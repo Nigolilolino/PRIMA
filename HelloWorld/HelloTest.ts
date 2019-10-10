@@ -1,14 +1,17 @@
-console.log("Hello World");
-//document.addEventListener("DOMContentLoaded", function () {
-    //document.getElementById("test").innerHTML = "Hello World";
+namespace HelloWorld{
 
-  //  document.body.innerHTML = "Eyoooooo";
-//});
+  console.log("Hello World");
+  //document.addEventListener("DOMContentLoaded", function () {
+      //document.getElementById("test").innerHTML = "Hello World";
 
-window.addEventListener("load", handleLoad);
+    //  document.body.innerHTML = "Eyoooooo";
+  //});
 
-function handleLoad(_event: Event){
-    document.body.innerHTML = "Eyoooooo";
+  window.addEventListener("load", handleLoad);
+
+  function handleLoad(_event: Event): void{
+      document.body.innerHTML = "Eyoooooo";
+  }
 }
 
 
