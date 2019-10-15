@@ -47,5 +47,4 @@ var HelloWorld;
         }
     }
 })(HelloWorld || (HelloWorld = {}));
-//Coding Style ansehen
 //# sourceMappingURL=HelloTest.js.map

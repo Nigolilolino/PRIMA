@@ -60,7 +60,3 @@ namespace HelloWorld {
 
   }
 }
-
-
-
-//Coding Style ansehen
