@@ -13,7 +13,7 @@ var L1_FirstFUDGE;
         let player1Node = new fudge.Node("Quad");
         let player2Node = new fudge.Node("Quad");
         let ball = new fudge.Node("Quad");
-        //Erstellung eines Meshs und dessen Komponente
+        //Erstellung eines Meshs und Umwandlung dessen in eine Komponente
         let player1Mesh = new fudge.MeshQuad();
         let cmpPlayer1Mesh = new fudge.ComponentMesh(player1Mesh);
         cmpPlayer1Mesh.pivot.scaleX(0.1);
@@ -28,7 +28,7 @@ var L1_FirstFUDGE;
         let cmpBallMesh = new fudge.ComponentMesh(ballMesh);
         cmpBallMesh.pivot.scaleX(0.1);
         cmpBallMesh.pivot.scaleY(0.1);
-        //Erstellung eines Materials und dessen Komponente
+        //Erstellung eines Materials und Umwandlung dessen in eine Komponente
         let player1Material = new fudge.Material("Solidwhite", fudge.ShaderUniColor, new fudge.CoatColored(new fudge.Color(1, 0, 0, 1)));
         let cmpPlayer1Material = new fudge.ComponentMaterial(player1Material);
         let player2Material = new fudge.Material("Solidwhite", fudge.ShaderUniColor, new fudge.CoatColored(new fudge.Color(0, 1, 0, 1)));
@@ -72,8 +72,6 @@ var L1_FirstFUDGE;
         viewport.initialize("camera", player1Node, cmpCamera, canvas);
         //Verschiebung der Kamera
         viewport.camera.pivot.translateZ(2);
-        //viewport.camera.pivot.translateX(1);
-        //viewport.camera.pivot.rotateY(20);
         fudge.Debug.log(viewport);
         viewport.draw();
     }

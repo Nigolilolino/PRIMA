@@ -16,7 +16,7 @@ namespace L1_FirstFUDGE {
         let ball: fudge.Node = new fudge.Node("Quad");
 
 
-        //Erstellung eines Meshs und dessen Komponente
+        //Erstellung eines Meshs und Umwandlung dessen in eine Komponente
         let player1Mesh: fudge.MeshQuad = new fudge.MeshQuad();
         let cmpPlayer1Mesh: fudge.ComponentMesh = new fudge.ComponentMesh(player1Mesh);
         cmpPlayer1Mesh.pivot.scaleX(0.1);
@@ -35,7 +35,7 @@ namespace L1_FirstFUDGE {
         cmpBallMesh.pivot.scaleY(0.1);
        
 
-        //Erstellung eines Materials und dessen Komponente
+        //Erstellung eines Materials und Umwandlung dessen in eine Komponente
         let player1Material: fudge.Material = new fudge.Material("Solidwhite", fudge.ShaderUniColor, new fudge.CoatColored(new fudge.Color(1,0,0,1)));
         let cmpPlayer1Material: fudge.ComponentMaterial = new fudge.ComponentMaterial(player1Material);
 
@@ -76,7 +76,6 @@ namespace L1_FirstFUDGE {
                 viewport.draw();
             }
         };
-
         //***************************************************************************************************** */
 
         //Kamera Komponente
@@ -86,8 +85,6 @@ namespace L1_FirstFUDGE {
         viewport.initialize("camera", player1Node, cmpCamera, canvas);
         //Verschiebung der Kamera
         viewport.camera.pivot.translateZ(2);
-        //viewport.camera.pivot.translateX(1);
-        //viewport.camera.pivot.rotateY(20);
         fudge.Debug.log(viewport);
         viewport.draw();
     }
