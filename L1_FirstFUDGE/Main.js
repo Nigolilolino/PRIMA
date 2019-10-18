@@ -65,24 +65,6 @@ var L1_FirstFUDGE;
                 viewport.draw();
             }
         };
-        document.body.onkeydown = function (e) {
-            if (e.keyCode == 38) {
-                cmpPlayer1Mesh.pivot.translateY(0.04);
-                viewport.draw();
-            }
-            else if (e.keyCode == 40) {
-                cmpPlayer1Mesh.pivot.translateY(-0.04);
-                viewport.draw();
-            }
-            if (e.keyCode == 87) {
-                cmpPlayer2Mesh.pivot.translateY(0.04);
-                viewport.draw();
-            }
-            else if (e.keyCode == 83) {
-                cmpPlayer2Mesh.pivot.translateY(-0.04);
-                viewport.draw();
-            }
-        };
         //***************************************************************************************************** */
         //Kamera Komponente
         let cmpCamera = new fudge.ComponentCamera();
