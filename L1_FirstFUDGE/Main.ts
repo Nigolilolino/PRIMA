@@ -11,23 +11,23 @@ namespace L1_FirstFUDGE {
         fudge.Debug.log(canvas);
         console.log(canvas);   
 
-        let node: fudge.Node = new fudge.Node("Quad");
-        let node2: fudge.Node = new fudge.Node("Quad");
+        let player1Node: fudge.Node = new fudge.Node("Quad");
+        let player2Node: fudge.Node = new fudge.Node("Quad");
         let ball: fudge.Node = new fudge.Node("Quad");
 
 
         //Erstellung eines Meshs und dessen Komponente
-        let mesh: fudge.MeshQuad = new fudge.MeshQuad();
-        let cmpMesh: fudge.ComponentMesh = new fudge.ComponentMesh(mesh);
-        cmpMesh.pivot.scaleX(0.1);
-        cmpMesh.pivot.scaleY(0.4);
-        cmpMesh.pivot.translateX(1);
+        let player1Mesh: fudge.MeshQuad = new fudge.MeshQuad();
+        let cmpPlayer1Mesh: fudge.ComponentMesh = new fudge.ComponentMesh(player1Mesh);
+        cmpPlayer1Mesh.pivot.scaleX(0.1);
+        cmpPlayer1Mesh.pivot.scaleY(0.4);
+        cmpPlayer1Mesh.pivot.translateX(1);
 
-        let mesh2: fudge.MeshQuad = new fudge.MeshQuad();
-        let cmpMesh2: fudge.ComponentMesh = new fudge.ComponentMesh(mesh2);
-        cmpMesh2.pivot.scaleX(0.1);
-        cmpMesh2.pivot.scaleY(0.4);
-        cmpMesh2.pivot.translateX(-1);
+        let player2Mesh: fudge.MeshQuad = new fudge.MeshQuad();
+        let cmpPlayer2Mesh: fudge.ComponentMesh = new fudge.ComponentMesh(player2Mesh);
+        cmpPlayer2Mesh.pivot.scaleX(0.1);
+        cmpPlayer2Mesh.pivot.scaleY(0.4);
+        cmpPlayer2Mesh.pivot.translateX(-1);
 
         let ballMesh: fudge.MeshQuad = new fudge.MeshQuad();
         let cmpBallMesh: fudge.ComponentMesh = new fudge.ComponentMesh(ballMesh);
@@ -36,25 +36,25 @@ namespace L1_FirstFUDGE {
        
 
         //Erstellung eines Materials und dessen Komponente
-        let material: fudge.Material = new fudge.Material("Solidwhite", fudge.ShaderUniColor, new fudge.CoatColored(new fudge.Color(1,0,0,1)));
-        let cmpMaterial: fudge.ComponentMaterial = new fudge.ComponentMaterial(material);
+        let player1Material: fudge.Material = new fudge.Material("Solidwhite", fudge.ShaderUniColor, new fudge.CoatColored(new fudge.Color(1,0,0,1)));
+        let cmpPlayer1Material: fudge.ComponentMaterial = new fudge.ComponentMaterial(player1Material);
 
-        let material2: fudge.Material = new fudge.Material("Solidwhite", fudge.ShaderUniColor, new fudge.CoatColored(new fudge.Color(0,1,0,1)));
-        let cmpMaterial2: fudge.ComponentMaterial = new fudge.ComponentMaterial(material2);
+        let player2Material: fudge.Material = new fudge.Material("Solidwhite", fudge.ShaderUniColor, new fudge.CoatColored(new fudge.Color(0,1,0,1)));
+        let cmpPlayer2Material: fudge.ComponentMaterial = new fudge.ComponentMaterial(player2Material);
 
         let ballMaterial: fudge.Material = new fudge.Material("Solidwhite", fudge.ShaderUniColor, new fudge.CoatColored(new fudge.Color(1,1,1,1)));
         let cmpBallMaterial: fudge.ComponentMaterial = new fudge.ComponentMaterial(ballMaterial);
 
         //Verknüpfung der Komonenten mit dem Knoten
-        node.addComponent(cmpMesh);
-        node.addComponent(cmpMaterial);
+        player1Node.addComponent(cmpPlayer1Mesh);
+        player1Node.addComponent(cmpPlayer1Material);
 
         //Spieler 2 und der Ball werden als Unterknoten des ersten Spielers eingefügt (Wurde ohne Dell Oro gemacht).
-        node.appendChild(node2);
-        node2.addComponent(cmpMesh2);
-        node2.addComponent(cmpMaterial2);
+        player1Node.appendChild(player2Node);
+        player2Node.addComponent(cmpPlayer2Mesh);
+        player2Node.addComponent(cmpPlayer2Material);
 
-        node.appendChild(ball);
+        player1Node.appendChild(ball);
         ball.addComponent(cmpBallMesh);
         ball.addComponent(cmpBallMaterial);
 
@@ -63,16 +63,16 @@ namespace L1_FirstFUDGE {
         document.body.onkeydown = function(e: KeyboardEvent): void{
         
             if (e.keyCode == 38) {
-                cmpMesh.pivot.translateY(0.01);
+                cmpPlayer1Mesh.pivot.translateY(0.01);
                 viewport.draw();
             } else if (e.keyCode == 40) {
-                cmpMesh.pivot.translateY(-0.01);
+                cmpPlayer1Mesh.pivot.translateY(-0.01);
                 viewport.draw();
             } else if (e.keyCode == 87) {
-                cmpMesh2.pivot.translateY(0.01);
+                cmpPlayer2Mesh.pivot.translateY(0.01);
                 viewport.draw();
             } else if (e.keyCode == 83) {
-                cmpMesh2.pivot.translateY(-0.01);
+                cmpPlayer2Mesh.pivot.translateY(-0.01);
                 viewport.draw();
             }
         };
@@ -80,18 +80,18 @@ namespace L1_FirstFUDGE {
         document.body.onkeydown = function(e: KeyboardEvent): void {
         
             if (e.keyCode == 38) {
-                cmpMesh.pivot.translateY(0.04);
+                cmpPlayer1Mesh.pivot.translateY(0.04);
                 viewport.draw();
             } else if (e.keyCode == 40) {
-                cmpMesh.pivot.translateY(-0.04);
+                cmpPlayer1Mesh.pivot.translateY(-0.04);
                 viewport.draw();
             }
             
             if (e.keyCode == 87) {
-                cmpMesh2.pivot.translateY(0.04);
+                cmpPlayer2Mesh.pivot.translateY(0.04);
                 viewport.draw();
             } else if (e.keyCode == 83) {
-                cmpMesh2.pivot.translateY(-0.04);
+                cmpPlayer2Mesh.pivot.translateY(-0.04);
                 viewport.draw();
             }
         };
@@ -101,7 +101,7 @@ namespace L1_FirstFUDGE {
         let cmpCamera: fudge.ComponentCamera = new fudge.ComponentCamera();
 
         let viewport: fudge.Viewport = new fudge.Viewport;
-        viewport.initialize("camera", node, cmpCamera, canvas);
+        viewport.initialize("camera", player1Node, cmpCamera, canvas);
         //Verschiebung der Kamera
         viewport.camera.pivot.translateZ(2);
         //viewport.camera.pivot.translateX(1);
