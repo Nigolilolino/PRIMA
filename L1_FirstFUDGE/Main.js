@@ -35,15 +35,18 @@ var L1_FirstFUDGE;
         let cmpMaterial2 = new fudge.ComponentMaterial(material2);
         let ballMaterial = new fudge.Material("Solidwhite", fudge.ShaderUniColor, new fudge.CoatColored(new fudge.Color(1, 1, 1, 1)));
         let cmpBallMaterial = new fudge.ComponentMaterial(ballMaterial);
-        //sVerknüpfung der Komonenten mit dem Knoten
+        //Verknüpfung der Komonenten mit dem Knoten
         node.addComponent(cmpMesh);
         node.addComponent(cmpMaterial);
+        //Spieler 2 und der Ball werden als Unterknoten des ersten Spielers eingefügt (Wurde ohne Dell Oro gemacht).
         node.appendChild(node2);
         node2.addComponent(cmpMesh2);
         node2.addComponent(cmpMaterial2);
         node.appendChild(ball);
         ball.addComponent(cmpBallMesh);
         ball.addComponent(cmpBallMaterial);
+        //****************************************EXPERIMENTEL**************************************// 
+        //Beide Spielerfiguren sind über W,S,Pfeil hoch und Pfeil runter  steuerbar. Wurde ohne Dell Oro gemacht.
         document.body.onkeydown = function (e) {
             if (e.keyCode == 38) {
                 cmpMesh.pivot.translateY(0.01);
@@ -80,6 +83,7 @@ var L1_FirstFUDGE;
                 viewport.draw();
             }
         };
+        //***************************************************************************************************** */
         //Kamera Komponente
         let cmpCamera = new fudge.ComponentCamera();
         let viewport = new fudge.Viewport;
