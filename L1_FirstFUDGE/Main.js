@@ -1,8 +1,8 @@
 "use strict";
 ///<reference types="../FUDGE/Build/FudgeCore.js"/>
-var L1_FirstFUDGE;
+var L2_NextFUDGE;
 ///<reference types="../FUDGE/Build/FudgeCore.js"/>
-(function (L1_FirstFUDGE) {
+(function (L2_NextFUDGE) {
     var fudge = FudgeCore;
     window.addEventListener("load", handleLoad);
     function handleLoad(_event) {
@@ -46,25 +46,21 @@ var L1_FirstFUDGE;
         ball.addComponent(cmpBallMesh);
         ball.addComponent(cmpBallMaterial);
         //****************************************EXPERIMENTEL**************************************// 
-        //Beide Spielerfiguren sind über W,S,Pfeil hoch und Pfeil runter  steuerbar. Wurde ohne Dell Oro gemacht.
-        document.body.onkeydown = function (e) {
-            if (e.keyCode == 38) {
-                cmpPlayer1Mesh.pivot.translateY(0.01);
-                viewport.draw();
-            }
-            else if (e.keyCode == 40) {
-                cmpPlayer1Mesh.pivot.translateY(-0.01);
-                viewport.draw();
-            }
-            else if (e.keyCode == 87) {
-                cmpPlayer2Mesh.pivot.translateY(0.01);
-                viewport.draw();
-            }
-            else if (e.keyCode == 83) {
-                cmpPlayer2Mesh.pivot.translateY(-0.01);
-                viewport.draw();
-            }
-        };
+        // document.body.onkeydown = function(e: KeyboardEvent): void {
+        //     if (e.keyCode == 38) {
+        //         cmpPlayer1Mesh.pivot.translateY(0.03);
+        //         viewport.draw();
+        //     } else if (e.keyCode == 40) {
+        //         cmpPlayer1Mesh.pivot.translateY(-0.03);
+        //         viewport.draw();
+        //     } else if (e.keyCode == 87) {
+        //         cmpPlayer2Mesh.pivot.translateY(0.03);
+        //         viewport.draw();
+        //     } else if (e.keyCode == 83) {
+        //         cmpPlayer2Mesh.pivot.translateY(-0.03);
+        //         viewport.draw();
+        //     }
+        // };
         //***************************************************************************************************** */
         //Kamera Komponente
         let cmpCamera = new fudge.ComponentCamera();
@@ -75,5 +71,5 @@ var L1_FirstFUDGE;
         fudge.Debug.log(viewport);
         viewport.draw();
     }
-})(L1_FirstFUDGE || (L1_FirstFUDGE = {}));
+})(L2_NextFUDGE || (L2_NextFUDGE = {}));
 //# sourceMappingURL=Main.js.map

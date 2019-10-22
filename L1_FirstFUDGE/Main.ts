@@ -1,5 +1,5 @@
 ///<reference types="../FUDGE/Build/FudgeCore.js"/>
-namespace L1_FirstFUDGE {
+namespace L2_NextFUDGE {
 
     import fudge = FudgeCore;
 
@@ -59,23 +59,22 @@ namespace L1_FirstFUDGE {
         ball.addComponent(cmpBallMaterial);
 
         //****************************************EXPERIMENTEL**************************************// 
-        //Beide Spielerfiguren sind über W,S,Pfeil hoch und Pfeil runter  steuerbar. Wurde ohne Dell Oro gemacht.
-        document.body.onkeydown = function(e: KeyboardEvent): void{
+        // document.body.onkeydown = function(e: KeyboardEvent): void {
         
-            if (e.keyCode == 38) {
-                cmpPlayer1Mesh.pivot.translateY(0.01);
-                viewport.draw();
-            } else if (e.keyCode == 40) {
-                cmpPlayer1Mesh.pivot.translateY(-0.01);
-                viewport.draw();
-            } else if (e.keyCode == 87) {
-                cmpPlayer2Mesh.pivot.translateY(0.01);
-                viewport.draw();
-            } else if (e.keyCode == 83) {
-                cmpPlayer2Mesh.pivot.translateY(-0.01);
-                viewport.draw();
-            }
-        };
+        //     if (e.keyCode == 38) {
+        //         cmpPlayer1Mesh.pivot.translateY(0.03);
+        //         viewport.draw();
+        //     } else if (e.keyCode == 40) {
+        //         cmpPlayer1Mesh.pivot.translateY(-0.03);
+        //         viewport.draw();
+        //     } else if (e.keyCode == 87) {
+        //         cmpPlayer2Mesh.pivot.translateY(0.03);
+        //         viewport.draw();
+        //     } else if (e.keyCode == 83) {
+        //         cmpPlayer2Mesh.pivot.translateY(-0.03);
+        //         viewport.draw();
+        //     }
+        // };
         //***************************************************************************************************** */
 
         //Kamera Komponente
