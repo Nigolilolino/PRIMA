@@ -5,6 +5,7 @@ var L2_NextFUDGE;
 (function (L2_NextFUDGE) {
     var fudge = FudgeCore;
     window.addEventListener("load", handleLoad);
+    let pressedKeys = {};
     let ball = new fudge.Node("Ball");
     let paddleLeft = new fudge.Node("PaddleLeft");
     let paddleRight = new fudge.Node("PaddleRight");
@@ -22,7 +23,35 @@ var L2_NextFUDGE;
         L2_NextFUDGE.viewport = new fudge.Viewport();
         L2_NextFUDGE.viewport.initialize("Viewport", pong, cmpCamera, canvas);
         fudge.Debug.log(L2_NextFUDGE.viewport);
-        addOnkeydownEvent();
+        document.addEventListener("keydown", handleKeyDown);
+        L2_NextFUDGE.viewport.draw();
+        fudge.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, update);
+        fudge.Loop.start();
+        document.addEventListener('keydown', function (event) {
+            console.log(event.code);
+            pressedKeys[event.code] = true;
+            console.log(pressedKeys);
+        }, false);
+        document.addEventListener('keyup', function (event) {
+            console.log(event.code);
+            pressedKeys[event.code] = false;
+            console.log(pressedKeys);
+        }, false);
+    }
+    function update(_event) {
+        if (pressedKeys[fudge.KEYBOARD_CODE.ARROW_UP]) {
+            paddleRight.cmpTransform.local.translate(new fudge.Vector3(0, 0.3, 0));
+        }
+        if (pressedKeys[fudge.KEYBOARD_CODE.ARROW_DOWN]) {
+            paddleRight.cmpTransform.local.translate(new fudge.Vector3(0, -0.3, 0));
+        }
+        if (pressedKeys[fudge.KEYBOARD_CODE.W]) {
+            paddleLeft.cmpTransform.local.translate(new fudge.Vector3(0, 0.3, 0));
+        }
+        if (pressedKeys[fudge.KEYBOARD_CODE.S]) {
+            paddleLeft.cmpTransform.local.translate(new fudge.Vector3(0, -0.3, 0));
+        }
+        fudge.RenderManager.update();
         L2_NextFUDGE.viewport.draw();
     }
     function createPong() {
@@ -44,25 +73,21 @@ var L2_NextFUDGE;
         pong.appendChild(paddleRight);
         return pong;
     }
-    function addOnkeydownEvent() {
-        document.body.onkeydown = function (e) {
-            if (e.keyCode == 38) {
-                paddleRight.getComponent(fudge.ComponentMesh).pivot.translateY(0.3);
-                L2_NextFUDGE.viewport.draw();
-            }
-            else if (e.keyCode == 40) {
-                paddleRight.getComponent(fudge.ComponentMesh).pivot.translateY(-0.3);
-                L2_NextFUDGE.viewport.draw();
-            }
-            else if (e.keyCode == 87) {
-                paddleLeft.getComponent(fudge.ComponentMesh).pivot.translateY(0.3);
-                L2_NextFUDGE.viewport.draw();
-            }
-            else if (e.keyCode == 83) {
-                paddleLeft.getComponent(fudge.ComponentMesh).pivot.translateY(-0.3);
-                L2_NextFUDGE.viewport.draw();
-            }
-        };
+    function handleKeyDown(_event) {
+        // switch (_event.code) {
+        //     case fudge.KEYBOARD_CODE.ARROW_UP:
+        //         paddleRight.cmpTransform.local.translate(new fudge.Vector3(0, 0.3, 0));
+        //         break;
+        //     case fudge.KEYBOARD_CODE.ARROW_DOWN:
+        //         paddleRight.cmpTransform.local.translate(new fudge.Vector3(0, -0.3, 0));
+        //         break;
+        //     case fudge.KEYBOARD_CODE.W:
+        //             paddleLeft.cmpTransform.local.translate(new fudge.Vector3(0, 0.3, 0));
+        //             break;
+        //     case fudge.KEYBOARD_CODE.S:
+        //             paddleLeft.cmpTransform.local.translate(new fudge.Vector3(0, -0.3, 0));
+        //             break;
+        // }
     }
 })(L2_NextFUDGE || (L2_NextFUDGE = {}));
 //# sourceMappingURL=Main.js.map

@@ -1,12 +1,18 @@
 ///<reference types="../FUDGE/Build/FudgeCore.js"/>
 namespace L2_NextFUDGE {
 
+    interface KeyPress{
+        [code: string]: boolean;
+    }
+
+
     import fudge = FudgeCore;
 
     window.addEventListener("load", handleLoad);
 
     export let viewport: fudge.Viewport;
 
+    let pressedKeys: KeyPress = {};
     let ball: fudge.Node = new fudge.Node("Ball");
     let paddleLeft: fudge.Node = new fudge.Node("PaddleLeft");
     let paddleRight: fudge.Node = new fudge.Node("PaddleRight");
@@ -32,8 +38,46 @@ namespace L2_NextFUDGE {
         viewport.initialize("Viewport", pong, cmpCamera, canvas);
         fudge.Debug.log(viewport);
 
-        addOnkeydownEvent();
+        document.addEventListener("keydown", handleKeyDown);
 
+        viewport.draw();
+
+        fudge.Loop.addEventListener(fudge.EVENT.LOOP_FRAME, update);
+        fudge.Loop.start();
+
+        document.addEventListener('keydown', function (event) {
+
+            console.log(event.code);
+            pressedKeys[event.code] = true;
+            console.log(pressedKeys);
+        
+        }, false);
+
+        document.addEventListener('keyup', function (event) {
+
+            console.log(event.code);
+            pressedKeys[event.code] = false;
+            console.log(pressedKeys);
+        
+        }, false);
+    }
+
+    function update(_event: Event): void {
+
+        if(pressedKeys[fudge.KEYBOARD_CODE.ARROW_UP]){
+            paddleRight.cmpTransform.local.translate(new fudge.Vector3(0, 0.3, 0));
+        }
+        if(pressedKeys[fudge.KEYBOARD_CODE.ARROW_DOWN]){
+            paddleRight.cmpTransform.local.translate(new fudge.Vector3(0, -0.3, 0));
+        }
+        if(pressedKeys[fudge.KEYBOARD_CODE.W]){
+            paddleLeft.cmpTransform.local.translate(new fudge.Vector3(0, 0.3, 0));
+        }
+        if(pressedKeys[fudge.KEYBOARD_CODE.S]){
+            paddleLeft.cmpTransform.local.translate(new fudge.Vector3(0, -0.3, 0));
+        }
+
+        fudge.RenderManager.update();
         viewport.draw();
     }
 
@@ -63,22 +107,21 @@ namespace L2_NextFUDGE {
         return pong;
     }
 
-    function addOnkeydownEvent(): void {
-
-        document.body.onkeydown = function(e: KeyboardEvent): void {
-            if (e.keyCode == 38) {
-                (<fudge.ComponentMesh>paddleRight.getComponent(fudge.ComponentMesh)).pivot.translateY(0.3);
-                viewport.draw();
-            } else if (e.keyCode == 40) {
-                (<fudge.ComponentMesh>paddleRight.getComponent(fudge.ComponentMesh)).pivot.translateY(-0.3);
-                viewport.draw();
-            } else if (e.keyCode == 87) {
-                (<fudge.ComponentMesh>paddleLeft.getComponent(fudge.ComponentMesh)).pivot.translateY(0.3);
-                viewport.draw();
-            } else if (e.keyCode == 83) {
-                (<fudge.ComponentMesh>paddleLeft.getComponent(fudge.ComponentMesh)).pivot.translateY(-0.3);
-                viewport.draw();
-            } 
-        };
+    function handleKeyDown(_event: KeyboardEvent): void {
+        // switch (_event.code) {
+        //     case fudge.KEYBOARD_CODE.ARROW_UP:
+        //         paddleRight.cmpTransform.local.translate(new fudge.Vector3(0, 0.3, 0));
+        //         break;
+        //     case fudge.KEYBOARD_CODE.ARROW_DOWN:
+        //         paddleRight.cmpTransform.local.translate(new fudge.Vector3(0, -0.3, 0));
+        //         break;
+        //     case fudge.KEYBOARD_CODE.W:
+        //             paddleLeft.cmpTransform.local.translate(new fudge.Vector3(0, 0.3, 0));
+        //             break;
+        //     case fudge.KEYBOARD_CODE.S:
+        //             paddleLeft.cmpTransform.local.translate(new fudge.Vector3(0, -0.3, 0));
+        //             break;
+        // }
+        
     }
 }
