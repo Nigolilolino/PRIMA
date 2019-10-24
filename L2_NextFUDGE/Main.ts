@@ -32,22 +32,20 @@ namespace L2_NextFUDGE {
         viewport.initialize("Viewport", pong, cmpCamera, canvas);
         fudge.Debug.log(viewport);
 
-        addOnkedownEvent();
+        addOnkeydownEvent();
 
         viewport.draw();
     }
 
     function createPong(): fudge.Node {
-        let pong: fudge.Node = new fudge.Node("Pong");
-        
 
+        let pong: fudge.Node = new fudge.Node("Pong");
         let meshQuad: fudge.MeshQuad = new fudge.MeshQuad();
         let mtrSolidWhite: fudge.Material = new fudge.Material("SolidWhite", fudge.ShaderUniColor, new fudge.CoatColored(new fudge.Color(1,1,1,1)));
 
         ball.addComponent(new fudge.ComponentMesh(meshQuad));
         paddleLeft.addComponent(new fudge.ComponentMesh(meshQuad));
         paddleRight.addComponent(new fudge.ComponentMesh(meshQuad));
-
         
         ball.addComponent(new fudge.ComponentMaterial(mtrSolidWhite));
         paddleLeft.addComponent(new fudge.ComponentMaterial(mtrSolidWhite));
@@ -65,7 +63,7 @@ namespace L2_NextFUDGE {
         return pong;
     }
 
-    function addOnkedownEvent(): void{
+    function addOnkeydownEvent(): void {
 
         document.body.onkeydown = function(e: KeyboardEvent): void {
             if (e.keyCode == 38) {
@@ -83,7 +81,4 @@ namespace L2_NextFUDGE {
             } 
         };
     }
-
-    
-
 }

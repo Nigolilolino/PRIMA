@@ -22,7 +22,7 @@ var L2_NextFUDGE;
         L2_NextFUDGE.viewport = new fudge.Viewport();
         L2_NextFUDGE.viewport.initialize("Viewport", pong, cmpCamera, canvas);
         fudge.Debug.log(L2_NextFUDGE.viewport);
-        addOnkedownEvent();
+        addOnkeydownEvent();
         L2_NextFUDGE.viewport.draw();
     }
     function createPong() {
@@ -44,7 +44,7 @@ var L2_NextFUDGE;
         pong.appendChild(paddleRight);
         return pong;
     }
-    function addOnkedownEvent() {
+    function addOnkeydownEvent() {
         document.body.onkeydown = function (e) {
             if (e.keyCode == 38) {
                 paddleRight.getComponent(fudge.ComponentMesh).pivot.translateY(0.3);
