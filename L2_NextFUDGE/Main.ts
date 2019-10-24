@@ -32,6 +32,8 @@ namespace L2_NextFUDGE {
         viewport.initialize("Viewport", pong, cmpCamera, canvas);
         fudge.Debug.log(viewport);
 
+        addOnkedownEvent();
+
         viewport.draw();
     }
 
@@ -61,6 +63,25 @@ namespace L2_NextFUDGE {
         pong.appendChild(paddleRight);
 
         return pong;
+    }
+
+    function addOnkedownEvent(): void{
+
+        document.body.onkeydown = function(e: KeyboardEvent): void {
+            if (e.keyCode == 38) {
+                (<fudge.ComponentMesh>paddleRight.getComponent(fudge.ComponentMesh)).pivot.translateY(0.3);
+                viewport.draw();
+            } else if (e.keyCode == 40) {
+                (<fudge.ComponentMesh>paddleRight.getComponent(fudge.ComponentMesh)).pivot.translateY(-0.3);
+                viewport.draw();
+            } else if (e.keyCode == 87) {
+                (<fudge.ComponentMesh>paddleLeft.getComponent(fudge.ComponentMesh)).pivot.translateY(0.3);
+                viewport.draw();
+            } else if (e.keyCode == 83) {
+                (<fudge.ComponentMesh>paddleLeft.getComponent(fudge.ComponentMesh)).pivot.translateY(-0.3);
+                viewport.draw();
+            } 
+        };
     }
 
     
