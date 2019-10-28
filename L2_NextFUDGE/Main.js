@@ -9,6 +9,8 @@ var L2_NextFUDGE;
     let ball = new fudge.Node("Ball");
     let paddleLeft = new fudge.Node("PaddleLeft");
     let paddleRight = new fudge.Node("PaddleRight");
+    let randomeXValue = generateRandomeValue();
+    let randomeYValue = generateRandomeValue();
     function handleLoad(_event) {
         const canvas = document.querySelector("canvas");
         fudge.RenderManager.initialize();
@@ -23,19 +25,14 @@ var L2_NextFUDGE;
         L2_NextFUDGE.viewport = new fudge.Viewport();
         L2_NextFUDGE.viewport.initialize("Viewport", pong, cmpCamera, canvas);
         fudge.Debug.log(L2_NextFUDGE.viewport);
-        document.addEventListener("keydown", handleKeyDown);
         L2_NextFUDGE.viewport.draw();
         fudge.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, update);
         fudge.Loop.start();
         document.addEventListener('keydown', function (event) {
-            console.log(event.code);
             pressedKeys[event.code] = true;
-            console.log(pressedKeys);
         }, false);
         document.addEventListener('keyup', function (event) {
-            console.log(event.code);
             pressedKeys[event.code] = false;
-            console.log(pressedKeys);
         }, false);
     }
     function update(_event) {
@@ -51,8 +48,26 @@ var L2_NextFUDGE;
         if (pressedKeys[fudge.KEYBOARD_CODE.S]) {
             paddleLeft.cmpTransform.local.translate(new fudge.Vector3(0, -0.3, 0));
         }
+        moveBall();
         fudge.RenderManager.update();
         L2_NextFUDGE.viewport.draw();
+    }
+    function moveBall() {
+        //fudge.Debug.log(randomeXValue);
+        ball.cmpTransform.local.translate(new fudge.Vector3(randomeXValue, randomeYValue, 0));
+        // fudge.Debug.log(ball.cmpTransform.local.translation["data"][1]);
+        if (ball.cmpTransform.local.translation["data"][0] >= 21) {
+            randomeXValue = randomeXValue * -1;
+        }
+        else if (ball.cmpTransform.local.translation["data"][0] <= -21) {
+            randomeXValue = randomeXValue * -1;
+        }
+        else if (ball.cmpTransform.local.translation["data"][1] >= 14) {
+            randomeYValue = randomeYValue * -1;
+        }
+        else if (ball.cmpTransform.local.translation["data"][1] <= -14) {
+            randomeYValue = randomeYValue * -1;
+        }
     }
     function createPong() {
         let pong = new fudge.Node("Pong");
@@ -73,21 +88,13 @@ var L2_NextFUDGE;
         pong.appendChild(paddleRight);
         return pong;
     }
-    function handleKeyDown(_event) {
-        // switch (_event.code) {
-        //     case fudge.KEYBOARD_CODE.ARROW_UP:
-        //         paddleRight.cmpTransform.local.translate(new fudge.Vector3(0, 0.3, 0));
-        //         break;
-        //     case fudge.KEYBOARD_CODE.ARROW_DOWN:
-        //         paddleRight.cmpTransform.local.translate(new fudge.Vector3(0, -0.3, 0));
-        //         break;
-        //     case fudge.KEYBOARD_CODE.W:
-        //             paddleLeft.cmpTransform.local.translate(new fudge.Vector3(0, 0.3, 0));
-        //             break;
-        //     case fudge.KEYBOARD_CODE.S:
-        //             paddleLeft.cmpTransform.local.translate(new fudge.Vector3(0, -0.3, 0));
-        //             break;
-        // }
+    function generateRandomeValue() {
+        if (Math.random() <= 0.5) {
+            return Math.random() * (+0.3 - +0.05) + +0.05;
+        }
+        else {
+            return (Math.random() * (+0.3 - +0.05) + +0.05) * -1;
+        }
     }
 })(L2_NextFUDGE || (L2_NextFUDGE = {}));
 //# sourceMappingURL=Main.js.map

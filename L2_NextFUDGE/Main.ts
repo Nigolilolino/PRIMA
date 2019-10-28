@@ -17,6 +17,10 @@ namespace L2_NextFUDGE {
     let paddleLeft: fudge.Node = new fudge.Node("PaddleLeft");
     let paddleRight: fudge.Node = new fudge.Node("PaddleRight");
 
+    let randomeXValue: number = generateRandomeValue();
+    let randomeYValue: number = generateRandomeValue();
+ 
+
     function handleLoad(_event: Event): void {
         const canvas: HTMLCanvasElement = document.querySelector("canvas");
         fudge.RenderManager.initialize();
@@ -38,47 +42,55 @@ namespace L2_NextFUDGE {
         viewport.initialize("Viewport", pong, cmpCamera, canvas);
         fudge.Debug.log(viewport);
 
-        document.addEventListener("keydown", handleKeyDown);
-
         viewport.draw();
 
         fudge.Loop.addEventListener(fudge.EVENT.LOOP_FRAME, update);
         fudge.Loop.start();
 
         document.addEventListener('keydown', function (event) {
-
-            console.log(event.code);
             pressedKeys[event.code] = true;
-            console.log(pressedKeys);
-        
         }, false);
 
         document.addEventListener('keyup', function (event) {
-
-            console.log(event.code);
             pressedKeys[event.code] = false;
-            console.log(pressedKeys);
-        
         }, false);
     }
 
     function update(_event: Event): void {
 
-        if(pressedKeys[fudge.KEYBOARD_CODE.ARROW_UP]){
+        if (pressedKeys[fudge.KEYBOARD_CODE.ARROW_UP]) {
             paddleRight.cmpTransform.local.translate(new fudge.Vector3(0, 0.3, 0));
         }
-        if(pressedKeys[fudge.KEYBOARD_CODE.ARROW_DOWN]){
+        if (pressedKeys[fudge.KEYBOARD_CODE.ARROW_DOWN]) {
             paddleRight.cmpTransform.local.translate(new fudge.Vector3(0, -0.3, 0));
         }
-        if(pressedKeys[fudge.KEYBOARD_CODE.W]){
+        if (pressedKeys[fudge.KEYBOARD_CODE.W]) {
             paddleLeft.cmpTransform.local.translate(new fudge.Vector3(0, 0.3, 0));
         }
-        if(pressedKeys[fudge.KEYBOARD_CODE.S]){
+        if (pressedKeys[fudge.KEYBOARD_CODE.S]) {
             paddleLeft.cmpTransform.local.translate(new fudge.Vector3(0, -0.3, 0));
         }
 
+        moveBall();
+
         fudge.RenderManager.update();
         viewport.draw();
+    }
+
+    function moveBall(): void {
+        //fudge.Debug.log(randomeXValue);
+        ball.cmpTransform.local.translate(new fudge.Vector3(randomeXValue, randomeYValue, 0));
+       // fudge.Debug.log(ball.cmpTransform.local.translation["data"][1]);
+        
+        if (ball.cmpTransform.local.translation["data"][0] >= 21){
+            randomeXValue = randomeXValue * -1;
+        }else if(ball.cmpTransform.local.translation["data"][0] <= -21){
+            randomeXValue = randomeXValue * -1;
+        }else if(ball.cmpTransform.local.translation["data"][1] >= 14){
+            randomeYValue = randomeYValue * -1;
+        }else if(ball.cmpTransform.local.translation["data"][1] <= -14){
+            randomeYValue = randomeYValue * -1;
+        }
     }
 
     function createPong(): fudge.Node {
@@ -107,21 +119,11 @@ namespace L2_NextFUDGE {
         return pong;
     }
 
-    function handleKeyDown(_event: KeyboardEvent): void {
-        // switch (_event.code) {
-        //     case fudge.KEYBOARD_CODE.ARROW_UP:
-        //         paddleRight.cmpTransform.local.translate(new fudge.Vector3(0, 0.3, 0));
-        //         break;
-        //     case fudge.KEYBOARD_CODE.ARROW_DOWN:
-        //         paddleRight.cmpTransform.local.translate(new fudge.Vector3(0, -0.3, 0));
-        //         break;
-        //     case fudge.KEYBOARD_CODE.W:
-        //             paddleLeft.cmpTransform.local.translate(new fudge.Vector3(0, 0.3, 0));
-        //             break;
-        //     case fudge.KEYBOARD_CODE.S:
-        //             paddleLeft.cmpTransform.local.translate(new fudge.Vector3(0, -0.3, 0));
-        //             break;
-        // }
-        
+    function generateRandomeValue(): number {
+        if (Math.random() <= 0.5) {
+            return Math.random() * (+0.3 - +0.05) + + 0.05;
+        } else {
+            return (Math.random() * (+0.3 - +0.05) + + 0.05) * -1;
+        }
     }
 }
