@@ -99,9 +99,9 @@ namespace PongGame {
             randomeYValue = randomeYValue * -1;
         } else if (ball.cmpTransform.local.translation["data"][1] <= -14) {
             randomeYValue = randomeYValue * -1;
-        } else if (ball.cmpTransform.local.translation["data"][0] - paddleRight.cmpTransform.local.translation["data"][0] >= 0 && ball.cmpTransform.local.translation["data"][1] - paddleRight.cmpTransform.local.translation["data"][1] >= -5 && ball.cmpTransform.local.translation["data"][1] - paddleRight.cmpTransform.local.translation["data"][1] <= 5){
+        } else if (ball.cmpTransform.local.translation["data"][0] - paddleRight.cmpTransform.local.translation["data"][0] >= 0 && ball.cmpTransform.local.translation["data"][1] - paddleRight.cmpTransform.local.translation["data"][1] >= -2 && ball.cmpTransform.local.translation["data"][1] - paddleRight.cmpTransform.local.translation["data"][1] <= 2) {
             randomeXValue = randomeXValue * -1;
-        } else if (ball.cmpTransform.local.translation["data"][0] - paddleLeft.cmpTransform.local.translation["data"][0] <= 0 && ball.cmpTransform.local.translation["data"][1] - paddleLeft.cmpTransform.local.translation["data"][1] >= -5 && ball.cmpTransform.local.translation["data"][1] - paddleLeft.cmpTransform.local.translation["data"][1] <= 5){
+        } else if (ball.cmpTransform.local.translation["data"][0] - paddleLeft.cmpTransform.local.translation["data"][0] <= 0 && ball.cmpTransform.local.translation["data"][1] - paddleLeft.cmpTransform.local.translation["data"][1] >= -2 && ball.cmpTransform.local.translation["data"][1] - paddleLeft.cmpTransform.local.translation["data"][1] <= 2) {
             randomeXValue = randomeXValue * -1;
         }
     }
@@ -134,9 +134,9 @@ namespace PongGame {
 
     function generateRandomeValue(): number {
         if (Math.random() <= 0.5) {
-            return Math.random() * (+0.3 - +0.05) + + 0.05;
+            return Math.random() * (+0.3 - +0.05) +  0.05;
         } else {
-            return (Math.random() * (+0.3 - +0.05) + + 0.05) * -1;
+            return (Math.random() * (+0.3 - +0.05) + 0.05) * -1;
         }
     }
 }
