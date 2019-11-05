@@ -1379,8 +1379,9 @@ var FudgeCore;
         }
         static injectRenderDataForCoatColored(_renderShader) {
             let colorUniformLocation = _renderShader.uniforms["u_color"];
-            let { r, g, b, a } = this.color;
-            let color = new Float32Array([r, g, b, a]);
+            // let { r, g, b, a } = (<CoatColored>this).color;
+            // let color: Float32Array = new Float32Array([r, g, b, a]);
+            let color = this.color.getArray();
             FudgeCore.RenderOperator.getRenderingContext().uniform4fv(colorUniformLocation, color);
         }
         static injectRenderDataForCoatTextured(_renderShader) {
@@ -1411,10 +1412,46 @@ var FudgeCore;
                 this.useRenderData(_renderShader);
             }
         }
+        static injectRenderDataForCoatMatCap(_renderShader) {
+            let crc3 = FudgeCore.RenderOperator.getRenderingContext();
+            let colorUniformLocation = _renderShader.uniforms["u_tint_color"];
+            let { r, g, b, a } = this.tintColor;
+            let tintColorArray = new Float32Array([r, g, b, a]);
+            crc3.uniform4fv(colorUniformLocation, tintColorArray);
+            let floatUniformLocation = _renderShader.uniforms["u_flatmix"];
+            let flatMix = this.flatMix;
+            crc3.uniform1f(floatUniformLocation, flatMix);
+            if (this.renderData) {
+                // buffers exist
+                crc3.activeTexture(WebGL2RenderingContext.TEXTURE0);
+                crc3.bindTexture(WebGL2RenderingContext.TEXTURE_2D, this.renderData["texture0"]);
+                crc3.uniform1i(_renderShader.uniforms["u_texture"], 0);
+            }
+            else {
+                this.renderData = {};
+                // TODO: check if all WebGL-Creations are asserted
+                const texture = FudgeCore.RenderManager.assert(crc3.createTexture());
+                crc3.bindTexture(WebGL2RenderingContext.TEXTURE_2D, texture);
+                try {
+                    crc3.texImage2D(crc3.TEXTURE_2D, 0, crc3.RGBA, crc3.RGBA, crc3.UNSIGNED_BYTE, this.texture.image);
+                    crc3.texImage2D(WebGL2RenderingContext.TEXTURE_2D, 0, WebGL2RenderingContext.RGBA, WebGL2RenderingContext.RGBA, WebGL2RenderingContext.UNSIGNED_BYTE, this.texture.image);
+                }
+                catch (_e) {
+                    FudgeCore.Debug.error(_e);
+                }
+                crc3.texParameteri(WebGL2RenderingContext.TEXTURE_2D, WebGL2RenderingContext.TEXTURE_MAG_FILTER, WebGL2RenderingContext.NEAREST);
+                crc3.texParameteri(WebGL2RenderingContext.TEXTURE_2D, WebGL2RenderingContext.TEXTURE_MIN_FILTER, WebGL2RenderingContext.NEAREST);
+                crc3.generateMipmap(crc3.TEXTURE_2D);
+                this.renderData["texture0"] = texture;
+                crc3.bindTexture(WebGL2RenderingContext.TEXTURE_2D, null);
+                this.useRenderData(_renderShader);
+            }
+        }
     }
     RenderInjector.coatInjections = {
         "CoatColored": RenderInjector.injectRenderDataForCoatColored,
-        "CoatTextured": RenderInjector.injectRenderDataForCoatTextured
+        "CoatTextured": RenderInjector.injectRenderDataForCoatTextured,
+        "CoatMatCap": RenderInjector.injectRenderDataForCoatMatCap
     };
     FudgeCore.RenderInjector = RenderInjector;
 })(FudgeCore || (FudgeCore = {}));
@@ -1447,6 +1484,7 @@ var FudgeCore;
             RenderOperator.crc3.enable(WebGL2RenderingContext.DEPTH_TEST);
             // RenderOperator.crc3.pixelStorei(WebGL2RenderingContext.UNPACK_FLIP_Y_WEBGL, true);
             RenderOperator.rectViewport = RenderOperator.getCanvasRect();
+            RenderOperator.renderShaderRayCast = RenderOperator.createProgram(FudgeCore.ShaderRayCast);
         }
         /**
          * Return a reference to the offscreen-canvas
@@ -1465,7 +1503,7 @@ var FudgeCore;
          */
         static getCanvasRect() {
             let canvas = RenderOperator.crc3.canvas;
-            return { x: 0, y: 0, width: canvas.width, height: canvas.height };
+            return FudgeCore.Rectangle.GET(0, 0, canvas.width, canvas.height);
         }
         /**
          * Set the size of the offscreen-canvas.
@@ -1557,6 +1595,7 @@ var FudgeCore;
          * @param _renderShader
          * @param _renderBuffers
          * @param _renderCoat
+         * @param _world
          * @param _projection
          */
         static draw(_renderShader, _renderBuffers, _renderCoat, _world, _projection) {
@@ -1586,6 +1625,31 @@ var FudgeCore;
             _renderCoat.coat.useRenderData(_renderShader);
             // Draw call
             // RenderOperator.crc3.drawElements(WebGL2RenderingContext.TRIANGLES, Mesh.getBufferSpecification().offset, _renderBuffers.nIndices);
+            RenderOperator.crc3.drawElements(WebGL2RenderingContext.TRIANGLES, _renderBuffers.nIndices, WebGL2RenderingContext.UNSIGNED_SHORT, 0);
+        }
+        /**
+         * Draw a buffer with a special shader that uses an id instead of a color
+         * @param _renderShader
+         * @param _renderBuffers
+         * @param _world
+         * @param _projection
+         */
+        static drawForRayCast(_id, _renderBuffers, _world, _projection) {
+            let renderShader = RenderOperator.renderShaderRayCast;
+            RenderOperator.useProgram(renderShader);
+            RenderOperator.crc3.bindBuffer(WebGL2RenderingContext.ARRAY_BUFFER, _renderBuffers.vertices);
+            RenderOperator.crc3.enableVertexAttribArray(renderShader.attributes["a_position"]);
+            RenderOperator.setAttributeStructure(renderShader.attributes["a_position"], FudgeCore.Mesh.getBufferSpecification());
+            RenderOperator.crc3.bindBuffer(WebGL2RenderingContext.ELEMENT_ARRAY_BUFFER, _renderBuffers.indices);
+            // Supply matrixdata to shader. 
+            let uProjection = renderShader.uniforms["u_projection"];
+            RenderOperator.crc3.uniformMatrix4fv(uProjection, false, _projection.get());
+            if (renderShader.uniforms["u_world"]) {
+                let uWorld = renderShader.uniforms["u_world"];
+                RenderOperator.crc3.uniformMatrix4fv(uWorld, false, _world.get());
+            }
+            let idUniformLocation = renderShader.uniforms["u_id"];
+            RenderOperator.getRenderingContext().uniform1i(idUniformLocation, _id);
             RenderOperator.crc3.drawElements(WebGL2RenderingContext.TRIANGLES, _renderBuffers.nIndices, WebGL2RenderingContext.UNSIGNED_SHORT, 0);
         }
         // #region Shaderprogram 
@@ -1785,9 +1849,6 @@ var FudgeCore;
      * A [[Coat]] providing a texture and additional data for texturing
      */
     let CoatTextured = class CoatTextured extends Coat {
-        /**
-         * A [[Coat]] providing a texture and additional data for texturing
-         */
         constructor() {
             super(...arguments);
             this.texture = null;
@@ -1797,6 +1858,25 @@ var FudgeCore;
         FudgeCore.RenderInjector.decorateCoat
     ], CoatTextured);
     FudgeCore.CoatTextured = CoatTextured;
+    /**
+     * A [[Coat]] to be used by the MatCap Shader providing a texture, a tint color (0.5 grey is neutral)
+     * and a flatMix number for mixing between smooth and flat shading.
+     */
+    let CoatMatCap = class CoatMatCap extends Coat {
+        constructor(_texture, _tintcolor, _flatmix) {
+            super();
+            this.texture = null;
+            this.tintColor = new FudgeCore.Color(0.5, 0.5, 0.5, 1);
+            this.flatMix = 0.5;
+            this.texture = _texture || new FudgeCore.TextureImage();
+            this.tintColor = _tintcolor || new FudgeCore.Color(0.5, 0.5, 0.5, 1);
+            this.flatMix = _flatmix > 1.0 ? this.flatMix = 1.0 : this.flatMix = _flatmix || 0.5;
+        }
+    };
+    CoatMatCap = __decorate([
+        FudgeCore.RenderInjector.decorateCoat
+    ], CoatMatCap);
+    FudgeCore.CoatMatCap = CoatMatCap;
 })(FudgeCore || (FudgeCore = {}));
 /// <reference path="../Transfer/Serializer.ts"/>
 /// <reference path="../Transfer/Mutable.ts"/>
@@ -1868,6 +1948,7 @@ var FudgeCore;
         }
         reduceMutator(_mutator) {
             delete _mutator.singleton;
+            delete _mutator.container;
         }
     }
     FudgeCore.Component = Component;
@@ -2234,7 +2315,7 @@ var FudgeCore;
                 tanHorizontal = tanFov;
                 tanVertical = tanHorizontal / this.aspectRatio;
             }
-            return { x: 0, y: 0, width: tanHorizontal * 2, height: tanVertical * 2 };
+            return FudgeCore.Rectangle.GET(0, 0, tanHorizontal * 2, tanVertical * 2);
         }
         //#region Transfer
         serialize() {
@@ -2652,15 +2733,42 @@ var FudgeCore;
      * Defines a color as values in the range of 0 to 1 for the four channels red, green, blue and alpha (for opacity)
      */
     class Color extends FudgeCore.Mutable {
-        constructor(_r, _g, _b, _a) {
+        constructor(_r = 1, _g = 1, _b = 1, _a = 1) {
             super();
-            this.r = _r;
-            this.g = _g;
-            this.b = _b;
-            this.a = _a;
+            this.setNormRGBA(_r, _g, _b, _a);
+        }
+        static get BLACK() {
+            return new Color(0, 0, 0, 1);
+        }
+        static get WHITE() {
+            return new Color(1, 1, 1, 1);
+        }
+        static get RED() {
+            return new Color(1, 0, 0, 1);
+        }
+        static get GREEN() {
+            return new Color(0, 1, 0, 1);
+        }
+        static get BLUE() {
+            return new Color(0, 0, 1, 1);
+        }
+        setNormRGBA(_r, _g, _b, _a) {
+            this.r = Math.min(1, Math.max(0, _r));
+            this.g = Math.min(1, Math.max(0, _g));
+            this.b = Math.min(1, Math.max(0, _b));
+            this.a = Math.min(1, Math.max(0, _a));
+        }
+        setBytesRGBA(_r, _g, _b, _a) {
+            this.setNormRGBA(_r / 255, _g / 255, _b / 255, _a / 255);
         }
         getArray() {
             return new Float32Array([this.r, this.g, this.b, this.a]);
+        }
+        setArrayNormRGBA(_color) {
+            this.setNormRGBA(_color[0], _color[1], _color[2], _color[3]);
+        }
+        setArrayBytesRGBA(_color) {
+            this.setBytesRGBA(_color[0], _color[1], _color[2], _color[3]);
         }
         reduceMutator(_mutator) { }
     }
@@ -3001,6 +3109,7 @@ var FudgeCore;
             this.branch = null; // The first node in the tree(branch) that will be rendered.
             this.crc2 = null;
             this.canvas = null;
+            this.pickBuffers = [];
             /**
              * Handle drag-drop events and dispatch to viewport as FUDGE-Event
              */
@@ -3049,9 +3158,11 @@ var FudgeCore;
             };
         }
         /**
-         * Creates a new viewport scenetree with a passed rootnode and camera and initializes all nodes currently in the tree(branch).
+         * Connects the viewport to the given canvas to render the given branch to using the given camera-component, and names the viewport as given.
+         * @param _name
          * @param _branch
          * @param _camera
+         * @param _canvas
          */
         initialize(_name, _branch, _camera, _canvas) {
             this.name = _name;
@@ -3072,13 +3183,13 @@ var FudgeCore;
          * Retrieve the size of the destination canvas as a rectangle, x and y are always 0
          */
         getCanvasRectangle() {
-            return { x: 0, y: 0, width: this.canvas.width, height: this.canvas.height };
+            return FudgeCore.Rectangle.GET(0, 0, this.canvas.width, this.canvas.height);
         }
         /**
          * Retrieve the client rectangle the canvas is displayed and fit in, x and y are always 0
          */
         getClientRectangle() {
-            return { x: 0, y: 0, width: this.canvas.clientWidth, height: this.canvas.clientHeight };
+            return FudgeCore.Rectangle.GET(0, 0, this.canvas.clientWidth, this.canvas.clientHeight);
         }
         /**
          * Set the branch to be drawn in the viewport.
@@ -3108,6 +3219,7 @@ var FudgeCore;
          * Draw this viewport
          */
         draw() {
+            FudgeCore.RenderManager.resetFrameBuffer();
             if (!this.camera.isActive)
                 return;
             if (this.adjustingFrames)
@@ -3122,6 +3234,27 @@ var FudgeCore;
             FudgeCore.RenderManager.drawBranch(this.branch, this.camera);
             this.crc2.imageSmoothingEnabled = false;
             this.crc2.drawImage(FudgeCore.RenderManager.getCanvas(), this.rectSource.x, this.rectSource.y, this.rectSource.width, this.rectSource.height, this.rectDestination.x, this.rectDestination.y, this.rectDestination.width, this.rectDestination.height);
+        }
+        /**
+        * Draw this viewport for RayCast
+        */
+        createPickBuffers() {
+            if (this.adjustingFrames)
+                this.adjustFrames();
+            if (this.adjustingCamera)
+                this.adjustCamera();
+            if (FudgeCore.RenderManager.addBranch(this.branch))
+                // branch has not yet been processed fully by rendermanager -> update all registered nodes
+                FudgeCore.RenderManager.update();
+            this.pickBuffers = FudgeCore.RenderManager.drawBranchForRayCast(this.branch, this.camera);
+            this.crc2.imageSmoothingEnabled = false;
+            this.crc2.drawImage(FudgeCore.RenderManager.getCanvas(), this.rectSource.x, this.rectSource.y, this.rectSource.width, this.rectSource.height, this.rectDestination.x, this.rectDestination.y, this.rectDestination.width, this.rectDestination.height);
+        }
+        pickNodeAt(_pos) {
+            // this.createPickBuffers();
+            let hits = FudgeCore.RenderManager.pickNodeAt(_pos, this.pickBuffers, this.rectSource);
+            hits.sort((a, b) => (b.zBuffer > 0) ? (a.zBuffer > 0) ? a.zBuffer - b.zBuffer : 1 : -1);
+            return hits;
         }
         /**
          * Adjust all frames involved in the rendering process from the display area in the client up to the renderer canvas
@@ -3396,7 +3529,7 @@ var FudgeCore;
         KEYBOARD_CODE["ZERO"] = "Digit0";
         KEYBOARD_CODE["ONE"] = "Digit1";
         KEYBOARD_CODE["TWO"] = "Digit2";
-        KEYBOARD_CODE["TRHEE"] = "Digit3";
+        KEYBOARD_CODE["THREE"] = "Digit3";
         KEYBOARD_CODE["FOUR"] = "Digit4";
         KEYBOARD_CODE["FIVE"] = "Digit5";
         KEYBOARD_CODE["SIX"] = "Digit6";
@@ -3584,7 +3717,7 @@ var FudgeCore;
             return result;
         }
         getRect(_rectFrame) {
-            return { x: 0, y: 0, width: this.width, height: this.height };
+            return FudgeCore.Rectangle.GET(0, 0, this.width, this.height);
         }
     }
     FudgeCore.FramingFixed = FramingFixed;
@@ -3611,7 +3744,7 @@ var FudgeCore;
             return result;
         }
         getRect(_rectFrame) {
-            return { x: 0, y: 0, width: this.normWidth * _rectFrame.width, height: this.normHeight * _rectFrame.height };
+            return FudgeCore.Rectangle.GET(0, 0, this.normWidth * _rectFrame.width, this.normHeight * _rectFrame.height);
         }
     }
     FudgeCore.FramingScaled = FramingScaled;
@@ -3640,8 +3773,7 @@ var FudgeCore;
             let minY = _rectFrame.y + this.margin.top * _rectFrame.height + this.padding.top;
             let maxX = _rectFrame.x + (1 - this.margin.right) * _rectFrame.width - this.padding.right;
             let maxY = _rectFrame.y + (1 - this.margin.bottom) * _rectFrame.height - this.padding.bottom;
-            let rect = { x: minX, y: minY, width: maxX - minX, height: maxY - minY };
-            return rect;
+            return FudgeCore.Rectangle.GET(minX, minY, maxX - minX, maxY - minY);
         }
         getMutator() {
             return { margin: this.margin, padding: this.padding };
@@ -3760,11 +3892,11 @@ var FudgeCore;
     /**
      * Stores a 4x4 transformation matrix and provides operations for it.
      * ```plaintext
-     * [ 0, 1, 2, 3 ] <- row vector x
-     * [ 4, 5, 6, 7 ] <- row vector y
-     * [ 8, 9,10,11 ] <- row vector z
-     * [12,13,14,15 ] <- translation
-     *            ^  homogeneous column
+     * [ 0, 1, 2, 3 ] ← row vector x
+     * [ 4, 5, 6, 7 ] ← row vector y
+     * [ 8, 9,10,11 ] ← row vector z
+     * [12,13,14,15 ] ← translation
+     *            ↑  homogeneous column
      * ```
      * @authors Jascha Karagöl, HFU, 2019 | Jirka Dell'Oro-Friedl, HFU, 2019
      */
@@ -3781,10 +3913,14 @@ var FudgeCore;
             ]);
             this.resetCache();
         }
+        /**
+         * - get: a copy of the calculated translation vector
+         * - set: effect the matrix
+         */
         get translation() {
             if (!this.vectors.translation)
                 this.vectors.translation = new FudgeCore.Vector3(this.data[12], this.data[13], this.data[14]);
-            return this.vectors.translation;
+            return this.vectors.translation.copy;
         }
         set translation(_translation) {
             this.data.set(_translation.get(), 12);
@@ -3792,25 +3928,36 @@ var FudgeCore;
             this.vectors.translation = _translation;
             this.mutator = null;
         }
+        /**
+         * - get: a copy of the calculated rotation vector
+         * - set: effect the matrix
+         */
         get rotation() {
             if (!this.vectors.rotation)
                 this.vectors.rotation = this.getEulerAngles();
-            return this.vectors.rotation;
+            return this.vectors.rotation.copy;
         }
         set rotation(_rotation) {
             this.mutate({ "rotation": _rotation });
             this.resetCache();
         }
+        /**
+         * - get: a copy of the calculated scale vector
+         * - set: effect the matrix
+         */
         get scaling() {
             if (!this.vectors.scaling)
                 this.vectors.scaling = new FudgeCore.Vector3(Math.hypot(this.data[0], this.data[1], this.data[2]), Math.hypot(this.data[4], this.data[5], this.data[6]), Math.hypot(this.data[8], this.data[9], this.data[10]));
-            return this.vectors.scaling;
+            return this.vectors.scaling.copy;
         }
         set scaling(_scaling) {
             this.mutate({ "scaling": _scaling });
             this.resetCache();
         }
         //#region STATICS
+        /**
+         * Retrieve a new identity matrix
+         */
         static get IDENTITY() {
             // const result: Matrix4x4 = new Matrix4x4();
             const result = FudgeCore.Recycler.get(Matrix4x4);
@@ -3986,7 +4133,6 @@ var FudgeCore;
         }
         /**
          * Returns a matrix that translates coordinates along the x-, y- and z-axis according to the given vector.
-         * @param _translate
          */
         static TRANSLATION(_translate) {
             // let matrix: Matrix4x4 = new Matrix4x4;
@@ -4055,7 +4201,6 @@ var FudgeCore;
         }
         /**
          * Returns a matrix that scales coordinates along the x-, y- and z-axis according to the given vector
-         * @param _scalar
          */
         static SCALING(_scalar) {
             // const matrix: Matrix4x4 = new Matrix4x4;
@@ -4127,19 +4272,15 @@ var FudgeCore;
         //#endregion
         //#region Rotation
         /**
-        * Wrapper function that multiplies a passed matrix by a rotationmatrix with passed x-rotation.
-        * @param _matrix The matrix to multiply.
-        * @param _angleInDegrees The angle to rotate by.
-        */
+         * Adds a rotation around the x-Axis to this matrix
+         */
         rotateX(_angleInDegrees) {
             const matrix = Matrix4x4.MULTIPLICATION(this, Matrix4x4.ROTATION_X(_angleInDegrees));
             this.set(matrix);
             FudgeCore.Recycler.store(matrix);
         }
         /**
-         * Wrapper function that multiplies a passed matrix by a rotationmatrix with passed y-rotation.
-         * @param _matrix The matrix to multiply.
-         * @param _angleInDegrees The angle to rotate by.
+         * Adds a rotation around the y-Axis to this matrix
          */
         rotateY(_angleInDegrees) {
             const matrix = Matrix4x4.MULTIPLICATION(this, Matrix4x4.ROTATION_Y(_angleInDegrees));
@@ -4147,15 +4288,16 @@ var FudgeCore;
             FudgeCore.Recycler.store(matrix);
         }
         /**
-         * Wrapper function that multiplies a passed matrix by a rotationmatrix with passed z-rotation.
-         * @param _matrix The matrix to multiply.
-         * @param _angleInDegrees The angle to rotate by.
+         * Adds a rotation around the z-Axis to this matrix
          */
         rotateZ(_angleInDegrees) {
             const matrix = Matrix4x4.MULTIPLICATION(this, Matrix4x4.ROTATION_Z(_angleInDegrees));
             this.set(matrix);
             FudgeCore.Recycler.store(matrix);
         }
+        /**
+         * Adjusts the rotation of this matrix to face the given target and tilts it to accord with the given up vector
+         */
         lookAt(_target, _up = FudgeCore.Vector3.Y()) {
             const matrix = Matrix4x4.LOOK_AT(this.translation, _target); // TODO: Handle rotation around z-axis
             this.set(matrix);
@@ -4163,6 +4305,9 @@ var FudgeCore;
         }
         //#endregion
         //#region Translation
+        /**
+         * Add a translation by the given vector to this matrix
+         */
         translate(_by) {
             const matrix = Matrix4x4.MULTIPLICATION(this, Matrix4x4.TRANSLATION(_by));
             // TODO: possible optimization, translation may alter mutator instead of deleting it.
@@ -4170,24 +4315,21 @@ var FudgeCore;
             FudgeCore.Recycler.store(matrix);
         }
         /**
-         * Translate the transformation along the x-axis.
-         * @param _x The value of the translation.
+         * Add a translation along the x-Axis by the given amount to this matrix
          */
         translateX(_x) {
             this.data[12] += _x;
             this.mutator = null;
         }
         /**
-         * Translate the transformation along the y-axis.
-         * @param _y The value of the translation.
+         * Add a translation along the y-Axis by the given amount to this matrix
          */
         translateY(_y) {
             this.data[13] += _y;
             this.mutator = null;
         }
         /**
-         * Translate the transformation along the z-axis.
-         * @param _z The value of the translation.
+         * Add a translation along the y-Axis by the given amount to this matrix
          */
         translateZ(_z) {
             this.data[14] += _z;
@@ -4195,28 +4337,46 @@ var FudgeCore;
         }
         //#endregion
         //#region Scaling
+        /**
+         * Add a scaling by the given vector to this matrix
+         */
         scale(_by) {
             const matrix = Matrix4x4.MULTIPLICATION(this, Matrix4x4.SCALING(_by));
             this.set(matrix);
             FudgeCore.Recycler.store(matrix);
         }
+        /**
+         * Add a scaling along the x-Axis by the given amount to this matrix
+         */
         scaleX(_by) {
             this.scale(new FudgeCore.Vector3(_by, 1, 1));
         }
+        /**
+         * Add a scaling along the y-Axis by the given amount to this matrix
+         */
         scaleY(_by) {
             this.scale(new FudgeCore.Vector3(1, _by, 1));
         }
+        /**
+         * Add a scaling along the z-Axis by the given amount to this matrix
+         */
         scaleZ(_by) {
             this.scale(new FudgeCore.Vector3(1, 1, _by));
         }
         //#endregion
         //#region Transformation
+        /**
+         * Multiply this matrix with the given matrix
+         */
         multiply(_matrix) {
             this.set(Matrix4x4.MULTIPLICATION(this, _matrix));
             this.mutator = null;
         }
         //#endregion
         //#region Transfer
+        /**
+         * Calculates and returns the euler-angles representing the current rotation of this matrix
+         */
         getEulerAngles() {
             let scaling = this.scaling;
             let s0 = this.data[0] / scaling.x;
@@ -4250,11 +4410,17 @@ var FudgeCore;
             rotation.scale(180 / Math.PI);
             return rotation;
         }
+        /**
+         * Sets the elements of this matrix to the values of the given matrix
+         */
         set(_to) {
             // this.data = _to.get();
             this.data.set(_to.data);
             this.resetCache();
         }
+        /**
+         * Return the elements of this matrix as a Float32Array
+         */
         get() {
             return new Float32Array(this.data);
         }
@@ -4328,6 +4494,131 @@ var FudgeCore;
     }
     FudgeCore.Matrix4x4 = Matrix4x4;
     //#endregion
+})(FudgeCore || (FudgeCore = {}));
+var FudgeCore;
+(function (FudgeCore) {
+    /**
+     * Defines the origin of a rectangle
+     */
+    let ORIGIN2D;
+    (function (ORIGIN2D) {
+        ORIGIN2D[ORIGIN2D["TOPLEFT"] = 0] = "TOPLEFT";
+        ORIGIN2D[ORIGIN2D["TOPCENTER"] = 1] = "TOPCENTER";
+        ORIGIN2D[ORIGIN2D["TOPRIGHT"] = 2] = "TOPRIGHT";
+        ORIGIN2D[ORIGIN2D["CENTERLEFT"] = 16] = "CENTERLEFT";
+        ORIGIN2D[ORIGIN2D["CENTER"] = 17] = "CENTER";
+        ORIGIN2D[ORIGIN2D["CENTERRIGHT"] = 18] = "CENTERRIGHT";
+        ORIGIN2D[ORIGIN2D["BOTTOMLEFT"] = 32] = "BOTTOMLEFT";
+        ORIGIN2D[ORIGIN2D["BOTTOMCENTER"] = 33] = "BOTTOMCENTER";
+        ORIGIN2D[ORIGIN2D["BOTTOMRIGHT"] = 34] = "BOTTOMRIGHT";
+    })(ORIGIN2D = FudgeCore.ORIGIN2D || (FudgeCore.ORIGIN2D = {}));
+    /**
+     * Defines a rectangle with position and size and add comfortable methods to it
+     * @author Jirka Dell'Oro-Friedl, HFU, 2019
+     */
+    class Rectangle extends FudgeCore.Mutable {
+        constructor(_x = 0, _y = 0, _width = 1, _height = 1, _origin = ORIGIN2D.TOPLEFT) {
+            super();
+            this.position = FudgeCore.Recycler.get(FudgeCore.Vector2);
+            this.size = FudgeCore.Recycler.get(FudgeCore.Vector2);
+            this.setPositionAndSize(_x, _y, _width, _height, _origin);
+        }
+        /**
+         * Returns a new rectangle created with the given parameters
+         */
+        static GET(_x = 0, _y = 0, _width = 1, _height = 1, _origin = ORIGIN2D.TOPLEFT) {
+            let rect = FudgeCore.Recycler.get(Rectangle);
+            rect.setPositionAndSize(_x, _y, _width, _height);
+            return rect;
+        }
+        /**
+         * Sets the position and size of the rectangle according to the given parameters
+         */
+        setPositionAndSize(_x = 0, _y = 0, _width = 1, _height = 1, _origin = ORIGIN2D.TOPLEFT) {
+            this.size.set(_width, _height);
+            switch (_origin & 0x03) {
+                case 0x00:
+                    this.position.x = _x;
+                    break;
+                case 0x01:
+                    this.position.x = _x - _width / 2;
+                    break;
+                case 0x02:
+                    this.position.x = _x - _width;
+                    break;
+            }
+            switch (_origin & 0x30) {
+                case 0x00:
+                    this.position.y = _y;
+                    break;
+                case 0x10:
+                    this.position.y = _y - _height / 2;
+                    break;
+                case 0x20:
+                    this.position.y = _y - _height;
+                    break;
+            }
+        }
+        get x() {
+            return this.position.x;
+        }
+        get y() {
+            return this.position.y;
+        }
+        get width() {
+            return this.size.x;
+        }
+        get height() {
+            return this.size.y;
+        }
+        get left() {
+            return this.position.x;
+        }
+        get top() {
+            return this.position.y;
+        }
+        get right() {
+            return this.position.x + this.size.x;
+        }
+        get bottom() {
+            return this.position.y + this.size.y;
+        }
+        set x(_x) {
+            this.position.x = _x;
+        }
+        set y(_y) {
+            this.position.y = _y;
+        }
+        set width(_width) {
+            this.position.x = _width;
+        }
+        set height(_height) {
+            this.position.y = _height;
+        }
+        set left(_value) {
+            this.size.x = this.right - _value;
+            this.position.x = _value;
+        }
+        set top(_value) {
+            this.size.y = this.bottom - _value;
+            this.position.y = _value;
+        }
+        set right(_value) {
+            this.size.x = this.position.x + _value;
+        }
+        set bottom(_value) {
+            this.size.y = this.position.y + _value;
+        }
+        /**
+         * Returns true if the given point is inside of this rectangle or on the border
+         * @param _point
+         */
+        isInside(_point) {
+            return (_point.x >= this.left && _point.x <= this.right && _point.y >= this.top && _point.y <= this.bottom);
+        }
+        reduceMutator(_mutator) { }
+    }
+    FudgeCore.Rectangle = Rectangle;
 })(FudgeCore || (FudgeCore = {}));
 var FudgeCore;
 (function (FudgeCore) {
@@ -4561,6 +4852,12 @@ var FudgeCore;
         get copy() {
             return new Vector2(this.x, this.y);
         }
+        /**
+         * Adds a z-component to the vector and returns a new Vector3
+         */
+        toVector3() {
+            return new FudgeCore.Vector3(this.x, this.y, 0);
+        }
         getMutator() {
             let mutator = {
                 x: this.data[0], y: this.data[1]
@@ -4671,6 +4968,14 @@ var FudgeCore;
             return vector;
         }
         /**
+         * Returns a new vector representing the given vector scaled by the given scaling factor
+         */
+        static SCALE(_vector, _scaling) {
+            let scaled = new Vector3();
+            scaled.data = new Float32Array([_vector.x * _scaling, _vector.y * _scaling, _vector.z * _scaling]);
+            return scaled;
+        }
+        /**
          * Computes the crossproduct of 2 vectors.
          * @param _a The vector to multiply.
          * @param _b The vector to multiply by.
@@ -4695,6 +5000,20 @@ var FudgeCore;
             let scalarProduct = _a.x * _b.x + _a.y * _b.y + _a.z * _b.z;
             return scalarProduct;
         }
+        /**
+         * Calculates and returns the reflection of the incoming vector at the given normal vector. The length of normal should be 1.
+         *     __________________
+         *           /|\
+         * incoming / | \ reflection
+         *         /  |  \
+         *          normal
+         *
+         */
+        static REFLECTION(_incoming, _normal) {
+            let dot = -Vector3.DOT(_incoming, _normal);
+            let reflection = Vector3.SUM(_incoming, Vector3.SCALE(_normal, 2 * dot));
+            return reflection;
+        }
         add(_addend) {
             this.data = new Vector3(_addend.x + this.x, _addend.y + this.y, _addend.z + this.z).data;
         }
@@ -4718,6 +5037,17 @@ var FudgeCore;
         }
         transform(_matrix) {
             this.data = Vector3.TRANSFORMATION(this, _matrix).data;
+        }
+        /**
+         * Drops the z-component and returns a Vector2 consisting of the x- and y-components
+         */
+        toVector2() {
+            return new FudgeCore.Vector2(this.x, this.y);
+        }
+        reflect(_normal) {
+            const reflected = Vector3.REFLECTION(this, _normal);
+            this.set(reflected.x, reflected.y, reflected.z);
+            FudgeCore.Recycler.store(reflected);
         }
         getMutator() {
             let mutator = {
@@ -4970,6 +5300,7 @@ var FudgeCore;
             this.vertices = this.createVertices();
             this.indices = this.createIndices();
             this.textureUVs = this.createTextureUVs();
+            this.normalsFace = this.createFaceNormals();
         }
         createVertices() {
             let vertices = new Float32Array([
@@ -4980,7 +5311,7 @@ var FudgeCore;
         }
         createIndices() {
             let indices = new Uint16Array([
-                0, 1, 2, 0, 2, 3
+                1, 2, 0, 2, 3, 0
             ]);
             return indices;
         }
@@ -4991,7 +5322,11 @@ var FudgeCore;
             ]);
             return textureUVs;
         }
-        createFaceNormals() { return null; }
+        createFaceNormals() {
+            return new Float32Array([
+                /*0*/ 0, 0, 1, /*1*/ 0, 0, 0, /*2*/ 0, 0, 0, /*3*/ 1, 0, 0
+            ]);
+        }
     }
     FudgeCore.MeshQuad = MeshQuad;
 })(FudgeCore || (FudgeCore = {}));
@@ -5451,6 +5786,17 @@ var FudgeCore;
     }
     FudgeCore.Ray = Ray;
 })(FudgeCore || (FudgeCore = {}));
+var FudgeCore;
+(function (FudgeCore) {
+    class RayHit {
+        constructor(_node = null, _face = 0, _zBuffer = 0) {
+            this.node = _node;
+            this.face = _face;
+            this.zBuffer = _zBuffer;
+        }
+    }
+    FudgeCore.RayHit = RayHit;
+})(FudgeCore || (FudgeCore = {}));
 /// <reference path="RenderOperator.ts"/>
 var FudgeCore;
 /// <reference path="RenderOperator.ts"/>
@@ -5490,19 +5836,19 @@ var FudgeCore;
          * @param _node
          */
         static addNode(_node) {
-            if (this.nodes.get(_node))
+            if (RenderManager.nodes.get(_node))
                 return;
             let cmpMaterial = _node.getComponent(FudgeCore.ComponentMaterial);
             if (!cmpMaterial)
                 return;
             let shader = cmpMaterial.material.getShader();
-            this.createReference(this.renderShaders, shader, this.createProgram);
+            RenderManager.createReference(RenderManager.renderShaders, shader, RenderManager.createProgram);
             let coat = cmpMaterial.material.getCoat();
-            this.createReference(this.renderCoats, coat, this.createParameter);
+            RenderManager.createReference(RenderManager.renderCoats, coat, RenderManager.createParameter);
             let mesh = _node.getComponent(FudgeCore.ComponentMesh).mesh;
-            this.createReference(this.renderBuffers, mesh, this.createBuffers);
+            RenderManager.createReference(RenderManager.renderBuffers, mesh, RenderManager.createBuffers);
             let nodeReferences = { shader: shader, coat: coat, mesh: mesh }; //, doneTransformToWorld: false };
-            this.nodes.set(_node, nodeReferences);
+            RenderManager.nodes.set(_node, nodeReferences);
         }
         /**
          * Register the node and its valid successors in the branch for rendering using [[addNode]]
@@ -5515,7 +5861,7 @@ var FudgeCore;
             for (let node of _node.branch)
                 try {
                     // may fail when some components are missing. TODO: cleanup
-                    this.addNode(node);
+                    RenderManager.addNode(node);
                 }
                 catch (_e) {
                     FudgeCore.Debug.log(_e);
@@ -5529,13 +5875,13 @@ var FudgeCore;
          * @param _node
          */
         static removeNode(_node) {
-            let nodeReferences = this.nodes.get(_node);
+            let nodeReferences = RenderManager.nodes.get(_node);
             if (!nodeReferences)
                 return;
-            this.removeReference(this.renderShaders, nodeReferences.shader, this.deleteProgram);
-            this.removeReference(this.renderCoats, nodeReferences.coat, this.deleteParameter);
-            this.removeReference(this.renderBuffers, nodeReferences.mesh, this.deleteBuffers);
-            this.nodes.delete(_node);
+            RenderManager.removeReference(RenderManager.renderShaders, nodeReferences.shader, RenderManager.deleteProgram);
+            RenderManager.removeReference(RenderManager.renderCoats, nodeReferences.coat, RenderManager.deleteParameter);
+            RenderManager.removeReference(RenderManager.renderBuffers, nodeReferences.mesh, RenderManager.deleteBuffers);
+            RenderManager.nodes.delete(_node);
         }
         /**
          * Unregister the node and its valid successors in the branch to free renderer resources. Uses [[removeNode]]
@@ -5543,7 +5889,7 @@ var FudgeCore;
          */
         static removeBranch(_node) {
             for (let node of _node.branch)
-                this.removeNode(node);
+                RenderManager.removeNode(node);
         }
         // #endregion
         // #region Updating
@@ -5552,26 +5898,26 @@ var FudgeCore;
          * @param _node
          */
         static updateNode(_node) {
-            let nodeReferences = this.nodes.get(_node);
+            let nodeReferences = RenderManager.nodes.get(_node);
             if (!nodeReferences)
                 return;
             let cmpMaterial = _node.getComponent(FudgeCore.ComponentMaterial);
             let shader = cmpMaterial.material.getShader();
             if (shader !== nodeReferences.shader) {
-                this.removeReference(this.renderShaders, nodeReferences.shader, this.deleteProgram);
-                this.createReference(this.renderShaders, shader, this.createProgram);
+                RenderManager.removeReference(RenderManager.renderShaders, nodeReferences.shader, RenderManager.deleteProgram);
+                RenderManager.createReference(RenderManager.renderShaders, shader, RenderManager.createProgram);
                 nodeReferences.shader = shader;
             }
             let coat = cmpMaterial.material.getCoat();
             if (coat !== nodeReferences.coat) {
-                this.removeReference(this.renderCoats, nodeReferences.coat, this.deleteParameter);
-                this.createReference(this.renderCoats, coat, this.createParameter);
+                RenderManager.removeReference(RenderManager.renderCoats, nodeReferences.coat, RenderManager.deleteParameter);
+                RenderManager.createReference(RenderManager.renderCoats, coat, RenderManager.createParameter);
                 nodeReferences.coat = coat;
             }
             let mesh = (_node.getComponent(FudgeCore.ComponentMesh)).mesh;
             if (mesh !== nodeReferences.mesh) {
-                this.removeReference(this.renderBuffers, nodeReferences.mesh, this.deleteBuffers);
-                this.createReference(this.renderBuffers, mesh, this.createBuffers);
+                RenderManager.removeReference(RenderManager.renderBuffers, nodeReferences.mesh, RenderManager.deleteBuffers);
+                RenderManager.createReference(RenderManager.renderBuffers, mesh, RenderManager.createBuffers);
                 nodeReferences.mesh = mesh;
             }
         }
@@ -5581,7 +5927,7 @@ var FudgeCore;
          */
         static updateBranch(_node) {
             for (let node of _node.branch)
-                this.updateNode(node);
+                RenderManager.updateNode(node);
         }
         // #endregion
         // #region Lights
@@ -5591,71 +5937,147 @@ var FudgeCore;
          * @param _lights
          */
         static setLights(_lights) {
-            // let renderLights: RenderLights = this.createRenderLights(_lights);
-            for (let entry of this.renderShaders) {
+            // let renderLights: RenderLights = RenderManager.createRenderLights(_lights);
+            for (let entry of RenderManager.renderShaders) {
                 let renderShader = entry[1].getReference();
-                this.setLightsInShader(renderShader, _lights);
+                RenderManager.setLightsInShader(renderShader, _lights);
             }
             // debugger;
         }
         // #endregion
-        // #region Transformation & Rendering
+        // #region Rendering
         /**
-         * Update all render data. After this, multiple viewports can render their associated data without updating the same data multiple times
+         * Update all render data. After RenderManager, multiple viewports can render their associated data without updating the same data multiple times
          */
         static update() {
             RenderManager.timestampUpdate = performance.now();
-            this.recalculateAllNodeTransforms();
+            RenderManager.recalculateAllNodeTransforms();
         }
         /**
          * Clear the offscreen renderbuffer with the given [[Color]]
          * @param _color
          */
         static clear(_color = null) {
-            this.crc3.clearColor(_color.r, _color.g, _color.b, _color.a);
-            this.crc3.clear(WebGL2RenderingContext.COLOR_BUFFER_BIT | WebGL2RenderingContext.DEPTH_BUFFER_BIT);
+            RenderManager.crc3.clearColor(_color.r, _color.g, _color.b, _color.a);
+            RenderManager.crc3.clear(WebGL2RenderingContext.COLOR_BUFFER_BIT | WebGL2RenderingContext.DEPTH_BUFFER_BIT);
         }
         /**
-         * Draws the branch starting with the given [[Node]] using the projection matrix given as _cameraMatrix.
-         * @param _node
-         * @param _cameraMatrix
+         * Reset the offscreen framebuffer to the original RenderingContext
          */
-        static drawBranch(_node, _cmpCamera) {
+        static resetFrameBuffer(_color = null) {
+            RenderManager.crc3.bindFramebuffer(WebGL2RenderingContext.FRAMEBUFFER, null);
+        }
+        /**
+         * Draws the branch starting with the given [[Node]] using the camera given [[ComponentCamera]].
+         * @param _node
+         * @param _cmpCamera
+         */
+        static drawBranch(_node, _cmpCamera, _drawNode = RenderManager.drawNode) {
+            if (_drawNode == RenderManager.drawNode)
+                RenderManager.resetFrameBuffer();
             let finalTransform;
             let cmpMesh = _node.getComponent(FudgeCore.ComponentMesh);
             if (cmpMesh)
                 finalTransform = FudgeCore.Matrix4x4.MULTIPLICATION(_node.mtxWorld, cmpMesh.pivot);
             else
-                finalTransform = _node.mtxWorld; // caution, this is a reference...
+                finalTransform = _node.mtxWorld; // caution, RenderManager is a reference...
             // multiply camera matrix
             let projection = FudgeCore.Matrix4x4.MULTIPLICATION(_cmpCamera.ViewProjectionMatrix, finalTransform);
-            this.drawNode(_node, finalTransform, projection);
+            _drawNode(_node, finalTransform, projection);
             for (let name in _node.getChildren()) {
                 let childNode = _node.getChildren()[name];
-                this.drawBranch(childNode, _cmpCamera); //, world);
+                RenderManager.drawBranch(childNode, _cmpCamera, _drawNode); //, world);
             }
             FudgeCore.Recycler.store(projection);
             if (finalTransform != _node.mtxWorld)
                 FudgeCore.Recycler.store(finalTransform);
         }
+        //#region RayCast & Picking
+        /**
+         * Draws the branch for RayCasting starting with the given [[Node]] using the camera given [[ComponentCamera]].
+         * @param _node
+         * @param _cmpCamera
+         */
+        static drawBranchForRayCast(_node, _cmpCamera) {
+            RenderManager.pickBuffers = [];
+            if (!RenderManager.renderShaders.get(FudgeCore.ShaderRayCast))
+                RenderManager.createReference(RenderManager.renderShaders, FudgeCore.ShaderRayCast, RenderManager.createProgram);
+            RenderManager.drawBranch(_node, _cmpCamera, RenderManager.drawNodeForRayCast);
+            RenderManager.resetFrameBuffer();
+            return RenderManager.pickBuffers;
+        }
+        static pickNodeAt(_pos, _pickBuffers, _rect) {
+            let hits = [];
+            for (let pickBuffer of _pickBuffers) {
+                RenderManager.crc3.bindFramebuffer(WebGL2RenderingContext.FRAMEBUFFER, pickBuffer.frameBuffer);
+                // TODO: instead of reading all data and afterwards pick the pixel, read only the pixel!
+                let data = new Uint8Array(_rect.width * _rect.height * 4);
+                RenderManager.crc3.readPixels(0, 0, _rect.width, _rect.height, WebGL2RenderingContext.RGBA, WebGL2RenderingContext.UNSIGNED_BYTE, data);
+                let pixel = _pos.x + _rect.width * _pos.y;
+                let zBuffer = data[4 * pixel + 2] + data[4 * pixel + 3] / 256;
+                let hit = new FudgeCore.RayHit(pickBuffer.node, 0, zBuffer);
+                hits.push(hit);
+            }
+            return hits;
+        }
         static drawNode(_node, _finalTransform, _projection) {
-            let references = this.nodes.get(_node);
+            let references = RenderManager.nodes.get(_node);
             if (!references)
                 return; // TODO: deal with partial references
-            let bufferInfo = this.renderBuffers.get(references.mesh).getReference();
-            let coatInfo = this.renderCoats.get(references.coat).getReference();
-            let shaderInfo = this.renderShaders.get(references.shader).getReference();
-            this.draw(shaderInfo, bufferInfo, coatInfo, _finalTransform, _projection);
+            let bufferInfo = RenderManager.renderBuffers.get(references.mesh).getReference();
+            let coatInfo = RenderManager.renderCoats.get(references.coat).getReference();
+            let shaderInfo = RenderManager.renderShaders.get(references.shader).getReference();
+            RenderManager.draw(shaderInfo, bufferInfo, coatInfo, _finalTransform, _projection);
         }
+        static drawNodeForRayCast(_node, _finalTransform, _projection) {
+            // TODO: look into SSBOs!
+            let target = RenderManager.getRayCastTexture();
+            const framebuffer = RenderManager.crc3.createFramebuffer();
+            // render to our targetTexture by binding the framebuffer
+            RenderManager.crc3.bindFramebuffer(WebGL2RenderingContext.FRAMEBUFFER, framebuffer);
+            // attach the texture as the first color attachment
+            const attachmentPoint = WebGL2RenderingContext.COLOR_ATTACHMENT0;
+            RenderManager.crc3.framebufferTexture2D(WebGL2RenderingContext.FRAMEBUFFER, attachmentPoint, WebGL2RenderingContext.TEXTURE_2D, target, 0);
+            // set render target
+            let references = RenderManager.nodes.get(_node);
+            if (!references)
+                return; // TODO: deal with partial references
+            let pickBuffer = { node: _node, texture: target, frameBuffer: framebuffer };
+            RenderManager.pickBuffers.push(pickBuffer);
+            let bufferInfo = RenderManager.renderBuffers.get(references.mesh).getReference();
+            RenderManager.drawForRayCast(RenderManager.pickBuffers.length, bufferInfo, _finalTransform, _projection);
+            // make texture available to onscreen-display
+            // IDEA: Iterate over textures, collect data if z indicates hit, sort by z
+        }
+        static getRayCastTexture() {
+            // create to render to
+            const targetTextureWidth = RenderManager.getViewportRectangle().width;
+            const targetTextureHeight = RenderManager.getViewportRectangle().height;
+            const targetTexture = RenderManager.crc3.createTexture();
+            RenderManager.crc3.bindTexture(WebGL2RenderingContext.TEXTURE_2D, targetTexture);
+            {
+                const internalFormat = WebGL2RenderingContext.RGBA8;
+                const format = WebGL2RenderingContext.RGBA;
+                const type = WebGL2RenderingContext.UNSIGNED_BYTE;
+                RenderManager.crc3.texImage2D(WebGL2RenderingContext.TEXTURE_2D, 0, internalFormat, targetTextureWidth, targetTextureHeight, 0, format, type, null);
+                // set the filtering so we don't need mips
+                RenderManager.crc3.texParameteri(WebGL2RenderingContext.TEXTURE_2D, WebGL2RenderingContext.TEXTURE_MIN_FILTER, WebGL2RenderingContext.LINEAR);
+                RenderManager.crc3.texParameteri(WebGL2RenderingContext.TEXTURE_2D, WebGL2RenderingContext.TEXTURE_WRAP_S, WebGL2RenderingContext.CLAMP_TO_EDGE);
+                RenderManager.crc3.texParameteri(WebGL2RenderingContext.TEXTURE_2D, WebGL2RenderingContext.TEXTURE_WRAP_T, WebGL2RenderingContext.CLAMP_TO_EDGE);
+            }
+            return targetTexture;
+        }
+        //#endregion
+        //#region Transformation of branch
         /**
          * Recalculate the world matrix of all registered nodes respecting their hierarchical relation.
          */
         static recalculateAllNodeTransforms() {
-            // inner function to be called in a for each node at the bottom of this function
+            // inner function to be called in a for each node at the bottom of RenderManager function
             // function markNodeToBeTransformed(_nodeReferences: NodeReferences, _node: Node, _map: MapNodeToNodeReferences): void {
             //     _nodeReferences.doneTransformToWorld = false;
             // }
-            // inner function to be called in a for each node at the bottom of this function
+            // inner function to be called in a for each node at the bottom of RenderManager function
             let recalculateBranchContainingNode = (_nodeReferences, _node, _map) => {
                 // find uppermost ancestor not recalculated yet
                 let ancestor = _node;
@@ -5674,11 +6096,11 @@ var FudgeCore;
                 if (parent)
                     matrix = parent.mtxWorld;
                 // start recursive recalculation of the whole branch starting from the ancestor found
-                this.recalculateTransformsOfNodeAndChildren(ancestor, matrix);
+                RenderManager.recalculateTransformsOfNodeAndChildren(ancestor, matrix);
             };
             // call the functions above for each registered node
-            // this.nodes.forEach(markNodeToBeTransformed);
-            this.nodes.forEach(recalculateBranchContainingNode);
+            // RenderManager.nodes.forEach(markNodeToBeTransformed);
+            RenderManager.nodes.forEach(recalculateBranchContainingNode);
         }
         /**
          * Recursive method receiving a childnode and its parents updated world transform.
@@ -5694,7 +6116,7 @@ var FudgeCore;
             _node.mtxWorld = world;
             _node.timestampUpdate = RenderManager.timestampUpdate;
             for (let child of _node.getChildren()) {
-                this.recalculateTransformsOfNodeAndChildren(child, world);
+                RenderManager.recalculateTransformsOfNodeAndChildren(child, world);
             }
         }
         // #endregion
@@ -5819,6 +6241,103 @@ var FudgeCore;
         }
     }
     FudgeCore.ShaderFlat = ShaderFlat;
+})(FudgeCore || (FudgeCore = {}));
+var FudgeCore;
+(function (FudgeCore) {
+    /**
+     * Matcap (Material Capture) shading. The texture provided by the coat is used as a matcap material.
+     * Implementation based on https://www.clicktorelease.com/blog/creating-spherical-environment-mapping-shader/
+     * @authors Simon Storl-Schulke, HFU, 2019 | Jirka Dell'Oro-Friedl, HFU, 2019
+     */
+    class ShaderMatCap extends FudgeCore.Shader {
+        static getCoat() {
+            return FudgeCore.CoatMatCap;
+        }
+        static getVertexShaderSource() {
+            return `#version 300 es
+
+                    in vec3 a_position;
+                    in vec3 a_normal;
+                    uniform mat4 u_projection;
+
+                    out vec2 tex_coords_smooth;
+                    flat out vec2 tex_coords_flat;
+
+                    void main() {
+                        mat4 normalMatrix = transpose(inverse(u_projection));
+                        vec4 p = vec4(a_position, 1.0);
+                        vec4 normal4 = vec4(a_normal, 1.0);
+                        vec3 e = normalize( vec3( u_projection * p ) );
+                        vec3 n = normalize( vec3(normalMatrix * normal4) );
+
+                        vec3 r = reflect( e, n );
+                        float m = 2. * sqrt(
+                            pow( r.x, 2. ) +
+                            pow( r.y, 2. ) +
+                            pow( r.z + 1., 2. )
+                        );
+
+                        tex_coords_smooth = r.xy / m + .5;
+                        tex_coords_flat = r.xy / m + .5;
+
+                        gl_Position = u_projection * vec4(a_position, 1.0);
+                    }`;
+        }
+        static getFragmentShaderSource() {
+            return `#version 300 es
+                    precision mediump float;
+                    
+                    uniform vec4 u_tint_color;
+                    uniform float u_flatmix;
+                    uniform sampler2D u_texture;
+                    
+                    in vec2 tex_coords_smooth;
+                    flat in vec2 tex_coords_flat;
+
+                    out vec4 frag;
+
+                    void main() {
+                        vec2 tc = mix(tex_coords_smooth, tex_coords_flat, u_flatmix);
+                        frag = u_tint_color * texture(u_texture, tc) * 2.0;
+                    }`;
+        }
+    }
+    FudgeCore.ShaderMatCap = ShaderMatCap;
+})(FudgeCore || (FudgeCore = {}));
+var FudgeCore;
+(function (FudgeCore) {
+    /**
+     * Renders for Raycasting
+     * @authors Jirka Dell'Oro-Friedl, HFU, 2019
+     */
+    class ShaderRayCast extends FudgeCore.Shader {
+        static getVertexShaderSource() {
+            return `#version 300 es
+
+                    in vec3 a_position;
+                    uniform mat4 u_projection;
+                    
+                    void main() {   
+                        gl_Position = u_projection * vec4(a_position, 1.0);
+                    }`;
+        }
+        static getFragmentShaderSource() {
+            return `#version 300 es
+                    precision mediump float;
+                    precision highp int;
+                    
+                    uniform int u_id;
+                    out vec4 frag;
+                    
+                    void main() {
+                       float id = float(u_id)/ 256.0;
+                       float upperbyte = trunc(gl_FragCoord.z * 256.0) / 256.0;
+                       float lowerbyte = fract(gl_FragCoord.z * 256.0);
+                       frag = vec4(id, id, upperbyte , lowerbyte);
+                    }`;
+        }
+    }
+    FudgeCore.ShaderRayCast = ShaderRayCast;
 })(FudgeCore || (FudgeCore = {}));
 var FudgeCore;
 (function (FudgeCore) {

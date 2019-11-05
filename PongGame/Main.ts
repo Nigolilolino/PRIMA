@@ -23,7 +23,7 @@ namespace PongGame {
     let scorePlayer1: number = 0;
     let scorePlayer2: number = 0;
  
-
+    
     function handleLoad(_event: Event): void {
         const canvas: HTMLCanvasElement = document.querySelector("canvas");
         fudge.RenderManager.initialize();
@@ -36,7 +36,6 @@ namespace PongGame {
         
         paddleRight.cmpTransform.local.translateX(20);
         paddleLeft.cmpTransform.local.translateX(-20);
-        
     
         (<fudge.ComponentMesh> paddleLeft.getComponent(fudge.ComponentMesh)).pivot.scaleY(4);
         (<fudge.ComponentMesh> paddleRight.getComponent(fudge.ComponentMesh)).pivot.scaleY(4);
@@ -73,7 +72,7 @@ namespace PongGame {
         if (pressedKeys[fudge.KEYBOARD_CODE.S]) {
             paddleLeft.cmpTransform.local.translate(new fudge.Vector3(0, -0.3, 0));
         }
-
+   
         moveBall();
 
         fudge.RenderManager.update();
@@ -101,6 +100,7 @@ namespace PongGame {
             randomeYValue = randomeYValue * -1;
         } else if (ball.cmpTransform.local.translation["data"][0] - paddleRight.cmpTransform.local.translation["data"][0] >= 0 && ball.cmpTransform.local.translation["data"][1] - paddleRight.cmpTransform.local.translation["data"][1] >= -2 && ball.cmpTransform.local.translation["data"][1] - paddleRight.cmpTransform.local.translation["data"][1] <= 2) {
             randomeXValue = randomeXValue * -1;
+            ball.cmpTransform.local.translate(new fudge.Vector3(0, 0, 0));
         } else if (ball.cmpTransform.local.translation["data"][0] - paddleLeft.cmpTransform.local.translation["data"][0] <= 0 && ball.cmpTransform.local.translation["data"][1] - paddleLeft.cmpTransform.local.translation["data"][1] >= -2 && ball.cmpTransform.local.translation["data"][1] - paddleLeft.cmpTransform.local.translation["data"][1] <= 2) {
             randomeXValue = randomeXValue * -1;
         }
@@ -139,4 +139,5 @@ namespace PongGame {
             return (Math.random() * (+0.3 - +0.05) + 0.05) * -1;
         }
     }
+
 }

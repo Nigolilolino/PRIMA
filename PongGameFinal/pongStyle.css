@@ -1,0 +1,21 @@
+
+#ScoreAreaPlayerOne{
+    display: inline;
+    z-index: 5;
+    position: absolute;
+    left: 392px;
+    color: white;
+    top: 123px;
+    font-size: 35pt;
+    
+}
+
+#ScoreAreaPlayerTwo{
+    display: inline;
+    z-index: 5;
+    position: absolute;
+    left: 133px;
+    color: white;
+    top: 123px;
+    font-size: 35pt;
+}
