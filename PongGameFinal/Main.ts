@@ -15,8 +15,6 @@ namespace PongGameFinal {
         [code: string]: Control;
     }
 
-
-
     import ƒ = FudgeCore;
 
     window.addEventListener("load", handleLoad);
@@ -29,24 +27,18 @@ namespace PongGameFinal {
     let paddleLeft: ƒ.Node;
     let paddleRight: ƒ.Node;
 
-    let playerOneScore = 0;
-    let playerTwoScore = 0;
+    let playerOneScore: number = 0;
+    let playerTwoScore: number = 0;
 
 
     let ballVelocity: ƒ.Vector3 = new ƒ.Vector3(generateRandomeValue(), generateRandomeValue(), 0);
 
-    let collisionRightTop: boolean = false;
-    let collisionRightBottom: boolean = false;
-    let collisionLeftTop: boolean = false;
-    let collisionLeftBottom: boolean = false;
 
     let keysPressed: KeyPressed = {};
 
     let paddleSpeedTranslation: number = 0.5;
-    let paddleSpeedRotation: number = 5;
     let controls: Controls;
 
-    let ballSpeed: ƒ.Vector3 = new ƒ.Vector3(0.5, -0.0, 0);
     let mtxBall: ƒ.Matrix4x4;
 
     let crc2: CanvasRenderingContext2D;
@@ -65,7 +57,7 @@ namespace PongGameFinal {
         mtxBall = ball.cmpTransform.local;
 
         let cmpCamera: ƒ.ComponentCamera = new ƒ.ComponentCamera();
-        cmpCamera.pivot.translateZ(50);
+        cmpCamera.pivot.translateZ(43);
 
         viewport = new ƒ.Viewport();
         viewport.initialize("Viewport", pong, cmpCamera, canvas);
@@ -145,7 +137,6 @@ namespace PongGameFinal {
 
     function reflectBall(_paddle: ƒ.Node): void {
         let normal: ƒ.Vector3 = ƒ.Vector3.X(-1);
-        //normal.transform(_paddle.cmpTransform.local, false);
         ballVelocity.reflect(normal);
     }
 
@@ -164,17 +155,13 @@ namespace PongGameFinal {
         let controls: Controls = {};
         controls[ƒ.KEYBOARD_CODE.ARROW_UP] = { paddle: paddleRight, translation: ƒ.Vector3.Y(paddleSpeedTranslation), rotation: 0 };
         controls[ƒ.KEYBOARD_CODE.ARROW_DOWN] = { paddle: paddleRight, translation: ƒ.Vector3.Y(-paddleSpeedTranslation), rotation: 0 };
-        controls[ƒ.KEYBOARD_CODE.ARROW_LEFT] = { paddle: paddleRight, translation: ƒ.Vector3.ZERO(), rotation: paddleSpeedRotation };
-        controls[ƒ.KEYBOARD_CODE.ARROW_RIGHT] = { paddle: paddleRight, translation: ƒ.Vector3.ZERO(), rotation: -paddleSpeedRotation };
         controls[ƒ.KEYBOARD_CODE.W] = { paddle: paddleLeft, translation: ƒ.Vector3.Y(paddleSpeedTranslation), rotation: 0 };
         controls[ƒ.KEYBOARD_CODE.S] = { paddle: paddleLeft, translation: ƒ.Vector3.Y(-paddleSpeedTranslation), rotation: 0 };
-        controls[ƒ.KEYBOARD_CODE.A] = { paddle: paddleLeft, translation: ƒ.Vector3.ZERO(), rotation: paddleSpeedRotation };
-        controls[ƒ.KEYBOARD_CODE.D] = { paddle: paddleLeft, translation: ƒ.Vector3.ZERO(), rotation: -paddleSpeedRotation };
+   
         return controls;
     }
 
     function moveBall(): void {
-        // ball.cmpTransform.local.translate(ballVelocity);
         mtxBall.translate(ballVelocity);
     }
 
@@ -236,7 +223,7 @@ namespace PongGameFinal {
         ball.cmpTransform.local["data"][13] = 0;
         ballVelocity = new ƒ.Vector3(generateRandomeValue(), generateRandomeValue(), 0);
 
-        if(_side == "right"){
+        if (_side == "right") {
             playerOneScore ++;
             let scoreAreaPlayerTwo: HTMLDivElement = <HTMLDivElement>document.getElementById("ScoreAreaPlayerTwo");
             scoreAreaPlayerTwo.innerHTML = playerOneScore.toString();

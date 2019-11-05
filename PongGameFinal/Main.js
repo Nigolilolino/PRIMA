@@ -14,15 +14,9 @@ var PongGameFinal;
     let playerOneScore = 0;
     let playerTwoScore = 0;
     let ballVelocity = new ƒ.Vector3(generateRandomeValue(), generateRandomeValue(), 0);
-    let collisionRightTop = false;
-    let collisionRightBottom = false;
-    let collisionLeftTop = false;
-    let collisionLeftBottom = false;
     let keysPressed = {};
     let paddleSpeedTranslation = 0.5;
-    let paddleSpeedRotation = 5;
     let controls;
-    let ballSpeed = new ƒ.Vector3(0.5, -0.0, 0);
     let mtxBall;
     let crc2;
     function handleLoad(_event) {
@@ -34,7 +28,7 @@ var PongGameFinal;
         controls = defineControls();
         mtxBall = ball.cmpTransform.local;
         let cmpCamera = new ƒ.ComponentCamera();
-        cmpCamera.pivot.translateZ(50);
+        cmpCamera.pivot.translateZ(43);
         viewport = new ƒ.Viewport();
         viewport.initialize("Viewport", pong, cmpCamera, canvas);
         ƒ.Debug.log(viewport);
@@ -98,7 +92,6 @@ var PongGameFinal;
     }
     function reflectBall(_paddle) {
         let normal = ƒ.Vector3.X(-1);
-        //normal.transform(_paddle.cmpTransform.local, false);
         ballVelocity.reflect(normal);
     }
     function processInput() {
@@ -115,16 +108,11 @@ var PongGameFinal;
         let controls = {};
         controls[ƒ.KEYBOARD_CODE.ARROW_UP] = { paddle: paddleRight, translation: ƒ.Vector3.Y(paddleSpeedTranslation), rotation: 0 };
         controls[ƒ.KEYBOARD_CODE.ARROW_DOWN] = { paddle: paddleRight, translation: ƒ.Vector3.Y(-paddleSpeedTranslation), rotation: 0 };
-        controls[ƒ.KEYBOARD_CODE.ARROW_LEFT] = { paddle: paddleRight, translation: ƒ.Vector3.ZERO(), rotation: paddleSpeedRotation };
-        controls[ƒ.KEYBOARD_CODE.ARROW_RIGHT] = { paddle: paddleRight, translation: ƒ.Vector3.ZERO(), rotation: -paddleSpeedRotation };
         controls[ƒ.KEYBOARD_CODE.W] = { paddle: paddleLeft, translation: ƒ.Vector3.Y(paddleSpeedTranslation), rotation: 0 };
         controls[ƒ.KEYBOARD_CODE.S] = { paddle: paddleLeft, translation: ƒ.Vector3.Y(-paddleSpeedTranslation), rotation: 0 };
-        controls[ƒ.KEYBOARD_CODE.A] = { paddle: paddleLeft, translation: ƒ.Vector3.ZERO(), rotation: paddleSpeedRotation };
-        controls[ƒ.KEYBOARD_CODE.D] = { paddle: paddleLeft, translation: ƒ.Vector3.ZERO(), rotation: -paddleSpeedRotation };
         return controls;
     }
     function moveBall() {
-        // ball.cmpTransform.local.translate(ballVelocity);
         mtxBall.translate(ballVelocity);
     }
     function createPong() {
