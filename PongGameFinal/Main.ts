@@ -130,7 +130,6 @@ namespace PongGameFinal {
                 reflectBall(_node);
                 break;
             default:
-                console.warn("Oh, no, I hit something unknown!!", _node.name);
                 break;
         }
     }
@@ -212,9 +211,9 @@ namespace PongGameFinal {
 
     function generateRandomeValue(): number {
         if (Math.random() <= 0.5) {
-            return Math.random() * (+0.3 - +0.05) + + 0.05;
+            return Math.random() * (+0.3 - +0.01) + + 0.05;
         } else {
-            return (Math.random() * (+0.3 - +0.05) + + 0.05) * -1;
+            return (Math.random() * (+0.3 - +0.01) + + 0.05) * -1;
         }
     }
 
