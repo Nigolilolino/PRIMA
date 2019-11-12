@@ -51,12 +51,12 @@ namespace FudgeCraft {
 
         let game: fudge.Node = new fudge.Node("Game");
 
-        buildBlocks(game);
+        buildFragments(game);
 
         return game;
     }
 
-    function buildBlocks(_game: fudge.Node): void {
+    function buildFragments(_game: fudge.Node): void {
 
         let translationTemp: number = -20;
 
