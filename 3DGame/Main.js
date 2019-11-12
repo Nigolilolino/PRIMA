@@ -5,17 +5,17 @@ var FudgeCraft;
 (function (FudgeCraft) {
     var fudge = FudgeCore;
     window.addEventListener("load", handleLoad);
-    let meshQuad = new fudge.MeshQuad();
+    let meshCube = new fudge.MeshCube;
     let allbuildingMatrices = [];
     initializeBuildingMatrices();
     let translationValues = [[-1, 1], [0, 1], [1, 1],
         [-1, 0], [0, 0], [1, 0],
         [-1, -1], [0, -1], [1, -1]];
+    let cmpCamera = new fudge.ComponentCamera();
     function handleLoad(_event) {
         const canvas = document.querySelector("canvas");
         fudge.RenderManager.initialize();
         fudge.Debug.log(canvas);
-        let cmpCamera = new fudge.ComponentCamera();
         cmpCamera.pivot.translateZ(50);
         let game = createGame();
         FudgeCraft.viewport = new fudge.Viewport();
@@ -26,6 +26,8 @@ var FudgeCraft;
         fudge.Loop.start();
     }
     function update(_event) {
+        //cmpCamera.pivot.translateX(0.1);
+        //cmpCamera.pivot.rotateY(0.05);
         fudge.RenderManager.update();
         FudgeCraft.viewport.draw();
     }
@@ -39,7 +41,7 @@ var FudgeCraft;
         for (let i = 0; i < allbuildingMatrices.length; i++) {
             let baseBlock = new fudge.Node("Base_Block_Fragment");
             let mtrSoliColor = new fudge.Material("SolidWhite", fudge.ShaderUniColor, new fudge.CoatColored(new fudge.Color(1, 0, 0, 0)));
-            baseBlock.addComponent(new fudge.ComponentMesh(meshQuad));
+            baseBlock.addComponent(new fudge.ComponentMesh(meshCube));
             baseBlock.addComponent(new fudge.ComponentMaterial(mtrSoliColor));
             baseBlock.addComponent(new fudge.ComponentTransform);
             baseBlock.cmpTransform.local.translateX(translationTemp);
@@ -47,7 +49,7 @@ var FudgeCraft;
             for (let j = 0; j < buildingMtrx.length; j++) {
                 if (buildingMtrx[j] == true) {
                     let subBlock = new fudge.Node("subBlock");
-                    subBlock.addComponent(new fudge.ComponentMesh(meshQuad));
+                    subBlock.addComponent(new fudge.ComponentMesh(meshCube));
                     subBlock.addComponent(new fudge.ComponentMaterial(mtrSoliColor));
                     subBlock.addComponent(new fudge.ComponentTransform);
                     subBlock.cmpTransform.local.translateX(translationValues[j][0]);
