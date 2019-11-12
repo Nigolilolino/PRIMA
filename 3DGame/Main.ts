@@ -8,11 +8,11 @@ namespace FudgeCraft {
     export let viewport: fudge.Viewport;
 
     let meshQuad: fudge.MeshQuad = new fudge.MeshQuad();
-    let allbuildingMatrices: any = [];
+    let allbuildingMatrices: boolean[][] = [];
 
     initializeBuildingMatrices();
 
-    let translationValues = [[-1, 1], [0, 1], [1, 1],
+    let translationValues: number[][] = [[-1, 1], [0, 1], [1, 1],
                             [-1, 0], [0, 0], [1, 0],
                             [-1, -1], [0, -1], [1, -1]];
  
@@ -64,7 +64,7 @@ namespace FudgeCraft {
             baseBlock.addComponent(new fudge.ComponentTransform);
             baseBlock.cmpTransform.local.translateX(translationTemp);
 
-            let buildingMtrx = allbuildingMatrices[i];
+            let buildingMtrx: boolean[] = allbuildingMatrices[i];
 
             for (let j: number = 0; j < buildingMtrx.length; j++) {
                 if (buildingMtrx[j] == true) {
@@ -83,7 +83,7 @@ namespace FudgeCraft {
         
     }
     
-    function initializeBuildingMatrices(): void{
+    function initializeBuildingMatrices(): void {
 
         let buildingMtrxIBlock: boolean[] = [false, true, false, 
                                             false, false, false, 
