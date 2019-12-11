@@ -6,8 +6,8 @@ namespace PongGameFinal {
     }
 
     interface Control {
-        paddle: ƒ.Node;
-        translation: ƒ.Vector3;
+        paddle: fudge.Node;
+        translation: fudge.Vector3;
         rotation: number;
     }
 
@@ -15,23 +15,23 @@ namespace PongGameFinal {
         [code: string]: Control;
     }
 
-    import ƒ = FudgeCore;
+    import fudge = FudgeCore;
 
     window.addEventListener("load", handleLoad);
 
     // What do the viewport?
-    let viewport: ƒ.Viewport;
+    let viewport: fudge.Viewport;
 
-    let pong: ƒ.Node = new ƒ.Node("Pong");
-    let ball: ƒ.Node;
-    let paddleLeft: ƒ.Node;
-    let paddleRight: ƒ.Node;
+    let pong: fudge.Node = new fudge.Node("Pong");
+    let ball: fudge.Node;
+    let paddleLeft: fudge.Node;
+    let paddleRight: fudge.Node;
 
     let playerOneScore: number = 0;
     let playerTwoScore: number = 0;
 
 
-    let ballVelocity: ƒ.Vector3 = new ƒ.Vector3(generateRandomeValue(), generateRandomeValue(), 0);
+    let ballVelocity: fudge.Vector3 = new fudge.Vector3(generateRandomeValue(), generateRandomeValue(), 0);
 
 
     let keysPressed: KeyPressed = {};
@@ -39,29 +39,29 @@ namespace PongGameFinal {
     let paddleSpeedTranslation: number = 0.5;
     let controls: Controls;
 
-    let mtxBall: ƒ.Matrix4x4;
+    let mtxBall: fudge.Matrix4x4;
 
     let crc2: CanvasRenderingContext2D;
 
     function handleLoad(_event: Event): void {
         const canvas: HTMLCanvasElement = document.querySelector("canvas");
-        ƒ.RenderManager.initialize();
-        ƒ.Debug.log(canvas);
+        fudge.RenderManager.initialize();
+        fudge.Debug.log(canvas);
 
 
         crc2 = canvas.getContext("2d");
 
-        let pong: ƒ.Node = createPong();
+        let pong: fudge.Node = createPong();
 
         controls = defineControls();
         mtxBall = ball.cmpTransform.local;
 
-        let cmpCamera: ƒ.ComponentCamera = new ƒ.ComponentCamera();
+        let cmpCamera: fudge.ComponentCamera = new fudge.ComponentCamera();
         cmpCamera.pivot.translateZ(43);
 
-        viewport = new ƒ.Viewport();
+        viewport = new fudge.Viewport();
         viewport.initialize("Viewport", pong, cmpCamera, canvas);
-        ƒ.Debug.log(viewport);
+        fudge.Debug.log(viewport);
 
 
         document.addEventListener("keydown", hndKeydown);
@@ -71,12 +71,12 @@ namespace PongGameFinal {
 
 
         // FUDGE Core Game Loop and Starting the Loop
-        ƒ.Loop.addEventListener(ƒ.EVENT.LOOP_FRAME, update);
-        ƒ.Loop.start();
+        fudge.Loop.addEventListener(fudge.EVENT.LOOP_FRAME, update);
+        fudge.Loop.start();
     }
 
     function update(_event: Event): void {
-        // ƒ.Debug.log(keysPressed);
+        // fudge.Debug.log(keysPressed);
 
         processInput();
 
@@ -94,7 +94,7 @@ namespace PongGameFinal {
         
         moveBall();
 
-        ƒ.RenderManager.update();
+        fudge.RenderManager.update();
         viewport.draw();
 
         crc2.strokeStyle = "white";
@@ -105,15 +105,15 @@ namespace PongGameFinal {
         crc2.stroke();
     }
 
-    function detectHit(_position: ƒ.Vector3, _node: ƒ.Node): boolean {
-        let sclRect: ƒ.Vector3 = _node.getComponent(ƒ.ComponentMesh).pivot.scaling.copy;
-        let mtxInverse: ƒ.Matrix4x4 = ƒ.Matrix4x4.INVERSION(_node.cmpTransform.local);
+    function detectHit(_position: fudge.Vector3, _node: fudge.Node): boolean {
+        let sclRect: fudge.Vector3 = _node.getComponent(fudge.ComponentMesh).pivot.scaling.copy;
+        let mtxInverse: fudge.Matrix4x4 = fudge.Matrix4x4.INVERSION(_node.cmpTransform.local);
         _position.transform(mtxInverse);
-        let rect: ƒ.Rectangle = new ƒ.Rectangle(0, 0, sclRect.x, sclRect.y, ƒ.ORIGIN2D.CENTER);
+        let rect: fudge.Rectangle = new fudge.Rectangle(0, 0, sclRect.x, sclRect.y, fudge.ORIGIN2D.CENTER);
         return rect.isInside(_position.toVector2());
     }
 
-    function processHit(_node: ƒ.Node): void {
+    function processHit(_node: fudge.Node): void {
         switch (_node.name) {
             case "WallTop":
             case "WallBottom":
@@ -134,8 +134,8 @@ namespace PongGameFinal {
         }
     }
 
-    function reflectBall(_paddle: ƒ.Node): void {
-        let normal: ƒ.Vector3 = ƒ.Vector3.X(-1);
+    function reflectBall(_paddle: fudge.Node): void {
+        let normal: fudge.Vector3 = fudge.Vector3.X(-1);
         ballVelocity.reflect(normal);
     }
 
@@ -143,8 +143,8 @@ namespace PongGameFinal {
         for (let code in controls) {
             if (keysPressed[code]) {
                 let control: Control = controls[code];
-                let mtxPaddle: ƒ.Matrix4x4 = control.paddle.cmpTransform.local;
-                mtxPaddle.translation = ƒ.Vector3.SUM(mtxPaddle.translation, control.translation);
+                let mtxPaddle: fudge.Matrix4x4 = control.paddle.cmpTransform.local;
+                mtxPaddle.translation = fudge.Vector3.SUM(mtxPaddle.translation, control.translation);
                 mtxPaddle.rotateZ(control.rotation);
             }
         }
@@ -152,10 +152,10 @@ namespace PongGameFinal {
 
     function defineControls(): Controls {
         let controls: Controls = {};
-        controls[ƒ.KEYBOARD_CODE.ARROW_UP] = { paddle: paddleRight, translation: ƒ.Vector3.Y(paddleSpeedTranslation), rotation: 0 };
-        controls[ƒ.KEYBOARD_CODE.ARROW_DOWN] = { paddle: paddleRight, translation: ƒ.Vector3.Y(-paddleSpeedTranslation), rotation: 0 };
-        controls[ƒ.KEYBOARD_CODE.W] = { paddle: paddleLeft, translation: ƒ.Vector3.Y(paddleSpeedTranslation), rotation: 0 };
-        controls[ƒ.KEYBOARD_CODE.S] = { paddle: paddleLeft, translation: ƒ.Vector3.Y(-paddleSpeedTranslation), rotation: 0 };
+        controls[fudge.KEYBOARD_CODE.ARROW_UP] = { paddle: paddleRight, translation: fudge.Vector3.Y(paddleSpeedTranslation), rotation: 0 };
+        controls[fudge.KEYBOARD_CODE.ARROW_DOWN] = { paddle: paddleRight, translation: fudge.Vector3.Y(-paddleSpeedTranslation), rotation: 0 };
+        controls[fudge.KEYBOARD_CODE.W] = { paddle: paddleLeft, translation: fudge.Vector3.Y(paddleSpeedTranslation), rotation: 0 };
+        controls[fudge.KEYBOARD_CODE.S] = { paddle: paddleLeft, translation: fudge.Vector3.Y(-paddleSpeedTranslation), rotation: 0 };
    
         return controls;
     }
@@ -164,22 +164,22 @@ namespace PongGameFinal {
         mtxBall.translate(ballVelocity);
     }
 
-    function createPong(): ƒ.Node {
+    function createPong(): fudge.Node {
 
-        let meshQuad: ƒ.MeshQuad = new ƒ.MeshQuad();
-        let mtrSolidWhite: ƒ.Material = new ƒ.Material("SolidWhite", ƒ.ShaderUniColor, new ƒ.CoatColored(new ƒ.Color(1, 1, 1, 1)));
+        let meshQuad: fudge.MeshQuad = new fudge.MeshQuad();
+        let mtrSolidWhite: fudge.Material = new fudge.Material("SolidWhite", fudge.ShaderUniColor, new fudge.CoatColored(new fudge.Color(1, 1, 1, 1)));
 
-        pong.appendChild(createNode("WallLeft", meshQuad, mtrSolidWhite, new ƒ.Vector2(-22, 0), new ƒ.Vector2(1, 30)));
-        pong.appendChild(createNode("WallRight", meshQuad, mtrSolidWhite, new ƒ.Vector2(22, 0), new ƒ.Vector2(1, 30)));
-        pong.appendChild(createNode("WallTop", meshQuad, mtrSolidWhite, new ƒ.Vector2(0, 15), new ƒ.Vector2(45, 1)));
-        pong.appendChild(createNode("WallBottom", meshQuad, mtrSolidWhite, new ƒ.Vector2(0, -15), new ƒ.Vector2(45, 1)));
+        pong.appendChild(createNode("WallLeft", meshQuad, mtrSolidWhite, new fudge.Vector2(-22, 0), new fudge.Vector2(1, 30)));
+        pong.appendChild(createNode("WallRight", meshQuad, mtrSolidWhite, new fudge.Vector2(22, 0), new fudge.Vector2(1, 30)));
+        pong.appendChild(createNode("WallTop", meshQuad, mtrSolidWhite, new fudge.Vector2(0, 15), new fudge.Vector2(45, 1)));
+        pong.appendChild(createNode("WallBottom", meshQuad, mtrSolidWhite, new fudge.Vector2(0, -15), new fudge.Vector2(45, 1)));
 
 
-        ball = createNode("Ball", meshQuad, mtrSolidWhite, ƒ.Vector2.ZERO, new ƒ.Vector2(1, 1));
-        paddleLeft = createNode("PaddleLeft", meshQuad, mtrSolidWhite, new ƒ.Vector2(-18, 0), new ƒ.Vector2(1, 4));
-        paddleRight = createNode("PaddleRight", meshQuad, mtrSolidWhite, new ƒ.Vector2(18, 0), new ƒ.Vector2(1, 4));
+        ball = createNode("Ball", meshQuad, mtrSolidWhite, fudge.Vector2.ZERO(), new fudge.Vector2(1, 1));
+        paddleLeft = createNode("PaddleLeft", meshQuad, mtrSolidWhite, new fudge.Vector2(-18, 0), new fudge.Vector2(1, 4));
+        paddleRight = createNode("PaddleRight", meshQuad, mtrSolidWhite, new fudge.Vector2(18, 0), new fudge.Vector2(1, 4));
 
-        ƒ.Debug.log(ball.cmpTransform.local.translation.x);
+        fudge.Debug.log(ball.cmpTransform.local.translation.x);
 
         pong.appendChild(ball);
         pong.appendChild(paddleLeft);
@@ -188,14 +188,14 @@ namespace PongGameFinal {
         return pong;
     }
 
-    function createNode(_name: string, _mesh: ƒ.Mesh, _material: ƒ.Material, _translation: ƒ.Vector2, _scaling: ƒ.Vector2): ƒ.Node {
+    function createNode(_name: string, _mesh: fudge.Mesh, _material: fudge.Material, _translation: fudge.Vector2, _scaling: fudge.Vector2): fudge.Node {
 
-        let node: ƒ.Node = new ƒ.Node(_name);
-        node.addComponent(new ƒ.ComponentTransform);
-        node.addComponent(new ƒ.ComponentMaterial(_material));
-        node.addComponent(new ƒ.ComponentMesh(_mesh));
+        let node: fudge.Node = new fudge.Node(_name);
+        node.addComponent(new fudge.ComponentTransform);
+        node.addComponent(new fudge.ComponentMaterial(_material));
+        node.addComponent(new fudge.ComponentMesh(_mesh));
         node.cmpTransform.local.translate(_translation.toVector3());
-        node.getComponent(ƒ.ComponentMesh).pivot.scale(_scaling.toVector3());
+        node.getComponent(fudge.ComponentMesh).pivot.scale(_scaling.toVector3());
 
         return node;
     }
@@ -220,7 +220,7 @@ namespace PongGameFinal {
     function scoredPoint(_side: string): void {
         ball.cmpTransform.local["data"][12] = 0;
         ball.cmpTransform.local["data"][13] = 0;
-        ballVelocity = new ƒ.Vector3(generateRandomeValue(), generateRandomeValue(), 0);
+        ballVelocity = new fudge.Vector3(generateRandomeValue(), generateRandomeValue(), 0);
 
         if (_side == "right") {
             playerOneScore ++;

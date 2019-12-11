@@ -33,10 +33,12 @@ var FudgeCraft;
     }
     function createGame() {
         let game = new fudge.Node("Game");
-        buildBlocks(game);
+        //buildFragments(game);
+        let cube = new FudgeCraft.Cube(allbuildingMatrices[0]);
+        //game.appendChild(new Cube());
         return game;
     }
-    function buildBlocks(_game) {
+    function buildFragments(_game) {
         let translationTemp = -20;
         for (let i = 0; i < allbuildingMatrices.length; i++) {
             let baseBlock = new fudge.Node("Base_Block_Fragment");

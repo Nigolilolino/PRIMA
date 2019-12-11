@@ -51,7 +51,10 @@ namespace FudgeCraft {
 
         let game: fudge.Node = new fudge.Node("Game");
 
-        buildFragments(game);
+        //buildFragments(game);
+        let cube = new Cube(allbuildingMatrices[0]);
+
+        //game.appendChild(new Cube());
 
         return game;
     }
