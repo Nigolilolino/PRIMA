@@ -14,7 +14,7 @@ namespace FudgeCraftCopy {
                 let type: CUBE_TYPE;
                 do {
                     type = Fragment.getRandomEnum(CUBE_TYPE);
-                } while (type == CUBE_TYPE.GREY);
+                } while (type == CUBE_TYPE.BLACK);
                 let vctPosition: ƒ.Vector3 = ƒ.Vector3.ZERO();
                 vctPosition.set(position[0], position[1], position[2]);
                 let cube: Cube = new Cube(type, vctPosition);

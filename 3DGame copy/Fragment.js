@@ -13,7 +13,7 @@ var FudgeCraftCopy;
                 let type;
                 do {
                     type = Fragment.getRandomEnum(FudgeCraftCopy.CUBE_TYPE);
-                } while (type == FudgeCraftCopy.CUBE_TYPE.GREY);
+                } while (type == FudgeCraftCopy.CUBE_TYPE.BLACK);
                 let vctPosition = ƒ.Vector3.ZERO();
                 vctPosition.set(position[0], position[1], position[2]);
                 let cube = new FudgeCraftCopy.Cube(type, vctPosition);

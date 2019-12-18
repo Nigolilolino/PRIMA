@@ -23,7 +23,7 @@ namespace FudgeCraftCopy {
                 for (let element of combo)
                     if (element == _element)
                         return true;
-            return false; 
+            return false;
         }
 
         private recurse(_element: GridElement, _combo: GridElement[]): void {
@@ -32,7 +32,7 @@ namespace FudgeCraftCopy {
                 let match: GridElement = matches[iMatch];
                 let iCombo: number = _combo.indexOf(match);
                 if (iCombo >= 0)
-                    matches.splice(iMatch);
+                    matches.splice(iMatch, 1);
                 else
                     _combo.push(match);
             }
@@ -42,8 +42,8 @@ namespace FudgeCraftCopy {
         }
 
         private findNeigborsOfSameColor(_element: GridElement): GridElement[] {
-            let all: GridElement[] = grid.findNeigbors(_element.cube.cmpTransform.local.translation);
-            let found: GridElement[] = all.filter(
+            let allNeighbors: GridElement[] = <GridElement[]>grid.findNeighbors(_element.position);
+            let found: GridElement[] = allNeighbors.filter(
                 _neighbor => (_neighbor.cube.name == _element.cube.name)
             );
             return found;

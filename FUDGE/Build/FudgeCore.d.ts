@@ -2387,13 +2387,21 @@ declare namespace FudgeCore {
      *            +y
      *             |__ +x
      * ```
-     * @authors Lukas Scheuerle, HFU, 2019
+     * @authors Lukas Scheuerle, Jirka Dell'Oro-Friedl, HFU, 2019
      */
     class Vector2 extends Mutable {
         private data;
         constructor(_x?: number, _y?: number);
         x: number;
         y: number;
+        /**
+         * Returns the length of the vector
+         */
+        readonly magnitude: number;
+        /**
+         * Returns the square of the magnitude of the vector without calculating a square root. Faster for simple proximity evaluation.
+         */
+        readonly magnitudeSquared: number;
         /**
          * A shorthand for writing `new Vector2(0, 0)`.
          * @returns A new vector with the values (0, 0)
@@ -2451,20 +2459,6 @@ declare namespace FudgeCore {
          */
         static DOT(_a: Vector2, _b: Vector2): number;
         /**
-         * Returns the magnitude of a given vector.
-         * If you only need to compare magnitudes of different vectors, you can compare squared magnitudes using Vector2.MAGNITUDESQR instead.
-         * @see Vector2.MAGNITUDESQR
-         * @param _vector The vector to get the magnitude of.
-         * @returns A number representing the magnitude of the given vector.
-         */
-        static MAGNITUDE(_vector: Vector2): number;
-        /**
-         * Returns the squared magnitude of a given vector. Much less calculation intensive than Vector2.MAGNITUDE, should be used instead if possible.
-         * @param _vector The vector to get the squared magnitude of.
-         * @returns A number representing the squared magnitude of the given vector.
-         */
-        static MAGNITUDESQR(_vector: Vector2): number;
-        /**
          * Calculates the cross product of two Vectors. Due to them being only 2 Dimensional, the result is a single number,
          * which implicitly is on the Z axis. It is also the signed magnitude of the result.
          * @param _a Vector to compute the cross product on
@@ -2483,6 +2477,11 @@ declare namespace FudgeCore {
          * @returns A Vector that is orthogonal to and has the same magnitude as the given Vector.
          */
         static ORTHOGONAL(_vector: Vector2, _clockwise?: boolean): Vector2;
+        /**
+         * Returns true if the coordinates of this and the given vector are to be considered identical within the given tolerance
+         * TODO: examine, if tolerance as criterium for the difference is appropriate with very large coordinate values or if _tolerance should be multiplied by coordinate value
+         */
+        equals(_compare: Vector2, _tolerance?: number): boolean;
         /**
          * Adds the given vector to the executing vector, changing the executor.
          * @param _addend The vector to add.
@@ -2509,12 +2508,6 @@ declare namespace FudgeCore {
          * @param _y new y to set
          */
         set(_x?: number, _y?: number): void;
-        /**
-         * Checks whether the given Vector is equal to the executed Vector.
-         * @param _vector The vector to comapre with.
-         * @returns true if the two vectors are equal, otherwise false
-         */
-        equals(_vector: Vector2): boolean;
         /**
          * @returns An array of the data of the vector
          */
@@ -2548,6 +2541,14 @@ declare namespace FudgeCore {
         x: number;
         y: number;
         z: number;
+        /**
+         * Returns the length of the vector
+         */
+        readonly magnitude: number;
+        /**
+         * Returns the square of the magnitude of the vector without calculating a square root. Faster for simple proximity evaluation.
+         */
+        readonly magnitudeSquared: number;
         static X(_scale?: number): Vector3;
         static Y(_scale?: number): Vector3;
         static Z(_scale?: number): Vector3;
@@ -2596,6 +2597,11 @@ declare namespace FudgeCore {
          *
          */
         static REFLECTION(_incoming: Vector3, _normal: Vector3): Vector3;
+        /**
+         * Returns true if the coordinates of this and the given vector are to be considered identical within the given tolerance
+         * TODO: examine, if tolerance as criterium for the difference is appropriate with very large coordinate values or if _tolerance should be multiplied by coordinate value
+         */
+        equals(_compare: Vector3, _tolerance?: number): boolean;
         add(_addend: Vector3): void;
         subtract(_subtrahend: Vector3): void;
         scale(_scale: number): void;
@@ -3142,6 +3148,10 @@ declare namespace FudgeCore {
          * Automatically reset at every call to set(...) and setScale(...)
          */
         getElapsedSincePreviousCall(): number;
+        /**
+         * Returns a Promise<void> to be resolved after the time given. To be used with async/await
+         */
+        delay(_lapse: number): Promise<void>;
         /**
          * Stops and deletes all [[Timer]]s attached. Should be called before this Time-object leaves scope
          */

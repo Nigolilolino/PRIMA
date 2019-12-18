@@ -30,7 +30,7 @@ var FudgeCraftCopy;
         move(_transformation) {
             let mtxContainer = this.cmpTransform.local;
             let mtxFragment = this.fragment.cmpTransform.local;
-            mtxFragment.rotate(_transformation.rotation, true);
+            mtxFragment.rotate(_transformation.rotation, false);
             mtxContainer.translate(_transformation.translation);
         }
         checkCollisions(_transformation) {

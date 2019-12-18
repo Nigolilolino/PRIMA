@@ -31,7 +31,7 @@ var FudgeCraftCopy;
                 let match = matches[iMatch];
                 let iCombo = _combo.indexOf(match);
                 if (iCombo >= 0)
-                    matches.splice(iMatch);
+                    matches.splice(iMatch, 1);
                 else
                     _combo.push(match);
             }
@@ -39,8 +39,8 @@ var FudgeCraftCopy;
                 this.recurse(match, _combo);
         }
         findNeigborsOfSameColor(_element) {
-            let all = FudgeCraftCopy.grid.findNeigbors(_element.cube.cmpTransform.local.translation);
-            let found = all.filter(_neighbor => (_neighbor.cube.name == _element.cube.name));
+            let allNeighbors = FudgeCraftCopy.grid.findNeighbors(_element.position);
+            let found = allNeighbors.filter(_neighbor => (_neighbor.cube.name == _element.cube.name));
             return found;
         }
     }

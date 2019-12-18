@@ -50,7 +50,7 @@ namespace FudgeCraftCopy {
         game.appendChild(control);
 
         startGame();
-        // startTests();
+        //startTests();
 
         updateDisplay();
         ƒ.Debug.log("Game", game);
@@ -58,7 +58,7 @@ namespace FudgeCraftCopy {
     }
 
     function startGame(): void {
-        grid.push(ƒ.Vector3.ZERO(), new GridElement(new Cube(CUBE_TYPE.GREY, ƒ.Vector3.ZERO())));
+        grid.push(ƒ.Vector3.ZERO(), new GridElement(new Cube(CUBE_TYPE.BLACK, ƒ.Vector3.ZERO())));
         startRandomFragment();
     }
 
@@ -67,7 +67,7 @@ namespace FudgeCraftCopy {
     }
 
     function hndPointerMove(_event: ƒ.PointerEventƒ): void {
-        // console.log(_event.movementX, _event.movementY);
+        // ƒ.Debug.log(_event.movementX, _event.movementY);
         camera.rotateY(_event.movementX * speedCameraRotation);
         camera.rotateX(_event.movementY * speedCameraRotation);
         updateDisplay();
@@ -80,7 +80,7 @@ namespace FudgeCraftCopy {
 
     function hndKeyDown(_event: KeyboardEvent): void {
         if (_event.code == ƒ.KEYBOARD_CODE.SPACE) {
-            let frozen: GridElement[] = control.freeze();
+            let frozen: GridElement[] = control.freeze(); 
             let combos: Combos = new Combos(frozen);
             handleCombos(combos);
             startRandomFragment();
@@ -97,27 +97,16 @@ namespace FudgeCraftCopy {
         for (let combo of _combos.found)
             if (combo.length > 2)
                 for (let element of combo) {
-                    ƒ.Debug.log("hier");
-                    //ƒ.Debug.log(game);
-                    //ƒ.Debug.log(element);
-                    let index: number = Array.prototype.indexOf.call(game["children"], element);
-                    for(let child of game["children"]){
-                        ƒ.Debug.log("child");
-                        ƒ.Debug.log(child.mtxWorld.data[12]);
-                        ƒ.Debug.log(child.mtxWorld.data[10]);
-                        ƒ.Debug.log("element");
-                        ƒ.Debug.log(element.cube.mtxWorld["data"][12]);
-                        ƒ.Debug.log(element.cube.mtxWorld["data"][10]);
-                    }
-                    ƒ.Debug.log(game);
-                    ƒ.Debug.log(element);
                     let mtxLocal: ƒ.Matrix4x4 = element.cube.cmpTransform.local;
-                    console.log(element.cube.name, mtxLocal.translation.getMutator());
+                    ƒ.Debug.log(element.cube.name, mtxLocal.translation.getMutator());
                     // mtxLocal.rotateX(45);
                     // mtxLocal.rotateY(45);
                     // mtxLocal.rotateY(45, true);
                     mtxLocal.scale(ƒ.Vector3.ONE(0.5));
-                    
+                    ƒ.Debug.log(element.cube.cmpTransform.local.translation);
+                    let test: ƒ.Vector3 = new ƒ.Vector3(element.cube.cmpTransform.local.translation.x, element.cube.cmpTransform.local.translation.y, element.cube.cmpTransform.local.translation.z);
+                    grid.pop(test);
+                    compress();
                 }
     }
 
@@ -134,8 +123,7 @@ namespace FudgeCraftCopy {
         if (Object.keys(timers).length > 0)
             return;
 
-        let collisions: GridElement[] = control.checkCollisions(move);
-        if (collisions.length > 0)
+        if ( control.checkCollisions(move).length > 0)
             return;
 
         move.translation.scale(1 / animationSteps);
@@ -151,5 +139,31 @@ namespace FudgeCraftCopy {
         let fragment: Fragment = Fragment.getRandom();
         control.cmpTransform.local = ƒ.Matrix4x4.IDENTITY;
         control.setFragment(fragment);
+        let vector: ƒ.Vector3 = new ƒ.Vector3(0, 0, 4);
+        fragment.cmpTransform.local.translate(vector);
+    }
+
+    function compress(): void {
+
+        let moves: Move[] = grid.compress();
+
+
+        for (let element of moves) {
+  
+            let move: Move = element;
+            let vectorOfElement: ƒ.Vector3 = new ƒ.Vector3(Math.round(move.element.position.x), Math.round(move.element.position.y), Math.round(move.element.position.z)); 
+            let newVectorOfElement: ƒ.Vector3 = new ƒ.Vector3(Math.round(move.target.x), Math.round(move.target.y), Math.round(move.target.z));
+            grid.pop(vectorOfElement);
+            move.element.cube.cmpTransform.local.translation = newVectorOfElement;
+            grid.push(newVectorOfElement, move.element);
+
+        }
+
+        if (moves.length != 0) {
+            compress();
+        }
+        ƒ.Debug.log("liste");
+        ƒ.Debug.log(moves);
+        
     }
 }

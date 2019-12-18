@@ -42,12 +42,12 @@ var FudgeCraftCopy;
         window.addEventListener("keydown", hndKeyDown);
         FudgeCraftCopy.game.appendChild(control);
         startGame();
-        // startTests();
+        //startTests();
         updateDisplay();
         FudgeCraftCopy.ƒ.Debug.log("Game", FudgeCraftCopy.game);
     }
     function startGame() {
-        FudgeCraftCopy.grid.push(FudgeCraftCopy.ƒ.Vector3.ZERO(), new FudgeCraftCopy.GridElement(new FudgeCraftCopy.Cube(FudgeCraftCopy.CUBE_TYPE.GREY, FudgeCraftCopy.ƒ.Vector3.ZERO())));
+        FudgeCraftCopy.grid.push(FudgeCraftCopy.ƒ.Vector3.ZERO(), new FudgeCraftCopy.GridElement(new FudgeCraftCopy.Cube(FudgeCraftCopy.CUBE_TYPE.BLACK, FudgeCraftCopy.ƒ.Vector3.ZERO())));
         startRandomFragment();
     }
     function updateDisplay() {
@@ -55,7 +55,7 @@ var FudgeCraftCopy;
     }
     FudgeCraftCopy.updateDisplay = updateDisplay;
     function hndPointerMove(_event) {
-        // console.log(_event.movementX, _event.movementY);
+        // ƒ.Debug.log(_event.movementX, _event.movementY);
         camera.rotateY(_event.movementX * speedCameraRotation);
         camera.rotateX(_event.movementY * speedCameraRotation);
         updateDisplay();
@@ -80,26 +80,16 @@ var FudgeCraftCopy;
         for (let combo of _combos.found)
             if (combo.length > 2)
                 for (let element of combo) {
-                    FudgeCraftCopy.ƒ.Debug.log("hier");
-                    //ƒ.Debug.log(game);
-                    //ƒ.Debug.log(element);
-                    let index = Array.prototype.indexOf.call(FudgeCraftCopy.game["children"], element);
-                    for (let child of FudgeCraftCopy.game["children"]) {
-                        FudgeCraftCopy.ƒ.Debug.log("child");
-                        FudgeCraftCopy.ƒ.Debug.log(child.mtxWorld.data[12]);
-                        FudgeCraftCopy.ƒ.Debug.log(child.mtxWorld.data[10]);
-                        FudgeCraftCopy.ƒ.Debug.log("element");
-                        FudgeCraftCopy.ƒ.Debug.log(element.cube.mtxWorld["data"][12]);
-                        FudgeCraftCopy.ƒ.Debug.log(element.cube.mtxWorld["data"][10]);
-                    }
-                    FudgeCraftCopy.ƒ.Debug.log(FudgeCraftCopy.game);
-                    FudgeCraftCopy.ƒ.Debug.log(element);
                     let mtxLocal = element.cube.cmpTransform.local;
-                    console.log(element.cube.name, mtxLocal.translation.getMutator());
+                    FudgeCraftCopy.ƒ.Debug.log(element.cube.name, mtxLocal.translation.getMutator());
                     // mtxLocal.rotateX(45);
                     // mtxLocal.rotateY(45);
                     // mtxLocal.rotateY(45, true);
                     mtxLocal.scale(FudgeCraftCopy.ƒ.Vector3.ONE(0.5));
+                    FudgeCraftCopy.ƒ.Debug.log(element.cube.cmpTransform.local.translation);
+                    let test = new FudgeCraftCopy.ƒ.Vector3(element.cube.cmpTransform.local.translation.x, element.cube.cmpTransform.local.translation.y, element.cube.cmpTransform.local.translation.z);
+                    FudgeCraftCopy.grid.pop(test);
+                    compress();
                 }
     }
     function move(_transformation) {
@@ -113,8 +103,7 @@ var FudgeCraftCopy;
         let timers = FudgeCraftCopy.ƒ.Time.game.getTimers();
         if (Object.keys(timers).length > 0)
             return;
-        let collisions = control.checkCollisions(move);
-        if (collisions.length > 0)
+        if (control.checkCollisions(move).length > 0)
             return;
         move.translation.scale(1 / animationSteps);
         move.rotation.scale(1 / animationSteps);
@@ -127,7 +116,25 @@ var FudgeCraftCopy;
         let fragment = FudgeCraftCopy.Fragment.getRandom();
         control.cmpTransform.local = FudgeCraftCopy.ƒ.Matrix4x4.IDENTITY;
         control.setFragment(fragment);
+        let vector = new FudgeCraftCopy.ƒ.Vector3(0, 0, 4);
+        fragment.cmpTransform.local.translate(vector);
     }
     FudgeCraftCopy.startRandomFragment = startRandomFragment;
+    function compress() {
+        let moves = FudgeCraftCopy.grid.compress();
+        for (let element of moves) {
+            let move = element;
+            let vectorOfElement = new FudgeCraftCopy.ƒ.Vector3(Math.round(move.element.position.x), Math.round(move.element.position.y), Math.round(move.element.position.z));
+            let newVectorOfElement = new FudgeCraftCopy.ƒ.Vector3(Math.round(move.target.x), Math.round(move.target.y), Math.round(move.target.z));
+            FudgeCraftCopy.grid.pop(vectorOfElement);
+            move.element.cube.cmpTransform.local.translation = newVectorOfElement;
+            FudgeCraftCopy.grid.push(newVectorOfElement, move.element);
+        }
+        if (moves.length != 0) {
+            compress();
+        }
+        FudgeCraftCopy.ƒ.Debug.log("liste");
+        FudgeCraftCopy.ƒ.Debug.log(moves);
+    }
 })(FudgeCraftCopy || (FudgeCraftCopy = {}));
 //# sourceMappingURL=Main.js.map

@@ -49,7 +49,7 @@ namespace FudgeCraftCopy {
         public move(_transformation: Transformation): void {
             let mtxContainer: ƒ.Matrix4x4 = this.cmpTransform.local;
             let mtxFragment: ƒ.Matrix4x4 = this.fragment.cmpTransform.local;
-            mtxFragment.rotate(_transformation.rotation, true);
+            mtxFragment.rotate(_transformation.rotation, false);
             mtxContainer.translate(_transformation.translation);
         }
 
