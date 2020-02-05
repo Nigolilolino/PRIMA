@@ -1,6 +1,6 @@
 ///<reference types="../FUDGE/Build/FudgeCore.js"/> 
 namespace L16_ScrollerCollide {
-    import ƒ = FudgeCore;
+    import fudge = FudgeCore;
   
     export enum ACTION {
       IDLE = "Idle",
@@ -11,17 +11,18 @@ namespace L16_ScrollerCollide {
       LEFT, RIGHT
     }
   
-    export class Hare extends ƒ.Node {
+    export class Hare extends fudge.Node {
       private static sprites: Sprite[];
-      private static speedMax: ƒ.Vector2 = new ƒ.Vector2(1.5, 5); // units per second
-      private static gravity: ƒ.Vector2 = ƒ.Vector2.Y(-3);
+      private static speedMax: fudge.Vector2 = new fudge.Vector2(1.5, 5); // units per second
+      private static gravity: fudge.Vector2 = fudge.Vector2.Y(-4);
+      private directionGlobal: String = "right";
       // private action: ACTION;
-      // private time: ƒ.Time = new ƒ.Time();
-      public speed: ƒ.Vector3 = ƒ.Vector3.ZERO();
+      // private time: fudge.Time = new fudge.Time();
+      public speed: fudge.Vector3 = fudge.Vector3.ZERO();
   
       constructor(_name: string = "Hare") {
         super(_name);
-        this.addComponent(new ƒ.ComponentTransform());
+        this.addComponent(new fudge.ComponentTransform());
   
         for (let sprite of Hare.sprites) {
           let nodeSprite: NodeSprite = new NodeSprite(sprite.name, sprite);
@@ -37,17 +38,17 @@ namespace L16_ScrollerCollide {
         }
   
         this.show(ACTION.IDLE);
-        ƒ.Loop.addEventListener(ƒ.EVENT.LOOP_FRAME, this.update);
+        fudge.Loop.addEventListener(fudge.EVENT.LOOP_FRAME, this.update);
       }
   
-      public static generateSprites(_txtImage: ƒ.TextureImage): void {
+      public static generateSprites(_txtImage: fudge.TextureImage): void {
         Hare.sprites = [];
         let sprite: Sprite = new Sprite(ACTION.WALK);
-        sprite.generateByGrid(_txtImage, ƒ.Rectangle.GET(0, 0, 77, 56), 7, ƒ.Vector2.ZERO(), 64, ƒ.ORIGIN2D.BOTTOMCENTER);
+        sprite.generateByGrid(_txtImage, fudge.Rectangle.GET(0, 0, 77, 53), 6, fudge.Vector2.ZERO(), 64, fudge.ORIGIN2D.BOTTOMCENTER);
         Hare.sprites.push(sprite);
-  
+      
         sprite = new Sprite(ACTION.IDLE);
-        sprite.generateByGrid(_txtImage, ƒ.Rectangle.GET(0, 0, 77, 56), 7, ƒ.Vector2.ZERO(), 64, ƒ.ORIGIN2D.BOTTOMCENTER);
+        sprite.generateByGrid(_txtImage, fudge.Rectangle.GET(0, 64, 77, 56), 6, fudge.Vector2.ZERO(), 64, fudge.ORIGIN2D.BOTTOMCENTER);
         Hare.sprites.push(sprite);
       }
   
@@ -67,22 +68,31 @@ namespace L16_ScrollerCollide {
           case ACTION.WALK:
             let direction: number = (_direction == DIRECTION.RIGHT ? 1 : -1);
             this.speed.x = Hare.speedMax.x; // * direction;
-            this.cmpTransform.local.rotation = ƒ.Vector3.Y(90 - 90 * direction);
-            // console.log(direction);
+            this.cmpTransform.local.rotation = fudge.Vector3.Y(90 - 90 * direction);
+            if (direction == 1) {
+              this.directionGlobal = "right";
+            } else if (direction == -1) {
+              this.directionGlobal = "left";
+            }
+            //console.log(this.speed.y);
             break;
           case ACTION.JUMP:
-            this.speed.y = 2;
-            break;
+            if (this.speed.y != 0) {
+              break;
+            } else {
+              this.speed.y = 3;
+              break;
+            }
         }
         this.show(_action);
       }
   
-      private update = (_event: ƒ.Eventƒ): void => {
+      private update = (_event: fudge.Eventƒ): void => {
         this.broadcastEvent(new CustomEvent("showNext"));
   
-        let timeFrame: number = ƒ.Loop.timeFrameGame / 1000;
+        let timeFrame: number = fudge.Loop.timeFrameGame / 1000;
         this.speed.y += Hare.gravity.y * timeFrame;
-        let distance: ƒ.Vector3 = ƒ.Vector3.SCALE(this.speed, timeFrame);
+        let distance: fudge.Vector3 = fudge.Vector3.SCALE(this.speed, timeFrame);
         this.cmpTransform.local.translate(distance);
   
         this.checkCollision();
@@ -90,15 +100,32 @@ namespace L16_ScrollerCollide {
   
       private checkCollision(): void {
         for (let floor of level.getChildren()) {
-          let rect: ƒ.Rectangle = (<Floor>floor).getRectWorld();
-          //console.log(rect.toString());
-          let hit: boolean = rect.isInside(this.cmpTransform.local.translation.toVector2());
-          if (hit) {
-            let translation: ƒ.Vector3 = this.cmpTransform.local.translation;
+          let rect: fudge.Rectangle = (<Floor>floor).getRectWorld();
+          let pointLeft: fudge.Vector2;
+          let pointRight: fudge.Vector2;
+          let hitLeft: boolean;
+          let hitRight: boolean;
+
+          if (this.directionGlobal == "right") {
+            pointLeft = new fudge.Vector2(this.cmpTransform.local.translation.x - 0.40, this.cmpTransform.local.translation.y);
+            pointRight = new fudge.Vector2(this.cmpTransform.local.translation.x, this.cmpTransform.local.translation.y);
+            hitLeft = rect.isInside(pointLeft);
+            hitRight = rect.isInside(pointRight);
+
+          } else if (this.directionGlobal == "left") {
+            pointLeft = new fudge.Vector2(this.cmpTransform.local.translation.x + 0.4, this.cmpTransform.local.translation.y);
+            pointRight = new fudge.Vector2(this.cmpTransform.local.translation.x, this.cmpTransform.local.translation.y);
+            hitLeft = rect.isInside(pointLeft);
+            hitRight = rect.isInside(pointRight);
+          }
+
+          if (hitRight || hitLeft) {
+            let translation: fudge.Vector3 = this.cmpTransform.local.translation;
             translation.y = rect.y;
             this.cmpTransform.local.translation = translation;
             this.speed.y = 0;
           }
+
         }
       }
     }
