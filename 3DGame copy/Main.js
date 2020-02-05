@@ -133,8 +133,6 @@ var FudgeCraftCopy;
         if (moves.length != 0) {
             compress();
         }
-        FudgeCraftCopy.ƒ.Debug.log("liste");
-        FudgeCraftCopy.ƒ.Debug.log(moves);
     }
 })(FudgeCraftCopy || (FudgeCraftCopy = {}));
 //# sourceMappingURL=Main.js.map

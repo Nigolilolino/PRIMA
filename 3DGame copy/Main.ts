@@ -162,8 +162,5 @@ namespace FudgeCraftCopy {
         if (moves.length != 0) {
             compress();
         }
-        ƒ.Debug.log("liste");
-        ƒ.Debug.log(moves);
-        
     }
 }
