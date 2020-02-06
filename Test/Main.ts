@@ -13,10 +13,15 @@ namespace Test {
       let canvas: HTMLCanvasElement = document.querySelector("canvas");
       let crc2: CanvasRenderingContext2D = canvas.getContext("2d");
       let txtImage: ƒ.TextureImage = new ƒ.TextureImage();
-      txtImage.image = img;
+
+      let images: any = document.querySelectorAll("img");
+      let imgEnemy = images[0];
+      ƒ.Debug.log(img);
+      ƒ.Debug.log(imgEnemy);
+      txtImage.image = imgEnemy;
   
       sprite = new Sprite("Hare");
-      sprite.generateByGrid(txtImage, ƒ.Rectangle.GET(0, 64, 77, 56), 6, ƒ.Vector2.ZERO(), 64, ƒ.ORIGIN2D.BOTTOMCENTER);
+      sprite.generateByGrid(txtImage, ƒ.Rectangle.GET(0, 0, 30, 34), 1, ƒ.Vector2.ZERO(), 64, ƒ.ORIGIN2D.BOTTOMCENTER);
   
       ƒ.RenderManager.initialize(true, false);
       root = new ƒ.Node("Root");

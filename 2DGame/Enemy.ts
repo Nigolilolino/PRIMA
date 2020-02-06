@@ -1,19 +1,9 @@
 ///<reference types="../FUDGE/Build/FudgeCore.js"/> 
 namespace L16_ScrollerCollide {
     import fudge = FudgeCore;
+    
   
-    export enum ACTION {
-      IDLE = "Idle",
-      WALK = "Walk",
-      JUMP = "Jump",
-      HIT = "Hit" 
-
-    }
-    export enum DIRECTION {
-      LEFT, RIGHT
-    }
-  
-    export class Hare extends fudge.Node {
+    export class Enemy extends fudge.Node {
       private static sprites: Sprite[];
       private static speedMax: fudge.Vector2 = new fudge.Vector2(1.5, 5); // units per second
       private static gravity: fudge.Vector2 = fudge.Vector2.Y(-4);
@@ -22,12 +12,13 @@ namespace L16_ScrollerCollide {
       // private action: ACTION;
       // private time: fudge.Time = new fudge.Time();
       public speed: fudge.Vector3 = fudge.Vector3.ZERO();
+    
   
-      constructor(_name: string = "Hare") {
+      constructor(_name: string, _x: number, _y:number) {
         super(_name);
         this.addComponent(new fudge.ComponentTransform());
   
-        for (let sprite of Hare.sprites) {
+        for (let sprite of Enemy.sprites) {
           let nodeSprite: NodeSprite = new NodeSprite(sprite.name, sprite);
           nodeSprite.activate(false);
   
@@ -39,32 +30,33 @@ namespace L16_ScrollerCollide {
   
           this.appendChild(nodeSprite);
         }
+        this.cmpTransform.local.translation = new fudge.Vector3(_x, _y, 0);
+        this.cmpTransform.local.scale(new fudge.Vector3(0.6, 0.6, 0));
         this.creatHitbox();
         this.show(ACTION.HIT);
         fudge.Loop.addEventListener(fudge.EVENT.LOOP_FRAME, this.update);
       }
   
       public static generateSprites(_txtImage: fudge.TextureImage): void {
-        Hare.sprites = [];
+        Enemy.sprites = [];
         let sprite: Sprite = new Sprite(ACTION.WALK);
-        sprite.generateByGrid(_txtImage, fudge.Rectangle.GET(0, 0, 77, 52), 6, fudge.Vector2.ZERO(), 64, fudge.ORIGIN2D.BOTTOMCENTER);
-        Hare.sprites.push(sprite);
+        sprite.generateByGrid(_txtImage, fudge.Rectangle.GET(0, 99, 75, 69), 11, fudge.Vector2.ZERO(), 64, fudge.ORIGIN2D.BOTTOMCENTER);
+        Enemy.sprites.push(sprite);
       
         sprite = new Sprite(ACTION.IDLE);
-        sprite.generateByGrid(_txtImage, fudge.Rectangle.GET(0, 64, 77, 55), 6, fudge.Vector2.ZERO(), 64, fudge.ORIGIN2D.BOTTOMCENTER);
-        Hare.sprites.push(sprite);
+        sprite.generateByGrid(_txtImage, fudge.Rectangle.GET(0, 0, 75, 69), 4, fudge.Vector2.ZERO(), 64, fudge.ORIGIN2D.BOTTOMCENTER);
+        Enemy.sprites.push(sprite);
 
-        sprite = new Sprite(ACTION.HIT);
-        sprite.generateByGrid(_txtImage, fudge.Rectangle.GET(0, 130, 76, 65), 6, fudge.Vector2.ZERO(), 64, fudge.ORIGIN2D.BOTTOMCENTER);
-        Hare.sprites.push(sprite);
+        //sprite = new Sprite(ACTION.HIT);
+        //sprite.generateByGrid(_txtImage, fudge.Rectangle.GET(0, 130, 76, 65), 6, fudge.Vector2.ZERO(), 64, fudge.ORIGIN2D.BOTTOMCENTER);
+        //Enemy.sprites.push(sprite);
       }
 
       public creatHitbox(): Hitbox {
 
-        let hitbox: Hitbox = new Hitbox("PlayerHitbox");
-        //hitbox.cmpTransform.local.translateY(3);
+        let hitbox: Hitbox = new Hitbox("EnemyHitbox");
         hitbox.cmpTransform.local.scaleX(0.4);
-        hitbox.cmpTransform.local.scaleY(0.8);
+        hitbox.cmpTransform.local.scaleY(0.6);
         this.hitbox = hitbox;
         return hitbox;
       }
@@ -84,7 +76,7 @@ namespace L16_ScrollerCollide {
             break;
           case ACTION.WALK:
             let direction: number = (_direction == DIRECTION.RIGHT ? 1 : -1);
-            this.speed.x = Hare.speedMax.x; // * direction;
+            this.speed.x = Enemy.speedMax.x; // * direction;
             this.cmpTransform.local.rotation = fudge.Vector3.Y(90 - 90 * direction);
             if (direction == 1) {
               this.directionGlobal = "right";
@@ -109,25 +101,19 @@ namespace L16_ScrollerCollide {
   
       private update = (_event: fudge.Eventƒ): void => {
         this.broadcastEvent(new CustomEvent("showNext"));
-  
+
         let timeFrame: number = fudge.Loop.timeFrameGame / 1000;
-        this.speed.y += Hare.gravity.y * timeFrame;
+        this.speed.y += Enemy.gravity.y * timeFrame;
         let distance: fudge.Vector3 = fudge.Vector3.SCALE(this.speed, timeFrame);
+        this.cmpTransform.local.translate(distance);
 
         if (this.directionGlobal == "right") {
-          this.hitbox.cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x - 0.2, this.mtxWorld.translation.y + 0.8, 0);
+          this.hitbox.cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x, this.mtxWorld.translation.y + 0.6, 0);
 
         } else if (this.directionGlobal == "left") {
-          this.hitbox.cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x + 0.2, this.mtxWorld.translation.y + 0.8, 0);
+          this.hitbox.cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x, this.mtxWorld.translation.y + 0.8, 0);
         }
-        this.cmpTransform.local.translate(distance);
-        
-        if(this.hitbox.checkCollision() == "Hit"){
-          fudge.Debug.log("HIT");
-          this.cmpTransform.local.translateX(-0.5);
-        }else if(this.hitbox.checkCollision() == "Collected"){
-          fudge.Debug.log("colected");
-        }
+        //this.hitbox.checkCollision();
         this.checkGroundCollision();
       }
   
@@ -136,7 +122,7 @@ namespace L16_ScrollerCollide {
 
         for (let floor of level.getChildren()) {
 
-          if(floor.name == "PlayerHitbox" || floor.name == "EnemyHitbox" || floor.name == "ItemHitbox"){
+          if(floor.name == "PlayerHitbox" || floor.name == "EnemyHitbox"){
             continue;
           }
 
@@ -158,7 +144,7 @@ namespace L16_ScrollerCollide {
             hitLeft = rect.isInside(pointLeft);
             hitRight = rect.isInside(pointRight);
           }
-
+ 
           if (hitRight || hitLeft) {
             let translation: fudge.Vector3 = this.cmpTransform.local.translation;
             translation.y = rect.y;
