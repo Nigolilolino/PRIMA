@@ -16,7 +16,6 @@ namespace L16_ScrollerCollide {
     let enemy1: Enemy;
     let item: Items;
   
-  
     function test(): void {
       let canvas: HTMLCanvasElement = document.querySelector("canvas");
       let crc2: CanvasRenderingContext2D = canvas.getContext("2d");
@@ -36,16 +35,17 @@ namespace L16_ScrollerCollide {
   
       fudge.RenderManager.initialize(true, false);
       game = new fudge.Node("Game");
-      hare = new Hare("Hare");
-      enemy1 = new Enemy("Stoner1", 1.5,1);
-      enemy2 = new Enemy("Stoner2", 5,1);
-      item = new Items("Life Potion", 6,1);
+      enemy1 = new Enemy("Stoner1", 1.5, 1);
+      enemy2 = new Enemy("Stoner2", 5, 1);
+      item = new Items("Potion", 6, 1);
       level = createLevel();
       game.appendChild(level);
-      game.appendChild(hare);
       game.appendChild(enemy1);
       game.appendChild(enemy2);
       game.appendChild(item);
+      hare = new Hare("Hare");
+      game.appendChild(hare);
+      game.appendChild( hare.creatHitbox());
   
       let cmpCamera: fudge.ComponentCamera = new fudge.ComponentCamera();
       cmpCamera.pivot.translateZ(5);
@@ -112,7 +112,6 @@ namespace L16_ScrollerCollide {
   
     function createLevel(): fudge.Node {
       let level: fudge.Node = new fudge.Node("Level");
-      level.appendChild( hare.creatHitbox());
       level.appendChild( enemy1.creatHitbox());
       level.appendChild( enemy2.creatHitbox());
       level.appendChild( item.creatHitbox());

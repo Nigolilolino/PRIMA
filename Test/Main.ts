@@ -21,7 +21,7 @@ namespace Test {
       txtImage.image = imgEnemy;
   
       sprite = new Sprite("Hare");
-      sprite.generateByGrid(txtImage, ƒ.Rectangle.GET(0, 0, 30, 34), 1, ƒ.Vector2.ZERO(), 64, ƒ.ORIGIN2D.BOTTOMCENTER);
+      sprite.generateByGrid(txtImage, ƒ.Rectangle.GET(0, 198, 55, 39), 12, ƒ.Vector2.ZERO(), 64, ƒ.ORIGIN2D.BOTTOMCENTER);
   
       ƒ.RenderManager.initialize(true, false);
       root = new ƒ.Node("Root");

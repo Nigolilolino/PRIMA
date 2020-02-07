@@ -28,16 +28,17 @@ var L16_ScrollerCollide;
         L16_ScrollerCollide.Items.generateSprites(txtItems);
         L16_ScrollerCollide.fudge.RenderManager.initialize(true, false);
         L16_ScrollerCollide.game = new L16_ScrollerCollide.fudge.Node("Game");
-        hare = new L16_ScrollerCollide.Hare("Hare");
         enemy1 = new L16_ScrollerCollide.Enemy("Stoner1", 1.5, 1);
         enemy2 = new L16_ScrollerCollide.Enemy("Stoner2", 5, 1);
-        item = new L16_ScrollerCollide.Items("Life Potion", 6, 1);
+        item = new L16_ScrollerCollide.Items("Potion", 6, 1);
         L16_ScrollerCollide.level = createLevel();
         L16_ScrollerCollide.game.appendChild(L16_ScrollerCollide.level);
-        L16_ScrollerCollide.game.appendChild(hare);
         L16_ScrollerCollide.game.appendChild(enemy1);
         L16_ScrollerCollide.game.appendChild(enemy2);
         L16_ScrollerCollide.game.appendChild(item);
+        hare = new L16_ScrollerCollide.Hare("Hare");
+        L16_ScrollerCollide.game.appendChild(hare);
+        L16_ScrollerCollide.game.appendChild(hare.creatHitbox());
         let cmpCamera = new L16_ScrollerCollide.fudge.ComponentCamera();
         cmpCamera.pivot.translateZ(5);
         cmpCamera.pivot.lookAt(L16_ScrollerCollide.fudge.Vector3.ZERO());
@@ -92,7 +93,6 @@ var L16_ScrollerCollide;
     }
     function createLevel() {
         let level = new L16_ScrollerCollide.fudge.Node("Level");
-        level.appendChild(hare.creatHitbox());
         level.appendChild(enemy1.creatHitbox());
         level.appendChild(enemy2.creatHitbox());
         level.appendChild(item.creatHitbox());

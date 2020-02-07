@@ -54,7 +54,7 @@ namespace L16_ScrollerCollide {
 
       public creatHitbox(): Hitbox {
 
-        let hitbox: Hitbox = new Hitbox("EnemyHitbox");
+        let hitbox: Hitbox = new Hitbox(this,"EnemyHitbox");
         hitbox.cmpTransform.local.scaleX(0.4);
         hitbox.cmpTransform.local.scaleY(0.6);
         this.hitbox = hitbox;

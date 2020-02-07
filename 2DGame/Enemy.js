@@ -52,7 +52,7 @@ var L16_ScrollerCollide;
             //Enemy.sprites.push(sprite);
         }
         creatHitbox() {
-            let hitbox = new L16_ScrollerCollide.Hitbox("EnemyHitbox");
+            let hitbox = new L16_ScrollerCollide.Hitbox(this, "EnemyHitbox");
             hitbox.cmpTransform.local.scaleX(0.4);
             hitbox.cmpTransform.local.scaleY(0.6);
             this.hitbox = hitbox;

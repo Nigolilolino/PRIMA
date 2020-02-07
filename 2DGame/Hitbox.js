@@ -5,15 +5,16 @@ var L16_ScrollerCollide;
 (function (L16_ScrollerCollide) {
     var fudge = FudgeCore;
     class Hitbox extends fudge.Node {
-        constructor(_name) {
+        constructor(_master, _name) {
             if (_name) {
                 super(_name);
             }
             else {
                 super("Hitbox");
             }
+            this.master = _master;
             this.addComponent(new fudge.ComponentTransform());
-            this.addComponent(new fudge.ComponentMaterial(Hitbox.material));
+            //this.addComponent(new fudge.ComponentMaterial(Hitbox.material));
             let cmpMesh = new fudge.ComponentMesh(Hitbox.mesh);
             //cmpMesh.pivot.translateY(-0.5);
             cmpMesh.pivot = Hitbox.pivot;
@@ -62,6 +63,12 @@ var L16_ScrollerCollide;
                         return "Hit";
                     }
                     if (hit && floor.name == "ItemHitbox") {
+                        let game = this.getParent();
+                        let hitbox = floor;
+                        let level = hitbox.getParent();
+                        fudge.Debug.log(hitbox.getParent());
+                        game.removeChild(hitbox.master);
+                        level.removeChild(hitbox);
                         return "Collected";
                     }
                 }

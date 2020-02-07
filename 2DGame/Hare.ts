@@ -22,6 +22,7 @@ namespace L16_ScrollerCollide {
       // private action: ACTION;
       // private time: fudge.Time = new fudge.Time();
       public speed: fudge.Vector3 = fudge.Vector3.ZERO();
+      public healthpoints:number  = 7;
   
       constructor(_name: string = "Hare") {
         super(_name);
@@ -61,7 +62,7 @@ namespace L16_ScrollerCollide {
 
       public creatHitbox(): Hitbox {
 
-        let hitbox: Hitbox = new Hitbox("PlayerHitbox");
+        let hitbox: Hitbox = new Hitbox(this, "PlayerHitbox");
         //hitbox.cmpTransform.local.translateY(3);
         hitbox.cmpTransform.local.scaleX(0.4);
         hitbox.cmpTransform.local.scaleY(0.8);
@@ -123,10 +124,14 @@ namespace L16_ScrollerCollide {
         this.cmpTransform.local.translate(distance);
         
         if(this.hitbox.checkCollision() == "Hit"){
-          fudge.Debug.log("HIT");
+          this.healthpoints = this.healthpoints - 1;
           this.cmpTransform.local.translateX(-0.5);
         }else if(this.hitbox.checkCollision() == "Collected"){
-          fudge.Debug.log("colected");
+          if(this.healthpoints + 2 > 6) {
+            this.healthpoints = 6;
+          }else{
+            this.healthpoints = this.healthpoints + 2;
+          }
         }
         this.checkGroundCollision();
       }

@@ -15,6 +15,7 @@ var L16_ScrollerCollide;
                 let distance = fudge.Vector3.SCALE(this.speed, timeFrame);
                 this.cmpTransform.local.translate(distance);
                 this.hitbox.cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x - 0.01, this.mtxWorld.translation.y + 0.3, 0);
+                this.cmpTransform.local.rotateY(10);
                 if (this.hitbox.checkCollision()) {
                     fudge.Debug.log("Colected");
                 }
@@ -41,7 +42,7 @@ var L16_ScrollerCollide;
             Items.sprites.push(sprite);
         }
         creatHitbox() {
-            let hitbox = new L16_ScrollerCollide.Hitbox("ItemHitbox");
+            let hitbox = new L16_ScrollerCollide.Hitbox(this, "ItemHitbox");
             hitbox.cmpTransform.local.scaleX(0.2);
             hitbox.cmpTransform.local.scaleY(0.3);
             this.hitbox = hitbox;

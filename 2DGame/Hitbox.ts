@@ -3,19 +3,21 @@ namespace L16_ScrollerCollide {
     import fudge = FudgeCore;
   
     export class Hitbox extends fudge.Node {
+      public master: fudge.Node;
       private static mesh: fudge.MeshSprite = new fudge.MeshSprite();
       private static material: fudge.Material = new fudge.Material("Hitbox", fudge.ShaderUniColor, new fudge.CoatColored(fudge.Color.CSS("black", 0.5)));
       private static readonly pivot: fudge.Matrix4x4 = fudge.Matrix4x4.TRANSLATION(fudge.Vector3.Y(-0.5));
   
-      public constructor(_name?: string) {
+      public constructor(_master: fudge.Node, _name?: string) {
 
-        if(_name){
+        if (_name) {
           super(_name);
-        }else{
+        } else {
           super("Hitbox");
         }
+        this.master = _master;
         this.addComponent(new fudge.ComponentTransform());
-        this.addComponent(new fudge.ComponentMaterial(Hitbox.material));
+        //this.addComponent(new fudge.ComponentMaterial(Hitbox.material));
         let cmpMesh: fudge.ComponentMesh = new fudge.ComponentMesh(Hitbox.mesh);
         //cmpMesh.pivot.translateY(-0.5);
         cmpMesh.pivot = Hitbox.pivot;
@@ -48,6 +50,7 @@ namespace L16_ScrollerCollide {
             if(this.name == "EnemyHitbox" || this.name == "ItemHitbox"){
               continue;
             }
+
             let hit: boolean = false;
             let rectOfThis: fudge.Rectangle = (<Hitbox>this).getRectWorld();
             let rectOfThat: fudge.Rectangle = (<Hitbox>floor).getRectWorld();
@@ -70,7 +73,14 @@ namespace L16_ScrollerCollide {
             if (hit && floor.name == "EnemyHitbox") {
               return "Hit";
             }
-            if(hit && floor.name == "ItemHitbox"){
+
+            if (hit && floor.name == "ItemHitbox") {
+              let game: fudge.Node = this.getParent();
+              let hitbox: Hitbox = <Hitbox>floor;
+              let level: fudge.Node = hitbox.getParent();
+              fudge.Debug.log(hitbox.getParent());
+              game.removeChild(hitbox.master);
+              level.removeChild(hitbox);
               return "Collected";
             }
           } else {

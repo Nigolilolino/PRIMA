@@ -5,6 +5,7 @@ namespace L16_ScrollerCollide {
     export class Items extends fudge.Node {
 
         public hitbox: Hitbox;
+        public type: string;
         public speed: fudge.Vector3 = fudge.Vector3.ZERO();
         private static gravity: fudge.Vector2 = fudge.Vector2.Y(-4);
         private static sprites: Sprite[];
@@ -43,7 +44,7 @@ namespace L16_ScrollerCollide {
 
       public creatHitbox(): Hitbox {
 
-        let hitbox: Hitbox = new Hitbox("ItemHitbox");
+        let hitbox: Hitbox = new Hitbox(this, "ItemHitbox");
         hitbox.cmpTransform.local.scaleX(0.2);
         hitbox.cmpTransform.local.scaleY(0.3);
         this.hitbox = hitbox;
@@ -75,6 +76,7 @@ namespace L16_ScrollerCollide {
         let distance: fudge.Vector3 = fudge.Vector3.SCALE(this.speed, timeFrame);
         this.cmpTransform.local.translate(distance);
         this.hitbox.cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x - 0.01, this.mtxWorld.translation.y + 0.3, 0);
+        this.cmpTransform.local.rotateY(10);
         
         if(this.hitbox.checkCollision()){
           fudge.Debug.log("Colected");

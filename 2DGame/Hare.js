@@ -23,6 +23,7 @@ var L16_ScrollerCollide;
             // private action: ACTION;
             // private time: fudge.Time = new fudge.Time();
             this.speed = fudge.Vector3.ZERO();
+            this.healthpoints = 7;
             this.update = (_event) => {
                 this.broadcastEvent(new CustomEvent("showNext"));
                 let timeFrame = fudge.Loop.timeFrameGame / 1000;
@@ -36,11 +37,16 @@ var L16_ScrollerCollide;
                 }
                 this.cmpTransform.local.translate(distance);
                 if (this.hitbox.checkCollision() == "Hit") {
-                    fudge.Debug.log("HIT");
+                    this.healthpoints = this.healthpoints - 1;
                     this.cmpTransform.local.translateX(-0.5);
                 }
                 else if (this.hitbox.checkCollision() == "Collected") {
-                    fudge.Debug.log("colected");
+                    if (this.healthpoints + 2 > 6) {
+                        this.healthpoints = 6;
+                    }
+                    else {
+                        this.healthpoints = this.healthpoints + 2;
+                    }
                 }
                 this.checkGroundCollision();
             };
@@ -68,7 +74,7 @@ var L16_ScrollerCollide;
             Hare.sprites.push(sprite);
         }
         creatHitbox() {
-            let hitbox = new L16_ScrollerCollide.Hitbox("PlayerHitbox");
+            let hitbox = new L16_ScrollerCollide.Hitbox(this, "PlayerHitbox");
             //hitbox.cmpTransform.local.translateY(3);
             hitbox.cmpTransform.local.scaleX(0.4);
             hitbox.cmpTransform.local.scaleY(0.8);
