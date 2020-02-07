@@ -18,11 +18,12 @@ namespace L16_ScrollerCollide {
       private static speedMax: fudge.Vector2 = new fudge.Vector2(1.5, 5); // units per second
       private static gravity: fudge.Vector2 = fudge.Vector2.Y(-4);
       private directionGlobal: String = "right";
-      public hitbox: Hitbox;
+      private frameCounter: number = 0;
+      public hitboxes: Hitbox[] = [];
       // private action: ACTION;
       // private time: fudge.Time = new fudge.Time();
       public speed: fudge.Vector3 = fudge.Vector3.ZERO();
-      public healthpoints:number  = 7;
+      public healthpoints: number  = 11;
   
       constructor(_name: string = "Hare") {
         super(_name);
@@ -63,17 +64,24 @@ namespace L16_ScrollerCollide {
       public creatHitbox(): Hitbox {
 
         let hitbox: Hitbox = new Hitbox(this, "PlayerHitbox");
-        //hitbox.cmpTransform.local.translateY(3);
         hitbox.cmpTransform.local.scaleX(0.4);
         hitbox.cmpTransform.local.scaleY(0.8);
-        this.hitbox = hitbox;
-        return hitbox;
+        this.hitboxes.push(hitbox);
+        return this.hitboxes[0];
+      }
+
+      public createHitboxWeapon(): Hitbox {
+        let hitboxWeapon: Hitbox = new Hitbox(this, "WeaponHitbox");
+        hitboxWeapon.cmpTransform.local.scaleX(0.05);
+        hitboxWeapon.cmpTransform.local.scaleY(0.05);
+        this.hitboxes.push(hitboxWeapon);
+        return this.hitboxes[1];
       }
   
       public show(_action: ACTION): void {
         if (_action == ACTION.JUMP)
           return;
-        for (let child of this.getChildren()){
+        for (let child of this.getChildren()) {
           child.activate(child.name == _action);
         }
       }
@@ -82,6 +90,7 @@ namespace L16_ScrollerCollide {
         switch (_action) {
           case ACTION.IDLE:
             this.speed.x = 0;
+            this.frameCounter = 0;
             break;
           case ACTION.WALK:
             let direction: number = (_direction == DIRECTION.RIGHT ? 1 : -1);
@@ -89,20 +98,28 @@ namespace L16_ScrollerCollide {
             this.cmpTransform.local.rotation = fudge.Vector3.Y(90 - 90 * direction);
             if (direction == 1) {
               this.directionGlobal = "right";
+              this.frameCounter = 0;
             } else if (direction == -1) {
               this.directionGlobal = "left";
+              this.frameCounter = 0;
             }
             break;
           case ACTION.JUMP:
             if (this.speed.y != 0) {
+              this.frameCounter = 0;
               break;
             } else {
               this.speed.y = 3;
+              this.frameCounter = 0;
               break;
             }
             
           case ACTION.HIT:
             this.speed.x = 0;
+            if(this.frameCounter > 6) {
+              this.frameCounter = 0;
+            }
+            this.frameCounter = this.frameCounter + 1;
             break;
         }
         this.show(_action);
@@ -116,23 +133,55 @@ namespace L16_ScrollerCollide {
         let distance: fudge.Vector3 = fudge.Vector3.SCALE(this.speed, timeFrame);
 
         if (this.directionGlobal == "right") {
-          this.hitbox.cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x - 0.2, this.mtxWorld.translation.y + 0.8, 0);
+          this.hitboxes[0].cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x - 0.2, this.mtxWorld.translation.y + 0.8, 0);
+          this.hitboxes[1].cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x + 0.45, this.mtxWorld.translation.y + 0.35, 0);
 
         } else if (this.directionGlobal == "left") {
-          this.hitbox.cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x + 0.2, this.mtxWorld.translation.y + 0.8, 0);
+          this.hitboxes[0].cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x + 0.2, this.mtxWorld.translation.y + 0.8, 0);
+          this.hitboxes[1].cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x - 0.45, this.mtxWorld.translation.y + 0.35, 0);
         }
         this.cmpTransform.local.translate(distance);
+
+        let colider: string = this.hitboxes[0].checkCollision();
         
-        if(this.hitbox.checkCollision() == "Hit"){
+        if (colider == "Hit") {
           this.healthpoints = this.healthpoints - 1;
-          this.cmpTransform.local.translateX(-0.5);
-        }else if(this.hitbox.checkCollision() == "Collected"){
-          if(this.healthpoints + 2 > 6) {
-            this.healthpoints = 6;
-          }else{
+          fudge.Debug.log(this.healthpoints);
+          if (this.directionGlobal == "right") {
+            this.cmpTransform.local.translateX(-0.5);
+          } else {
+            this.cmpTransform.local.translateX(+0.5);
+          }
+        } else if (colider == "Collected") {
+          if (this.healthpoints + 2 > this.healthpoints) {
+            this.healthpoints = this.healthpoints;
+          } else {
             this.healthpoints = this.healthpoints + 2;
+            fudge.Debug.log(this.healthpoints);
           }
         }
+
+        let values: (string|fudge.Node)[] = this.hitboxes[1].checkCollisionWeapon();
+        if (values) {
+          if (this.frameCounter == 6 || values[0] == "Hit" && this.frameCounter == 7) {
+            let enemyHitbox: Hitbox = <Hitbox>values[1];
+            let enemy: Enemy = <Enemy> enemyHitbox.master;
+            if (this.directionGlobal == "right") {
+              enemy.cmpTransform.local.translateX(+0.15);
+              enemy.receiveHit();
+            } else {
+              enemy.cmpTransform.local.translateX(-0.15);
+              enemy.receiveHit();
+            }
+           
+          }
+        }
+
+        if (this.healthpoints <= 0) {
+          let parent: fudge.Node = this.getParent();
+          parent.removeChild(this);
+        }
+
         this.checkGroundCollision();
       }
   
@@ -141,7 +190,7 @@ namespace L16_ScrollerCollide {
 
         for (let floor of level.getChildren()) {
 
-          if(floor.name == "PlayerHitbox" || floor.name == "EnemyHitbox" || floor.name == "ItemHitbox"){
+          if (floor.name == "PlayerHitbox" || floor.name == "EnemyHitbox" || floor.name == "ItemHitbox") {
             continue;
           }
 

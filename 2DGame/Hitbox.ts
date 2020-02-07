@@ -78,7 +78,6 @@ namespace L16_ScrollerCollide {
               let game: fudge.Node = this.getParent();
               let hitbox: Hitbox = <Hitbox>floor;
               let level: fudge.Node = hitbox.getParent();
-              fudge.Debug.log(hitbox.getParent());
               game.removeChild(hitbox.master);
               level.removeChild(hitbox);
               return "Collected";
@@ -89,5 +88,38 @@ namespace L16_ScrollerCollide {
 
         }
       }
+
+      public checkCollisionWeapon(): any {
+
+        for (let floor of level.getChildren()) {
+
+          if (floor.name == "EnemyHitbox") {
+
+            let hit: boolean = false;
+            let rectOfThis: fudge.Rectangle = (<Hitbox>this).getRectWorld();
+            let rectOfThat: fudge.Rectangle = (<Hitbox>floor).getRectWorld();
+            let expansionRight: fudge.Vector2 = new fudge.Vector2(rectOfThis.size.x);
+            let expansionDown: fudge.Vector2 = new fudge.Vector2(0 , rectOfThis.size.y);
+            let topRight: fudge.Vector2 = fudge.Vector2.SUM(rectOfThis.position, expansionRight);
+            let bottomLeft: fudge.Vector2 = fudge.Vector2.SUM(rectOfThis.position, expansionDown);
+            let bottomRight: fudge.Vector2 = fudge.Vector2.SUM(rectOfThis.position, expansionDown, expansionRight);
+
+            if (rectOfThat.isInside(rectOfThis.position)) {
+              hit = true;
+            } else if (rectOfThat.isInside(topRight)) {
+              hit = true;
+            } else if (rectOfThat.isInside(bottomLeft)) {
+              hit = true;
+            } else if (rectOfThat.isInside(bottomRight)) {
+              hit = true;
+            }
+
+            if (hit && floor.name == "EnemyHitbox") {
+              return ["Hit", floor];
+            }
+
+        }
+      }
+
     }
   }

@@ -8,6 +8,7 @@ var L16_ScrollerCollide;
         constructor(_name, _x, _y) {
             super(_name);
             this.directionGlobal = "right";
+            this.healthpoints = 6;
             // private action: ACTION;
             // private time: fudge.Time = new fudge.Time();
             this.speed = fudge.Vector3.ZERO();
@@ -94,6 +95,13 @@ var L16_ScrollerCollide;
                     break;
             }
             this.show(_action);
+        }
+        receiveHit() {
+            this.healthpoints = this.healthpoints - 1;
+            if (this.healthpoints <= 0) {
+                let parent = this.getParent();
+                parent.removeChild(this);
+            }
         }
         checkGroundCollision() {
             for (let floor of L16_ScrollerCollide.level.getChildren()) {

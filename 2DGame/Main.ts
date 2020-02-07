@@ -35,6 +35,7 @@ namespace L16_ScrollerCollide {
   
       fudge.RenderManager.initialize(true, false);
       game = new fudge.Node("Game");
+      hare = new Hare("Hare");
       enemy1 = new Enemy("Stoner1", 1.5, 1);
       enemy2 = new Enemy("Stoner2", 5, 1);
       item = new Items("Potion", 6, 1);
@@ -43,7 +44,7 @@ namespace L16_ScrollerCollide {
       game.appendChild(enemy1);
       game.appendChild(enemy2);
       game.appendChild(item);
-      hare = new Hare("Hare");
+      
       game.appendChild(hare);
       game.appendChild( hare.creatHitbox());
   
@@ -60,7 +61,7 @@ namespace L16_ScrollerCollide {
       document.addEventListener("keyup", handleKeyboard);
   
       fudge.Loop.addEventListener(fudge.EVENT.LOOP_FRAME, update);
-      fudge.Loop.start(fudge.LOOP_MODE.TIME_GAME, 10);
+      fudge.Loop.start(fudge.LOOP_MODE.TIME_GAME, 15);
   
       function update(_event: fudge.Eventƒ): void {
         processInput();
@@ -115,6 +116,7 @@ namespace L16_ScrollerCollide {
       level.appendChild( enemy1.creatHitbox());
       level.appendChild( enemy2.creatHitbox());
       level.appendChild( item.creatHitbox());
+      level.appendChild( hare.createHitboxWeapon());
 
       let floor: Floor = new Floor();
       floor.cmpTransform.local.scaleX(3);

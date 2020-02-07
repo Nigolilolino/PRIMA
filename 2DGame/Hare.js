@@ -20,33 +20,64 @@ var L16_ScrollerCollide;
         constructor(_name = "Hare") {
             super(_name);
             this.directionGlobal = "right";
+            this.frameCounter = 0;
+            this.hitboxes = [];
             // private action: ACTION;
             // private time: fudge.Time = new fudge.Time();
             this.speed = fudge.Vector3.ZERO();
-            this.healthpoints = 7;
+            this.healthpoints = 11;
             this.update = (_event) => {
                 this.broadcastEvent(new CustomEvent("showNext"));
                 let timeFrame = fudge.Loop.timeFrameGame / 1000;
                 this.speed.y += Hare.gravity.y * timeFrame;
                 let distance = fudge.Vector3.SCALE(this.speed, timeFrame);
                 if (this.directionGlobal == "right") {
-                    this.hitbox.cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x - 0.2, this.mtxWorld.translation.y + 0.8, 0);
+                    this.hitboxes[0].cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x - 0.2, this.mtxWorld.translation.y + 0.8, 0);
+                    this.hitboxes[1].cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x + 0.45, this.mtxWorld.translation.y + 0.35, 0);
                 }
                 else if (this.directionGlobal == "left") {
-                    this.hitbox.cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x + 0.2, this.mtxWorld.translation.y + 0.8, 0);
+                    this.hitboxes[0].cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x + 0.2, this.mtxWorld.translation.y + 0.8, 0);
+                    this.hitboxes[1].cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x - 0.45, this.mtxWorld.translation.y + 0.35, 0);
                 }
                 this.cmpTransform.local.translate(distance);
-                if (this.hitbox.checkCollision() == "Hit") {
+                let colider = this.hitboxes[0].checkCollision();
+                if (colider == "Hit") {
                     this.healthpoints = this.healthpoints - 1;
-                    this.cmpTransform.local.translateX(-0.5);
+                    fudge.Debug.log(this.healthpoints);
+                    if (this.directionGlobal == "right") {
+                        this.cmpTransform.local.translateX(-0.5);
+                    }
+                    else {
+                        this.cmpTransform.local.translateX(+0.5);
+                    }
                 }
-                else if (this.hitbox.checkCollision() == "Collected") {
-                    if (this.healthpoints + 2 > 6) {
-                        this.healthpoints = 6;
+                else if (colider == "Collected") {
+                    if (this.healthpoints + 2 > this.healthpoints) {
+                        this.healthpoints = this.healthpoints;
                     }
                     else {
                         this.healthpoints = this.healthpoints + 2;
+                        fudge.Debug.log(this.healthpoints);
                     }
+                }
+                let values = this.hitboxes[1].checkCollisionWeapon();
+                if (values) {
+                    if (this.frameCounter == 6 || values[0] == "Hit" && this.frameCounter == 7) {
+                        let enemyHitbox = values[1];
+                        let enemy = enemyHitbox.master;
+                        if (this.directionGlobal == "right") {
+                            enemy.cmpTransform.local.translateX(+0.15);
+                            enemy.receiveHit();
+                        }
+                        else {
+                            enemy.cmpTransform.local.translateX(-0.15);
+                            enemy.receiveHit();
+                        }
+                    }
+                }
+                if (this.healthpoints <= 0) {
+                    let parent = this.getParent();
+                    parent.removeChild(this);
                 }
                 this.checkGroundCollision();
             };
@@ -75,11 +106,17 @@ var L16_ScrollerCollide;
         }
         creatHitbox() {
             let hitbox = new L16_ScrollerCollide.Hitbox(this, "PlayerHitbox");
-            //hitbox.cmpTransform.local.translateY(3);
             hitbox.cmpTransform.local.scaleX(0.4);
             hitbox.cmpTransform.local.scaleY(0.8);
-            this.hitbox = hitbox;
-            return hitbox;
+            this.hitboxes.push(hitbox);
+            return this.hitboxes[0];
+        }
+        createHitboxWeapon() {
+            let hitboxWeapon = new L16_ScrollerCollide.Hitbox(this, "WeaponHitbox");
+            hitboxWeapon.cmpTransform.local.scaleX(0.05);
+            hitboxWeapon.cmpTransform.local.scaleY(0.05);
+            this.hitboxes.push(hitboxWeapon);
+            return this.hitboxes[1];
         }
         show(_action) {
             if (_action == ACTION.JUMP)
@@ -92,6 +129,7 @@ var L16_ScrollerCollide;
             switch (_action) {
                 case ACTION.IDLE:
                     this.speed.x = 0;
+                    this.frameCounter = 0;
                     break;
                 case ACTION.WALK:
                     let direction = (_direction == DIRECTION.RIGHT ? 1 : -1);
@@ -99,21 +137,29 @@ var L16_ScrollerCollide;
                     this.cmpTransform.local.rotation = fudge.Vector3.Y(90 - 90 * direction);
                     if (direction == 1) {
                         this.directionGlobal = "right";
+                        this.frameCounter = 0;
                     }
                     else if (direction == -1) {
                         this.directionGlobal = "left";
+                        this.frameCounter = 0;
                     }
                     break;
                 case ACTION.JUMP:
                     if (this.speed.y != 0) {
+                        this.frameCounter = 0;
                         break;
                     }
                     else {
                         this.speed.y = 3;
+                        this.frameCounter = 0;
                         break;
                     }
                 case ACTION.HIT:
                     this.speed.x = 0;
+                    if (this.frameCounter > 6) {
+                        this.frameCounter = 0;
+                    }
+                    this.frameCounter = this.frameCounter + 1;
                     break;
             }
             this.show(_action);

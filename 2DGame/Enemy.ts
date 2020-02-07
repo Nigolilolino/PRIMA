@@ -8,6 +8,7 @@ namespace L16_ScrollerCollide {
       private static speedMax: fudge.Vector2 = new fudge.Vector2(1.5, 5); // units per second
       private static gravity: fudge.Vector2 = fudge.Vector2.Y(-4);
       private directionGlobal: String = "right";
+      public healthpoints: number  = 6;
       public hitbox: Hitbox;
       // private action: ACTION;
       // private time: fudge.Time = new fudge.Time();
@@ -98,6 +99,15 @@ namespace L16_ScrollerCollide {
         }
         this.show(_action);
       }
+
+      public receiveHit(): void {
+        this.healthpoints = this.healthpoints - 1;
+
+        if (this.healthpoints <= 0) {
+          let parent: fudge.Node = this.getParent();
+          parent.removeChild(this);
+        }
+      }
   
       private update = (_event: fudge.Eventƒ): void => {
         this.broadcastEvent(new CustomEvent("showNext"));
@@ -113,12 +123,12 @@ namespace L16_ScrollerCollide {
         } else if (this.directionGlobal == "left") {
           this.hitbox.cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x, this.mtxWorld.translation.y + 0.8, 0);
         }
+
         //this.hitbox.checkCollision();
         this.checkGroundCollision();
       }
   
       private checkGroundCollision(): void {
-
 
         for (let floor of level.getChildren()) {
 
@@ -144,14 +154,13 @@ namespace L16_ScrollerCollide {
             hitLeft = rect.isInside(pointLeft);
             hitRight = rect.isInside(pointRight);
           }
- 
+
           if (hitRight || hitLeft) {
             let translation: fudge.Vector3 = this.cmpTransform.local.translation;
             translation.y = rect.y;
             this.cmpTransform.local.translation = translation;
             this.speed.y = 0;
           }
-
         }
       }
 
