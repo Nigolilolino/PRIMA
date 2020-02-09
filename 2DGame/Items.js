@@ -65,7 +65,7 @@ var L16_ScrollerCollide;
         }
         checkGroundCollision() {
             for (let floor of L16_ScrollerCollide.level.getChildren()) {
-                if (floor.name == "PlayerHitbox" || floor.name == "EnemyHitbox") {
+                if (floor.name != "Floor") {
                     continue;
                 }
                 let rect = floor.getRectWorld();

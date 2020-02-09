@@ -89,7 +89,7 @@ namespace L16_ScrollerCollide {
 
         for (let floor of level.getChildren()) {
 
-          if(floor.name == "PlayerHitbox" || floor.name == "EnemyHitbox"){
+          if(floor.name != "Floor"){
             continue;
           }
 

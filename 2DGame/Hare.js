@@ -22,6 +22,7 @@ var L16_ScrollerCollide;
             this.directionGlobal = "right";
             this.frameCounter = 0;
             this.hitboxes = [];
+            this.healthbar = [];
             // private action: ACTION;
             // private time: fudge.Time = new fudge.Time();
             this.speed = fudge.Vector3.ZERO();
@@ -43,7 +44,7 @@ var L16_ScrollerCollide;
                 let colider = this.hitboxes[0].checkCollision();
                 if (colider == "Hit") {
                     this.healthpoints = this.healthpoints - 1;
-                    fudge.Debug.log(this.healthpoints);
+                    this.updateHealthbar();
                     if (this.directionGlobal == "right") {
                         this.cmpTransform.local.translateX(-0.5);
                     }
@@ -52,13 +53,13 @@ var L16_ScrollerCollide;
                     }
                 }
                 else if (colider == "Collected") {
-                    if (this.healthpoints + 2 > this.healthpoints) {
-                        this.healthpoints = this.healthpoints;
+                    if (this.healthpoints + 2 > 10) {
+                        this.healthpoints = 10;
                     }
                     else {
                         this.healthpoints = this.healthpoints + 2;
-                        fudge.Debug.log(this.healthpoints);
                     }
+                    this.updateHealthbar();
                 }
                 let values = this.hitboxes[1].checkCollisionWeapon();
                 if (values) {
@@ -66,11 +67,11 @@ var L16_ScrollerCollide;
                         let enemyHitbox = values[1];
                         let enemy = enemyHitbox.master;
                         if (this.directionGlobal == "right") {
-                            enemy.cmpTransform.local.translateX(+0.15);
+                            enemy.cmpTransform.local.translateX(+0.5);
                             enemy.receiveHit();
                         }
                         else {
-                            enemy.cmpTransform.local.translateX(-0.15);
+                            enemy.cmpTransform.local.translateX(-0.5);
                             enemy.receiveHit();
                         }
                     }
@@ -89,7 +90,7 @@ var L16_ScrollerCollide;
                 this.appendChild(nodeSprite);
             }
             this.creatHitbox();
-            this.show(ACTION.HIT);
+            //this.show(ACTION.HIT);
             fudge.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, this.update);
         }
         static generateSprites(_txtImage) {
@@ -164,9 +165,23 @@ var L16_ScrollerCollide;
             }
             this.show(_action);
         }
+        updateHealthbar() {
+            if (this.healthpoints == 11) {
+                return;
+            }
+            let lifeDifference = 10 - this.healthpoints;
+            for (let i = 0; i < this.healthbar.length; i++) {
+                if (i < lifeDifference) {
+                    this.healthbar[i].act(L16_ScrollerCollide.STATUS.EMPTY);
+                }
+                else {
+                    this.healthbar[i].act(L16_ScrollerCollide.STATUS.FULL);
+                }
+            }
+        }
         checkGroundCollision() {
             for (let floor of L16_ScrollerCollide.level.getChildren()) {
-                if (floor.name == "PlayerHitbox" || floor.name == "EnemyHitbox" || floor.name == "ItemHitbox") {
+                if (floor.name != "Floor") {
                     continue;
                 }
                 let rect = floor.getRectWorld();
@@ -189,6 +204,10 @@ var L16_ScrollerCollide;
                 if (hitRight || hitLeft) {
                     let translation = this.cmpTransform.local.translation;
                     translation.y = rect.y;
+                    if (translation.y - 0.3 > this.cmpTransform.local.translation.y) {
+                        translation.x = this.cmpTransform.local.translation.x + 0.1;
+                        translation.y = this.cmpTransform.local.translation.y;
+                    }
                     this.cmpTransform.local.translation = translation;
                     this.speed.y = 0;
                 }

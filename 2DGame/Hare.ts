@@ -20,6 +20,7 @@ namespace L16_ScrollerCollide {
       private directionGlobal: String = "right";
       private frameCounter: number = 0;
       public hitboxes: Hitbox[] = [];
+      public healthbar: Healthpoints[] = [];
       // private action: ACTION;
       // private time: fudge.Time = new fudge.Time();
       public speed: fudge.Vector3 = fudge.Vector3.ZERO();
@@ -42,7 +43,8 @@ namespace L16_ScrollerCollide {
           this.appendChild(nodeSprite);
         }
         this.creatHitbox();
-        this.show(ACTION.HIT);
+     
+        //this.show(ACTION.HIT);
         fudge.Loop.addEventListener(fudge.EVENT.LOOP_FRAME, this.update);
       }
   
@@ -124,6 +126,20 @@ namespace L16_ScrollerCollide {
         }
         this.show(_action);
       }
+
+      private updateHealthbar(){
+        if(this.healthpoints == 11){
+          return;
+        }
+        let lifeDifference: number = 10 - this.healthpoints;
+        for(let i =  0; i < this.healthbar.length; i++){
+          if(i < lifeDifference){
+            this.healthbar[i].act(STATUS.EMPTY);
+          }else{
+            this.healthbar[i].act(STATUS.FULL);
+          }
+        }
+      }
   
       private update = (_event: fudge.Eventƒ): void => {
         this.broadcastEvent(new CustomEvent("showNext"));
@@ -146,19 +162,19 @@ namespace L16_ScrollerCollide {
         
         if (colider == "Hit") {
           this.healthpoints = this.healthpoints - 1;
-          fudge.Debug.log(this.healthpoints);
+          this.updateHealthbar();
           if (this.directionGlobal == "right") {
             this.cmpTransform.local.translateX(-0.5);
           } else {
             this.cmpTransform.local.translateX(+0.5);
           }
         } else if (colider == "Collected") {
-          if (this.healthpoints + 2 > this.healthpoints) {
-            this.healthpoints = this.healthpoints;
+          if (this.healthpoints + 2 > 10) {
+            this.healthpoints = 10;
           } else {
             this.healthpoints = this.healthpoints + 2;
-            fudge.Debug.log(this.healthpoints);
           }
+          this.updateHealthbar();
         }
 
         let values: (string|fudge.Node)[] = this.hitboxes[1].checkCollisionWeapon();
@@ -167,10 +183,10 @@ namespace L16_ScrollerCollide {
             let enemyHitbox: Hitbox = <Hitbox>values[1];
             let enemy: Enemy = <Enemy> enemyHitbox.master;
             if (this.directionGlobal == "right") {
-              enemy.cmpTransform.local.translateX(+0.15);
+              enemy.cmpTransform.local.translateX(+0.5);
               enemy.receiveHit();
             } else {
-              enemy.cmpTransform.local.translateX(-0.15);
+              enemy.cmpTransform.local.translateX(-0.5);
               enemy.receiveHit();
             }
            
@@ -190,7 +206,7 @@ namespace L16_ScrollerCollide {
 
         for (let floor of level.getChildren()) {
 
-          if (floor.name == "PlayerHitbox" || floor.name == "EnemyHitbox" || floor.name == "ItemHitbox") {
+          if (floor.name != "Floor") {
             continue;
           }
 
@@ -216,6 +232,11 @@ namespace L16_ScrollerCollide {
           if (hitRight || hitLeft) {
             let translation: fudge.Vector3 = this.cmpTransform.local.translation;
             translation.y = rect.y;
+            if (translation.y - 0.3 >  this.cmpTransform.local.translation.y) {
+              translation.x = this.cmpTransform.local.translation.x + 0.1;
+              translation.y = this.cmpTransform.local.translation.y;
+              
+            }
             this.cmpTransform.local.translation = translation;
             this.speed.y = 0;
           }

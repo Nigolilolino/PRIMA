@@ -17,11 +17,11 @@ namespace L16_ScrollerCollide {
         }
         this.master = _master;
         this.addComponent(new fudge.ComponentTransform());
-        //this.addComponent(new fudge.ComponentMaterial(Hitbox.material));
+        this.addComponent(new fudge.ComponentMaterial(Hitbox.material));
         let cmpMesh: fudge.ComponentMesh = new fudge.ComponentMesh(Hitbox.mesh);
         //cmpMesh.pivot.translateY(-0.5);
         cmpMesh.pivot = Hitbox.pivot;
-        this.addComponent(cmpMesh);
+        this.addComponent(cmpMesh); 
       
       }
   
@@ -47,7 +47,7 @@ namespace L16_ScrollerCollide {
         for (let floor of level.getChildren()) {
 
           if (floor.name == "EnemyHitbox" || floor.name == "ItemHitbox") {
-            if(this.name == "EnemyHitbox" || this.name == "ItemHitbox"){
+            if (this.name == "EnemyHitbox" || this.name == "ItemHitbox" ){
               continue;
             }
 
@@ -75,10 +75,9 @@ namespace L16_ScrollerCollide {
             }
 
             if (hit && floor.name == "ItemHitbox") {
-              let game: fudge.Node = this.getParent();
               let hitbox: Hitbox = <Hitbox>floor;
               let level: fudge.Node = hitbox.getParent();
-              game.removeChild(hitbox.master);
+              level.removeChild(hitbox.master);
               level.removeChild(hitbox);
               return "Collected";
             }

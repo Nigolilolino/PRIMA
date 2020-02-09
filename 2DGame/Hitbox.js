@@ -14,7 +14,7 @@ var L16_ScrollerCollide;
             }
             this.master = _master;
             this.addComponent(new fudge.ComponentTransform());
-            //this.addComponent(new fudge.ComponentMaterial(Hitbox.material));
+            this.addComponent(new fudge.ComponentMaterial(Hitbox.material));
             let cmpMesh = new fudge.ComponentMesh(Hitbox.mesh);
             //cmpMesh.pivot.translateY(-0.5);
             cmpMesh.pivot = Hitbox.pivot;
@@ -63,10 +63,9 @@ var L16_ScrollerCollide;
                         return "Hit";
                     }
                     if (hit && floor.name == "ItemHitbox") {
-                        let game = this.getParent();
                         let hitbox = floor;
                         let level = hitbox.getParent();
-                        game.removeChild(hitbox.master);
+                        level.removeChild(hitbox.master);
                         level.removeChild(hitbox);
                         return "Collected";
                     }
