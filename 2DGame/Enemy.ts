@@ -63,36 +63,44 @@ namespace L16_ScrollerCollide {
       }
 
       public show(_action: ACTION): void {
-        for (let child of this.getChildren()){
+        for (let child of this.getChildren()) {
           child.activate(child.name == _action);
         }
       }
   
       public act(_action: ACTION, _direction:String = this.directionGlobal): void {
         let fightMode: boolean = this.checkDistanceToPlayer();
-        fudge.Debug.log(this.frameCounter);
         if (fightMode == true) {
-          _action = ACTION.HIT;
+          if (this.frameCounter > 4 && this.frameCounter < 8) {
+            this.frameCounter = this.frameCounter + 1;
+            _action = ACTION.HIT;
+          } else {
+            _action = ACTION.IDLE;
+            this.frameCounter = this.frameCounter + 1;
+          }
         }
         let direction: number = (_direction == "right" ? 1 : -1);
         this.cmpTransform.local.rotation = fudge.Vector3.Y(90 - 90 * direction);
         switch (_action) {
           case ACTION.IDLE:
+            if(this.frameCounter > 41){
+              this.frameCounter = 0;
+            }
             this.speed.x = 0;
             break;
           case ACTION.WALK:
             this.speed.x = Enemy.speedMax.x; // * direction;
             if (this.currentWalkingTime < this.walkingTimeMax) {
-              if(direction == 1) {
+              if (direction == 1) {
                 this.currentWalkingTime = this.currentWalkingTime + 1;
-              }else{
+              } else {
                 this.currentWalkingTime = this.currentWalkingTime + 1;
               }
-            }else{ 
+            } else { 
               if(direction == 1){
                 this.currentWalkingTime = 0;
                 direction = -1;
-              }else{
+              } else {
                 this.currentWalkingTime = 0;
                 direction = 1;
               }
@@ -114,11 +122,7 @@ namespace L16_ScrollerCollide {
             
           case ACTION.HIT:
             this.speed.x = 0;
-            if (this.frameCounter < 36) {
-              this.frameCounter = this.frameCounter + 1;
-            } else {
-              this.frameCounter = 0;
-            }
+            
             break;
         }
         this.show(_action);
@@ -180,13 +184,14 @@ namespace L16_ScrollerCollide {
             if (distance > 0) {
               this.directionGlobal = "left";
               if (this.frameCounter == 5) {
-                let stone: Stone = new Stone("Stone", this.cmpTransform.local.translation.x, this.cmpTransform.local.translation.y + 0.2, this.directionGlobal);
+                let stone: Stone = new Stone("Stone", this.cmpTransform.local.translation.x, this.cmpTransform.local.translation.y + 0.2, this.directionGlobal, level);
                 level.appendChild(stone);
+                level.appendChild(stone.creatHitbox());
               }
             } else {
               this.directionGlobal = "right";
-              if (this.frameCounter == 35) {
-                let stone: Stone = new Stone("Stone", this.cmpTransform.local.translation.x, this.cmpTransform.local.translation.y + 0.2, this.directionGlobal);
+              if (this.frameCounter == 5) {
+                let stone: Stone = new Stone("Stone", this.cmpTransform.local.translation.x, this.cmpTransform.local.translation.y + 0.2, this.directionGlobal, level);
                 level.appendChild(stone);
               }
             }

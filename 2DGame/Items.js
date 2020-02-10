@@ -17,7 +17,6 @@ var L16_ScrollerCollide;
                 this.hitbox.cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x - 0.01, this.mtxWorld.translation.y + 0.3, 0);
                 this.cmpTransform.local.rotateY(10);
                 if (this.hitbox.checkCollision()) {
-                    fudge.Debug.log("Colected");
                 }
                 this.checkGroundCollision();
             };

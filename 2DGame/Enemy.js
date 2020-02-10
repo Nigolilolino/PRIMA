@@ -82,14 +82,23 @@ var L16_ScrollerCollide;
         }
         act(_action, _direction = this.directionGlobal) {
             let fightMode = this.checkDistanceToPlayer();
-            fudge.Debug.log(this.frameCounter);
             if (fightMode == true) {
-                _action = L16_ScrollerCollide.ACTION.HIT;
+                if (this.frameCounter > 4 && this.frameCounter < 8) {
+                    this.frameCounter = this.frameCounter + 1;
+                    _action = L16_ScrollerCollide.ACTION.HIT;
+                }
+                else {
+                    _action = L16_ScrollerCollide.ACTION.IDLE;
+                    this.frameCounter = this.frameCounter + 1;
+                }
             }
             let direction = (_direction == "right" ? 1 : -1);
             this.cmpTransform.local.rotation = fudge.Vector3.Y(90 - 90 * direction);
             switch (_action) {
                 case L16_ScrollerCollide.ACTION.IDLE:
+                    if (this.frameCounter > 41) {
+                        this.frameCounter = 0;
+                    }
                     this.speed.x = 0;
                     break;
                 case L16_ScrollerCollide.ACTION.WALK:
@@ -129,12 +138,6 @@ var L16_ScrollerCollide;
                     }
                 case L16_ScrollerCollide.ACTION.HIT:
                     this.speed.x = 0;
-                    if (this.frameCounter < 36) {
-                        this.frameCounter = this.frameCounter + 1;
-                    }
-                    else {
-                        this.frameCounter = 0;
-                    }
                     break;
             }
             this.show(_action);
@@ -159,14 +162,15 @@ var L16_ScrollerCollide;
                     if (distance > 0) {
                         this.directionGlobal = "left";
                         if (this.frameCounter == 5) {
-                            let stone = new L16_ScrollerCollide.Stone("Stone", this.cmpTransform.local.translation.x, this.cmpTransform.local.translation.y + 0.2, this.directionGlobal);
+                            let stone = new L16_ScrollerCollide.Stone("Stone", this.cmpTransform.local.translation.x, this.cmpTransform.local.translation.y + 0.2, this.directionGlobal, level);
                             level.appendChild(stone);
+                            level.appendChild(stone.creatHitbox());
                         }
                     }
                     else {
                         this.directionGlobal = "right";
-                        if (this.frameCounter == 35) {
-                            let stone = new L16_ScrollerCollide.Stone("Stone", this.cmpTransform.local.translation.x, this.cmpTransform.local.translation.y + 0.2, this.directionGlobal);
+                        if (this.frameCounter == 5) {
+                            let stone = new L16_ScrollerCollide.Stone("Stone", this.cmpTransform.local.translation.x, this.cmpTransform.local.translation.y + 0.2, this.directionGlobal, level);
                             level.appendChild(stone);
                         }
                     }

@@ -91,7 +91,6 @@ var L16_ScrollerCollide;
         for (let i = 0; i < stones.length; i++) {
             stones[i].act(L16_ScrollerCollide.ACTION.IDLE);
         }
-        //fudge.Debug.log(stones);
     }
     function createLevel() {
         let level = new L16_ScrollerCollide.fudge.Node("Level");

@@ -79,7 +79,7 @@ namespace L16_ScrollerCollide {
         this.cmpTransform.local.rotateY(10);
         
         if(this.hitbox.checkCollision()){
-          fudge.Debug.log("Colected");
+          
         }
         this.checkGroundCollision();
       }

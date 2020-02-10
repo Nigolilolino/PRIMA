@@ -115,8 +115,6 @@ namespace L16_ScrollerCollide {
       for(let i = 0; i < stones.length; i++){
         stones[i].act(ACTION.IDLE);
       }
-
-      //fudge.Debug.log(stones);
     }
   
     function createLevel(): fudge.Node {
