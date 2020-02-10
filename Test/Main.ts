@@ -21,15 +21,19 @@ namespace Test {
       txtImage.image = imgEnemy;
   
       sprite = new Sprite("Hare");
-      sprite.generateByGrid(txtImage, ƒ.Rectangle.GET(2, 24, 188, 92), 1, ƒ.Vector2.ZERO(), 64, ƒ.ORIGIN2D.BOTTOMCENTER);
-  
+      sprite.generateByGrid(txtImage, ƒ.Rectangle.GET(17, 293, 74, 65), 11, ƒ.Vector2.ZERO(), 64, ƒ.ORIGIN2D.BOTTOMCENTER); //WALK
+      //sprite.generateByGrid(txtImage, ƒ.Rectangle.GET(19, 16, 67, 66), 4, ƒ.Vector2.ZERO(), 64, ƒ.ORIGIN2D.BOTTOMCENTER); IDLE
+      //sprite.generateByGrid(txtImage, ƒ.Rectangle.GET(15, 87, 68, 75), 7, ƒ.Vector2.ZERO(), 64, ƒ.ORIGIN2D.BOTTOMCENTER); Throw
+      //sprite.generateByGrid(txtImage, ƒ.Rectangle.GET(15, 170, 36, 38), 7, ƒ.Vector2.ZERO(), 64, ƒ.ORIGIN2D.BOTTOMCENTER); Stone
+      //sprite.generateByGrid(txtImage, ƒ.Rectangle.GET(15, 210, 72, 67), 5, ƒ.Vector2.ZERO(), 64, ƒ.ORIGIN2D.BOTTOMCENTER); //DEAD
+
       ƒ.RenderManager.initialize(true, false);
       root = new ƒ.Node("Root");
       let mtxHare: ƒ.Matrix4x4;
       let hare: NodeSprite;
   
       hare = new NodeSprite("Hare0", sprite);
-      hare.setFrameDirection(-1);
+      hare.setFrameDirection(1);
       root.appendChild(hare);
   
       //hare = new NodeSprite("Hare1", sprite);
@@ -65,7 +69,7 @@ namespace Test {
       viewport.draw();
   
       ƒ.Loop.addEventListener(ƒ.EVENT.LOOP_FRAME, update);
-      ƒ.Loop.start(ƒ.LOOP_MODE.TIME_GAME, 15);
+      ƒ.Loop.start(ƒ.LOOP_MODE.TIME_GAME, 10);
   
       function update(_event: ƒ.Eventƒ): void {
          //ƒ.Debug.log(frame);

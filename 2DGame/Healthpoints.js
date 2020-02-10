@@ -14,7 +14,6 @@ var L16_ScrollerCollide;
             super(_name);
             this.update = (_event) => {
                 this.broadcastEvent(new CustomEvent("showNext"));
-                fudge.Debug.log("hkjhks");
             };
             this.addComponent(new fudge.ComponentTransform());
             for (let sprite of Healthpoints.sprites) {

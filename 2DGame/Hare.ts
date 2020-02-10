@@ -17,7 +17,7 @@ namespace L16_ScrollerCollide {
       private static sprites: Sprite[];
       private static speedMax: fudge.Vector2 = new fudge.Vector2(1.5, 5); // units per second
       private static gravity: fudge.Vector2 = fudge.Vector2.Y(-4);
-      private directionGlobal: String = "right";
+      public directionGlobal: String = "right";
       private frameCounter: number = 0;
       public hitboxes: Hitbox[] = [];
       public healthbar: Healthpoints[] = [];

@@ -55,7 +55,6 @@ namespace L16_ScrollerCollide {
   
       private update = (_event: fudge.Eventƒ): void => {
         this.broadcastEvent(new CustomEvent("showNext"));
-        fudge.Debug.log("hkjhks");
       }
 
     }

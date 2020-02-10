@@ -16,6 +16,7 @@ namespace L16_ScrollerCollide {
     let enemy2: Enemy;
     let enemy1: Enemy;
     let item: Items;
+    
     //let healthpoints: Healthpoints;
   
     function test(): void {
@@ -31,6 +32,7 @@ namespace L16_ScrollerCollide {
       let txtEnemy: fudge.TextureImage = new fudge.TextureImage();
       txtEnemy.image = imgEnemy;
       Enemy.generateSprites(txtEnemy);
+      Stone.generateSprites(txtEnemy);
 
       let imgItem = images[2];
       let txtItems: fudge.TextureImage = new fudge.TextureImage();
@@ -49,11 +51,10 @@ namespace L16_ScrollerCollide {
       level = createLevel();
       game.appendChild(level);
       game.appendChild(hare);
-      game.appendChild(hare.creatHitbox());
     
   
       let cmpCamera: fudge.ComponentCamera = new fudge.ComponentCamera();
-      cmpCamera.pivot.translateZ(6);
+      cmpCamera.pivot.translateZ(20);
       cmpCamera.pivot.translateY(1.5);
       //cmpCamera.pivot.lookAt(fudge.Vector3.ZERO());
       cmpCamera.backgroundColor = fudge.Color.CSS("aliceblue");
@@ -70,7 +71,7 @@ namespace L16_ScrollerCollide {
   
       function update(_event: fudge.Eventƒ): void {
         processInput();
-        activateNPCAnimation();
+        activateAnimations();
         viewport.draw(); 
         cmpCamera.pivot.translation = new fudge.Vector3(hare.mtxWorld.translation.x, cmpCamera.pivot.translation.y, cmpCamera.pivot.translation.z);
         for(let i = 0; i < healthbar.length; i++){
@@ -101,14 +102,21 @@ namespace L16_ScrollerCollide {
         hare.act(ACTION.HIT);
         return;
       }
-      
       hare.act(ACTION.IDLE);
     }
 
-    function activateNPCAnimation(){
+    function activateAnimations(): void {
+      //enemy1.act(ACTION.WALK);
       enemy2.act(ACTION.WALK);
-      enemy1.act(ACTION.WALK);
       item.act(ACTION.IDLE); 
+      
+      let stones:Stone[] = <Stone[]>level.getChildrenByName("Stone");
+
+      for(let i = 0; i < stones.length; i++){
+        stones[i].act(ACTION.IDLE);
+      }
+
+      //fudge.Debug.log(stones);
     }
   
     function createLevel(): fudge.Node {
@@ -229,6 +237,13 @@ namespace L16_ScrollerCollide {
       floor = new Floor(TYPE.GRASS);
       floor.cmpTransform.local.scaleY(0.5);
       floor.cmpTransform.local.scaleX(0.5);
+      floor.cmpTransform.local.translateX(2.9);
+      floor.cmpTransform.local.translateY(0.5);
+      level.appendChild(floor);
+
+      floor = new Floor(TYPE.GRASS);
+      floor.cmpTransform.local.scaleY(0.5);
+      floor.cmpTransform.local.scaleX(0.5);
       floor.cmpTransform.local.translateX(3.3);
       floor.cmpTransform.local.translateY(0.5);
       level.appendChild(floor);
@@ -243,24 +258,27 @@ namespace L16_ScrollerCollide {
       //......................................
       //Enemies and Items
 
-      enemy1 = new Enemy("Stoner1", 1.5, 1);
+     // enemy1 = new Enemy("Stoner1", 1.5, 1);
       enemy2 = new Enemy("Stoner2", 5, 1);
-      level.appendChild(enemy1);
+      //level.appendChild(enemy1);
       level.appendChild(enemy2);
-      level.appendChild( enemy1.creatHitbox());
+      //level.appendChild( enemy1.creatHitbox());
       level.appendChild( enemy2.creatHitbox());
+
 
       item = new Items("Potion", 6, 1);
       level.appendChild(item);
       level.appendChild( item.creatHitbox());
       level.appendChild( hare.createHitboxWeapon());
 
-      for(let i = 0; i < hare.healthpoints - 1; i++){
+      for (let i = 0; i < hare.healthpoints - 1; i++) {
         let healthpoint: Healthpoints = new Healthpoints("Player Healthpoint 1");
         level.appendChild(healthpoint);
         healthpoint.act(STATUS.FULL);
         healthbar.push(healthpoint);
       }
+
+      level.appendChild(hare.creatHitbox());
 
       hare.healthbar = healthbar;
       // let healthpoints: Healthpoints = new Healthpoints("Player Healthpoint 1", 1, 1);

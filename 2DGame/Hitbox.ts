@@ -46,11 +46,10 @@ namespace L16_ScrollerCollide {
 
         for (let floor of level.getChildren()) {
 
-          if (floor.name == "EnemyHitbox" || floor.name == "ItemHitbox") {
-            if (this.name == "EnemyHitbox" || this.name == "ItemHitbox" ){
+          if (floor.name == "EnemyHitbox" || floor.name == "ItemHitbox" ) {
+            if (this.name == "EnemyHitbox" || this.name == "ItemHitbox"){ 
               continue;
             }
-
             let hit: boolean = false;
             let rectOfThis: fudge.Rectangle = (<Hitbox>this).getRectWorld();
             let rectOfThat: fudge.Rectangle = (<Hitbox>floor).getRectWorld();
@@ -122,3 +121,4 @@ namespace L16_ScrollerCollide {
 
     }
   }
+}
