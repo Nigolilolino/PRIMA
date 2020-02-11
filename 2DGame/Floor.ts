@@ -19,7 +19,7 @@ namespace L16_ScrollerCollide {
           let nodeSprite: NodeSprite = new NodeSprite("GrassFloor", Floor.sprites[0]);
           nodeSprite.activate(true);
           this.appendChild(nodeSprite);
-        }else if(_type == "Dirt") {
+        } else if (_type == "Dirt") {
           let nodeSprite: NodeSprite = new NodeSprite("DirtFloor", Floor.sprites[1]);
           nodeSprite.activate(true);
           this.appendChild(nodeSprite);
@@ -36,7 +36,7 @@ namespace L16_ScrollerCollide {
         Floor.sprites = [];
         let sprite: Sprite = new Sprite("GrassFloor");
         sprite.generateByGrid(_txtImage, fudge.Rectangle.GET(2, 24, 188, 220), 1, fudge.Vector2.ZERO(), 160, fudge.ORIGIN2D.CENTER);
-        for (let i = 0; i < sprite.frames.length; i++) {
+        for (let i: number = 0; i < sprite.frames.length; i++) {
           sprite.frames[i].pivot.translateX(-0.1);
           sprite.frames[i].pivot.translateY(-0.5);
         }
@@ -44,7 +44,7 @@ namespace L16_ScrollerCollide {
 
         sprite = new Sprite("DirtFloor");
         sprite.generateByGrid(_txtImage, fudge.Rectangle.GET(300, 24, 340, 300), 1, fudge.Vector2.ZERO(), 250, fudge.ORIGIN2D.CENTER);
-        for (let i = 0; i < sprite.frames.length; i++) {
+        for (let i: number = 0; i < sprite.frames.length; i++) {
           sprite.frames[i].pivot.translateX(-0.17);
           sprite.frames[i].pivot.translateY(-0.6);
         }

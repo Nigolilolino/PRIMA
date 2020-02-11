@@ -44,7 +44,7 @@ namespace L16_ScrollerCollide {
       }
   
       public show(_status: STATUS): void {
-        for (let child of this.getChildren()){
+        for (let child of this.getChildren()) {
           child.activate(child.name == _status);
         }
       }

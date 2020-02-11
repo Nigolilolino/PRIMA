@@ -19,23 +19,6 @@ var L16_ScrollerCollide;
                 this.speed.y += Enemy.gravity.y * timeFrame;
                 let distance = fudge.Vector3.SCALE(this.speed, timeFrame);
                 this.cmpTransform.local.translate(distance);
-                // if (this.currentWalkingTime < this.walkingTimeMax) {
-                //   if(this.directionGlobal == "right"){
-                //     this.cmpTransform.local.translateX(0.02);
-                //     this.currentWalkingTime = this.currentWalkingTime + 1;
-                //   }else{
-                //     this.cmpTransform.local.translateX(-0.02);
-                //     this.currentWalkingTime = this.currentWalkingTime + 1;
-                //   }
-                // }else{
-                //   if(this.directionGlobal == "right"){
-                //     this.currentWalkingTime = 0;
-                //     this.directionGlobal = "left";
-                //   }else{
-                //     this.currentWalkingTime = 0;
-                //     this.directionGlobal = "right";
-                //   }
-                // }
                 if (this.directionGlobal == "right") {
                     this.hitbox.cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x, this.mtxWorld.translation.y + 0.6, 0);
                 }
@@ -67,6 +50,9 @@ var L16_ScrollerCollide;
             sprite = new L16_ScrollerCollide.Sprite(L16_ScrollerCollide.ACTION.HIT);
             sprite.generateByGrid(_txtImage, fudge.Rectangle.GET(15, 87, 68, 75), 7, fudge.Vector2.ZERO(), 64, fudge.ORIGIN2D.BOTTOMCENTER);
             Enemy.sprites.push(sprite);
+            sprite = new L16_ScrollerCollide.Sprite(L16_ScrollerCollide.ACTION.DIE);
+            sprite.generateByGrid(_txtImage, fudge.Rectangle.GET(20, 210, 71, 67), 5, fudge.Vector2.ZERO(), 64, fudge.ORIGIN2D.BOTTOMCENTER);
+            Enemy.sprites.push(sprite);
         }
         creatHitbox() {
             let hitbox = new L16_ScrollerCollide.Hitbox(this, "EnemyHitbox");
@@ -91,6 +77,13 @@ var L16_ScrollerCollide;
                     _action = L16_ScrollerCollide.ACTION.IDLE;
                     this.frameCounter = this.frameCounter + 1;
                 }
+            }
+            if (this.healthpoints <= 0 && this.frameCounter >= 5 && _action == L16_ScrollerCollide.ACTION.IDLE) {
+                this.deleteThis();
+            }
+            else if (_action == L16_ScrollerCollide.ACTION.DIE || this.healthpoints <= 0) {
+                this.frameCounter = this.frameCounter + 1;
+                _action = L16_ScrollerCollide.ACTION.DIE;
             }
             let direction = (_direction == "right" ? 1 : -1);
             this.cmpTransform.local.rotation = fudge.Vector3.Y(90 - 90 * direction);
@@ -139,16 +132,23 @@ var L16_ScrollerCollide;
                 case L16_ScrollerCollide.ACTION.HIT:
                     this.speed.x = 0;
                     break;
+                case L16_ScrollerCollide.ACTION.DIE:
+                    this.speed.x = 0;
+                    break;
             }
             this.show(_action);
         }
         receiveHit() {
             this.healthpoints = this.healthpoints - 1;
             if (this.healthpoints <= 0) {
-                let parent = this.getParent();
-                parent.removeChild(this.hitbox);
-                parent.removeChild(this);
+                this.frameCounter = 0;
+                this.act(L16_ScrollerCollide.ACTION.DIE);
             }
+        }
+        deleteThis() {
+            let parent = this.getParent();
+            parent.removeChild(this.hitbox);
+            parent.removeChild(this);
         }
         checkDistanceToPlayer() {
             if (this.getParent() != null) {
@@ -172,6 +172,7 @@ var L16_ScrollerCollide;
                         if (this.frameCounter == 5) {
                             let stone = new L16_ScrollerCollide.Stone("Stone", this.cmpTransform.local.translation.x, this.cmpTransform.local.translation.y + 0.2, this.directionGlobal, level);
                             level.appendChild(stone);
+                            level.appendChild(stone.creatHitbox());
                         }
                     }
                     return true;

@@ -13,8 +13,8 @@ namespace L16_ScrollerCollide {
     export let level: fudge.Node;
     let hare: Hare;
     let healthbar: Healthpoints[] = [];
-    let enemy2: Enemy;
-    let enemy1: Enemy;
+    //let enemy2: Enemy;
+    let enemy: Enemy;
     let item: Items;
     
     //let healthpoints: Healthpoints;
@@ -44,13 +44,18 @@ namespace L16_ScrollerCollide {
       let imgEnvironment = images[3];
       txtEnvironment.image = imgEnvironment;
       Floor.generateSprites(txtEnvironment);
+
+      let txtflora: fudge.TextureImage = new fudge.TextureImage();
+      let imgflora = images[4];
+      txtflora.image = imgflora;
+      Flora.generateSprites(txtflora);
   
       fudge.RenderManager.initialize(true, false);
       game = new fudge.Node("Game");
       hare = new Hare("Hare");
       level = createLevel();
       game.appendChild(level);
-      game.appendChild(hare);
+      //game.appendChild(hare);
     
   
       let cmpCamera: fudge.ComponentCamera = new fudge.ComponentCamera();
@@ -74,8 +79,8 @@ namespace L16_ScrollerCollide {
         activateAnimations();
         viewport.draw(); 
         cmpCamera.pivot.translation = new fudge.Vector3(hare.mtxWorld.translation.x, cmpCamera.pivot.translation.y, cmpCamera.pivot.translation.z);
-        for(let i = 0; i < healthbar.length; i++){
-          healthbar[i].cmpTransform.local.translation = new fudge.Vector3(hare.mtxWorld.translation.x + 1.5 + i/10 + 0.2, 3, 0);
+        for (let i = 0; i < healthbar.length; i++) {
+          healthbar[i].cmpTransform.local.translation = new fudge.Vector3(hare.mtxWorld.translation.x + 2 + i / 10 + 0.2, 3, 0);
         }
         //crc2.strokeRect(-1, -1, canvas.width / 2, canvas.height + 2);
         //crc2.strokeRect(-1, canvas.height / 2, canvas.width + 2, canvas.height);
@@ -107,12 +112,17 @@ namespace L16_ScrollerCollide {
 
     function activateAnimations(): void {
       //enemy1.act(ACTION.WALK);
-      enemy2.act(ACTION.WALK);
+   
       item.act(ACTION.IDLE); 
+
+      let stoner: Enemy[] = <Enemy[]>level.getChildrenByName("Stoner");
+      for (let i = 0; i < stoner.length; i++) {
+        stoner[i].act(ACTION.WALK);
+      }
       
       let stones:Stone[] = <Stone[]>level.getChildrenByName("Stone");
 
-      for(let i = 0; i < stones.length; i++){
+      for (let i = 0; i < stones.length; i++) {
         stones[i].act(ACTION.IDLE);
       }
     }
@@ -195,7 +205,7 @@ namespace L16_ScrollerCollide {
       floor.cmpTransform.local.translateX(16.3);
       level.appendChild(floor);
 
-      //Pyramide
+      //Hügel
 
       floor = new Floor(TYPE.GRASS);
       floor.cmpTransform.local.scaleY(0.5);
@@ -256,12 +266,12 @@ namespace L16_ScrollerCollide {
       //......................................
       //Enemies and Items
 
-     // enemy1 = new Enemy("Stoner1", 1.5, 1);
-      enemy2 = new Enemy("Stoner2", 5, 1);
-      //level.appendChild(enemy1);
-      level.appendChild(enemy2);
-      //level.appendChild( enemy1.creatHitbox());
-      level.appendChild( enemy2.creatHitbox());
+      // enemy = new Enemy("Stoner", 1.5, 1);
+      // level.appendChild(enemy);
+      // level.appendChild( enemy.creatHitbox());
+      enemy = new Enemy("Stoner", 5, 1);
+      level.appendChild(enemy);
+      level.appendChild( enemy.creatHitbox());
 
 
       item = new Items("Potion", 6, 1);
@@ -279,11 +289,135 @@ namespace L16_ScrollerCollide {
       level.appendChild(hare.creatHitbox());
 
       hare.healthbar = healthbar;
-      // let healthpoints: Healthpoints = new Healthpoints("Player Healthpoint 1", 1, 1);
-      // level.appendChild(healthpoints);
 
-      // healthpoints = new Healthpoints("Player Healthpoint 2", 2, 1);
-      // level.appendChild(healthpoints); 
+      //Flora
+
+      let flora: Flora = new Flora(ENVI_TYPE.LEAVES, 1.1, 3.3);
+      flora.cmpTransform.local.scaleX(0.9);
+      flora.cmpTransform.local.scaleY(0.9);
+      flora.cmpTransform.local.rotateZ(-10);
+      level.appendChild(flora);
+
+      flora = new Flora(ENVI_TYPE.TREE_ROOT, 1, 0);
+      flora.cmpTransform.local.scaleX(0.6);
+      flora.cmpTransform.local.scaleY(0.6);
+      level.appendChild(flora);
+
+      flora = new Flora(ENVI_TYPE.TREE_TRUNK, 1, 0.67);
+      flora.cmpTransform.local.scaleX(0.6);
+      flora.cmpTransform.local.scaleY(0.6);
+      level.appendChild(flora);
+
+      flora = new Flora(ENVI_TYPE.TREE_TRUNK, 1, 1.4);
+      flora.cmpTransform.local.scaleX(0.6);
+      flora.cmpTransform.local.scaleY(0.6);
+      level.appendChild(flora);
+
+      flora = new Flora(ENVI_TYPE.TREE_TRUNK, 1, 2.15);
+      flora.cmpTransform.local.scaleX(0.6);
+      flora.cmpTransform.local.scaleY(0.6);
+      level.appendChild(flora);
+
+      flora = new Flora(ENVI_TYPE.TREE_CROWN, 1 , 2.75);
+      flora.cmpTransform.local.scaleX(0.6);
+      flora.cmpTransform.local.scaleY(0.6);
+      level.appendChild(flora);
+//...
+      flora = new Flora(ENVI_TYPE.LEAVES, 4.1, 3.3);
+      flora.cmpTransform.local.scaleX(0.9);
+      flora.cmpTransform.local.scaleY(0.9);
+      flora.cmpTransform.local.rotateZ(-10);
+      level.appendChild(flora);
+
+      flora = new Flora(ENVI_TYPE.TREE_ROOT, 4, 0);
+      flora.cmpTransform.local.scaleX(0.6);
+      flora.cmpTransform.local.scaleY(0.6);
+      level.appendChild(flora);
+
+      flora = new Flora(ENVI_TYPE.TREE_TRUNK, 4, 0.67);
+      flora.cmpTransform.local.scaleX(0.6);
+      flora.cmpTransform.local.scaleY(0.6);
+      level.appendChild(flora);
+
+      flora = new Flora(ENVI_TYPE.TREE_TRUNK, 4, 1.4);
+      flora.cmpTransform.local.scaleX(0.6);
+      flora.cmpTransform.local.scaleY(0.6);
+      level.appendChild(flora);
+
+      flora = new Flora(ENVI_TYPE.TREE_TRUNK, 4, 2.15);
+      flora.cmpTransform.local.scaleX(0.6);
+      flora.cmpTransform.local.scaleY(0.6);
+      level.appendChild(flora);
+
+      flora = new Flora(ENVI_TYPE.TREE_CROWN, 4 , 2.75);
+      flora.cmpTransform.local.scaleX(0.6);
+      flora.cmpTransform.local.scaleY(0.6);
+      level.appendChild(flora);
+      //...
+      flora = new Flora(ENVI_TYPE.LEAVES, 7.1, 3.3);
+      flora.cmpTransform.local.scaleX(0.9);
+      flora.cmpTransform.local.scaleY(0.9);
+      flora.cmpTransform.local.rotateZ(-10);
+      level.appendChild(flora);
+
+      flora = new Flora(ENVI_TYPE.TREE_ROOT, 7, 0);
+      flora.cmpTransform.local.scaleX(0.6);
+      flora.cmpTransform.local.scaleY(0.6);
+      level.appendChild(flora);
+
+      flora = new Flora(ENVI_TYPE.TREE_TRUNK, 7, 0.67);
+      flora.cmpTransform.local.scaleX(0.6);
+      flora.cmpTransform.local.scaleY(0.6);
+      level.appendChild(flora);
+
+      flora = new Flora(ENVI_TYPE.TREE_TRUNK, 7, 1.4);
+      flora.cmpTransform.local.scaleX(0.6);
+      flora.cmpTransform.local.scaleY(0.6);
+      level.appendChild(flora);
+
+      flora = new Flora(ENVI_TYPE.TREE_TRUNK, 7, 2.15);
+      flora.cmpTransform.local.scaleX(0.6);
+      flora.cmpTransform.local.scaleY(0.6);
+      level.appendChild(flora);
+
+      flora = new Flora(ENVI_TYPE.TREE_CROWN, 7 , 2.75);
+      flora.cmpTransform.local.scaleX(0.6);
+      flora.cmpTransform.local.scaleY(0.6);
+      level.appendChild(flora);
+
+      //...
+      flora = new Flora(ENVI_TYPE.LEAVES, 10.1, 3.3);
+      flora.cmpTransform.local.scaleX(0.9);
+      flora.cmpTransform.local.scaleY(0.9);
+      flora.cmpTransform.local.rotateZ(-10);
+      level.appendChild(flora);
+
+      flora = new Flora(ENVI_TYPE.TREE_ROOT, 10, 0);
+      flora.cmpTransform.local.scaleX(0.6);
+      flora.cmpTransform.local.scaleY(0.6);
+      level.appendChild(flora);
+
+      flora = new Flora(ENVI_TYPE.TREE_TRUNK, 10, 0.67);
+      flora.cmpTransform.local.scaleX(0.6);
+      flora.cmpTransform.local.scaleY(0.6);
+      level.appendChild(flora);
+
+      flora = new Flora(ENVI_TYPE.TREE_TRUNK, 10, 1.4);
+      flora.cmpTransform.local.scaleX(0.6);
+      flora.cmpTransform.local.scaleY(0.6);
+      level.appendChild(flora);
+
+      flora = new Flora(ENVI_TYPE.TREE_TRUNK, 10, 2.15);
+      flora.cmpTransform.local.scaleX(0.6);
+      flora.cmpTransform.local.scaleY(0.6);
+      level.appendChild(flora);
+
+      flora = new Flora(ENVI_TYPE.TREE_CROWN, 10, 2.75);
+      flora.cmpTransform.local.scaleX(0.6);
+      flora.cmpTransform.local.scaleY(0.6);
+      level.appendChild(flora);
+
+      game.appendChild(hare);
 
       return level;
     }

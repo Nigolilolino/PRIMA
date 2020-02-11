@@ -20,11 +20,7 @@ var Test;
         ƒ.Debug.log(imgEnemy);
         txtImage.image = imgEnemy;
         sprite = new Sprite("Hare");
-        sprite.generateByGrid(txtImage, ƒ.Rectangle.GET(17, 293, 74, 65), 11, ƒ.Vector2.ZERO(), 64, ƒ.ORIGIN2D.BOTTOMCENTER); //WALK
-        //sprite.generateByGrid(txtImage, ƒ.Rectangle.GET(19, 16, 67, 66), 4, ƒ.Vector2.ZERO(), 64, ƒ.ORIGIN2D.BOTTOMCENTER); IDLE
-        //sprite.generateByGrid(txtImage, ƒ.Rectangle.GET(15, 87, 68, 75), 7, ƒ.Vector2.ZERO(), 64, ƒ.ORIGIN2D.BOTTOMCENTER); Throw
-        //sprite.generateByGrid(txtImage, ƒ.Rectangle.GET(15, 170, 36, 38), 7, ƒ.Vector2.ZERO(), 64, ƒ.ORIGIN2D.BOTTOMCENTER); Stone
-        //sprite.generateByGrid(txtImage, ƒ.Rectangle.GET(15, 210, 72, 67), 5, ƒ.Vector2.ZERO(), 64, ƒ.ORIGIN2D.BOTTOMCENTER); //DEAD
+        sprite.generateByGrid(txtImage, ƒ.Rectangle.GET(20, 210, 71, 67), 5, ƒ.Vector2.ZERO(), 64, ƒ.ORIGIN2D.BOTTOMCENTER); //DEAD
         ƒ.RenderManager.initialize(true, false);
         root = new ƒ.Node("Root");
         let mtxHare;

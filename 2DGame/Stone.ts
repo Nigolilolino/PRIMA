@@ -44,8 +44,8 @@ namespace L16_ScrollerCollide {
 
       public creatHitbox(): Hitbox {
         let hitbox: Hitbox = new Hitbox(this, "StoneHitbox");
-        hitbox.cmpTransform.local.scaleX(0.4);
-        hitbox.cmpTransform.local.scaleY(0.6);
+        hitbox.cmpTransform.local.scaleX(0.25);
+        hitbox.cmpTransform.local.scaleY(0.25);
         this.hitbox = hitbox;
         return hitbox;
       }
@@ -60,6 +60,11 @@ namespace L16_ScrollerCollide {
         this.show(_action);
       }
 
+      public deleteThis(): void {
+        this.level.removeChild(this.hitbox);
+        this.level.removeChild(this);
+      }
+
       private update = (_event: fudge.Eventƒ): void => {
         this.counter = this.counter + 1;
         this.broadcastEvent(new CustomEvent("showNext"));
@@ -70,14 +75,13 @@ namespace L16_ScrollerCollide {
         }
 
         if (this.counter > this.lifetime) {
-            this.level.removeChild(this.hitbox);
-            this.level.removeChild(this);
+            this.deleteThis();
         }
 
         if (this.direction == "right") {
-            this.hitbox.cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x, this.mtxWorld.translation.y + 0.6, 0);
+            this.hitbox.cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x + 0.1, this.mtxWorld.translation.y + 0.3, 0);
           } else if (this.direction == "left") {
-            this.hitbox.cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x, this.mtxWorld.translation.y + 0.6, 0);
+            this.hitbox.cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x - 0.1, this.mtxWorld.translation.y + 0.3, 0);
           }
 
       }

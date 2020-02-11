@@ -35,10 +35,13 @@ var L16_ScrollerCollide;
         }
         checkCollision() {
             for (let floor of L16_ScrollerCollide.level.getChildren()) {
-                if (floor.name == "EnemyHitbox" || floor.name == "ItemHitbox") {
+                if (floor.name == "EnemyHitbox" || floor.name == "ItemHitbox" || floor.name == "StoneHitbox") {
                     if (this.name == "EnemyHitbox" || this.name == "ItemHitbox") {
                         continue;
                     }
+                    // if (floor.name == "StoneHitbox") {
+                    //   fudge.Debug.log("unten");
+                    // }
                     let hit = false;
                     let rectOfThis = this.getRectWorld();
                     let rectOfThat = floor.getRectWorld();
@@ -58,6 +61,12 @@ var L16_ScrollerCollide;
                     }
                     else if (rectOfThis.isInside(bottomRight)) {
                         hit = true;
+                    }
+                    if (hit && floor.name == "StoneHitbox") {
+                        let stoneHitbox = floor;
+                        let stone = stoneHitbox.master;
+                        stone.deleteThis();
+                        return "Hit";
                     }
                     if (hit && floor.name == "EnemyHitbox") {
                         return "Hit";

@@ -46,10 +46,17 @@ namespace L16_ScrollerCollide {
 
         for (let floor of level.getChildren()) {
 
-          if (floor.name == "EnemyHitbox" || floor.name == "ItemHitbox" ) {
-            if (this.name == "EnemyHitbox" || this.name == "ItemHitbox"){ 
+
+          if (floor.name == "EnemyHitbox" || floor.name == "ItemHitbox" || floor.name == "StoneHitbox") {
+            if (this.name == "EnemyHitbox" || this.name == "ItemHitbox") { 
               continue;
             }
+
+
+            // if (floor.name == "StoneHitbox") {
+            //   fudge.Debug.log("unten");
+            // }
+
             let hit: boolean = false;
             let rectOfThis: fudge.Rectangle = (<Hitbox>this).getRectWorld();
             let rectOfThat: fudge.Rectangle = (<Hitbox>floor).getRectWorld();
@@ -67,6 +74,13 @@ namespace L16_ScrollerCollide {
               hit = true;
             } else if (rectOfThis.isInside(bottomRight)) {
               hit = true;
+            }
+
+            if (hit && floor.name == "StoneHitbox") {
+              let stoneHitbox: Hitbox = <Hitbox>floor;
+              let stone: Stone = <Stone>stoneHitbox.master;
+              stone.deleteThis();
+              return "Hit";
             }
 
             if (hit && floor.name == "EnemyHitbox") {

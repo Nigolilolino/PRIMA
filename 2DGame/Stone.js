@@ -19,14 +19,13 @@ var L16_ScrollerCollide;
                     this.cmpTransform.local.translateX(-0.1);
                 }
                 if (this.counter > this.lifetime) {
-                    this.level.removeChild(this.hitbox);
-                    this.level.removeChild(this);
+                    this.deleteThis();
                 }
                 if (this.direction == "right") {
-                    this.hitbox.cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x, this.mtxWorld.translation.y + 0.6, 0);
+                    this.hitbox.cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x + 0.1, this.mtxWorld.translation.y + 0.3, 0);
                 }
                 else if (this.direction == "left") {
-                    this.hitbox.cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x, this.mtxWorld.translation.y + 0.6, 0);
+                    this.hitbox.cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x - 0.1, this.mtxWorld.translation.y + 0.3, 0);
                 }
             };
             this.level = _lvl;
@@ -51,8 +50,8 @@ var L16_ScrollerCollide;
         }
         creatHitbox() {
             let hitbox = new L16_ScrollerCollide.Hitbox(this, "StoneHitbox");
-            hitbox.cmpTransform.local.scaleX(0.4);
-            hitbox.cmpTransform.local.scaleY(0.6);
+            hitbox.cmpTransform.local.scaleX(0.25);
+            hitbox.cmpTransform.local.scaleY(0.25);
             this.hitbox = hitbox;
             return hitbox;
         }
@@ -63,6 +62,10 @@ var L16_ScrollerCollide;
         }
         act(_action) {
             this.show(_action);
+        }
+        deleteThis() {
+            this.level.removeChild(this.hitbox);
+            this.level.removeChild(this);
         }
     }
     L16_ScrollerCollide.Stone = Stone;

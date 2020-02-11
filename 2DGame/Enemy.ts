@@ -52,6 +52,10 @@ namespace L16_ScrollerCollide {
         sprite = new Sprite(ACTION.HIT);
         sprite.generateByGrid(_txtImage, fudge.Rectangle.GET(15, 87, 68, 75), 7, fudge.Vector2.ZERO(), 64, fudge.ORIGIN2D.BOTTOMCENTER);
         Enemy.sprites.push(sprite);
+
+        sprite = new Sprite(ACTION.DIE);
+        sprite.generateByGrid(_txtImage, fudge.Rectangle.GET(20, 210, 71, 67), 5, fudge.Vector2.ZERO(), 64, fudge.ORIGIN2D.BOTTOMCENTER);
+        Enemy.sprites.push(sprite);
       }
 
       public creatHitbox(): Hitbox {
@@ -68,7 +72,7 @@ namespace L16_ScrollerCollide {
         }
       }
   
-      public act(_action: ACTION, _direction:String = this.directionGlobal): void {
+      public act(_action: ACTION, _direction: String = this.directionGlobal): void {
         let fightMode: boolean = this.checkDistanceToPlayer();
         if (fightMode == true) {
           if (this.frameCounter > 4 && this.frameCounter < 8) {
@@ -79,6 +83,13 @@ namespace L16_ScrollerCollide {
             this.frameCounter = this.frameCounter + 1;
           }
         }
+        if (this.healthpoints <= 0 && this.frameCounter >= 5 && _action == ACTION.IDLE) {
+          this.deleteThis();
+        }else if(_action == ACTION.DIE || this.healthpoints <= 0){
+          this.frameCounter = this.frameCounter + 1;
+          _action = ACTION.DIE;
+        }
+
         let direction: number = (_direction == "right" ? 1 : -1);
         this.cmpTransform.local.rotation = fudge.Vector3.Y(90 - 90 * direction);
         switch (_action) {
@@ -124,6 +135,11 @@ namespace L16_ScrollerCollide {
             this.speed.x = 0;
             
             break;
+
+          case ACTION.DIE:
+            this.speed.x = 0;
+            
+            break;
         }
         this.show(_action);
       }
@@ -131,10 +147,15 @@ namespace L16_ScrollerCollide {
       public receiveHit(): void {
         this.healthpoints = this.healthpoints - 1;
         if (this.healthpoints <= 0) {
-          let parent: fudge.Node = this.getParent();
-          parent.removeChild(this.hitbox);
-          parent.removeChild(this);
+          this.frameCounter = 0;
+          this.act(ACTION.DIE);
         }
+      }
+
+      private deleteThis(): void {
+        let parent: fudge.Node = this.getParent();
+        parent.removeChild(this.hitbox);
+        parent.removeChild(this);
       }
   
       private update = (_event: fudge.Eventƒ): void => {
@@ -143,24 +164,6 @@ namespace L16_ScrollerCollide {
         this.speed.y += Enemy.gravity.y * timeFrame;
         let distance: fudge.Vector3 = fudge.Vector3.SCALE(this.speed, timeFrame);
         this.cmpTransform.local.translate(distance);
-
-        // if (this.currentWalkingTime < this.walkingTimeMax) {
-        //   if(this.directionGlobal == "right"){
-        //     this.cmpTransform.local.translateX(0.02);
-        //     this.currentWalkingTime = this.currentWalkingTime + 1;
-        //   }else{
-        //     this.cmpTransform.local.translateX(-0.02);
-        //     this.currentWalkingTime = this.currentWalkingTime + 1;
-        //   }
-        // }else{
-        //   if(this.directionGlobal == "right"){
-        //     this.currentWalkingTime = 0;
-        //     this.directionGlobal = "left";
-        //   }else{
-        //     this.currentWalkingTime = 0;
-        //     this.directionGlobal = "right";
-        //   }
-        // }
 
         if (this.directionGlobal == "right") {
           this.hitbox.cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x, this.mtxWorld.translation.y + 0.6, 0);
@@ -193,6 +196,7 @@ namespace L16_ScrollerCollide {
               if (this.frameCounter == 5) {
                 let stone: Stone = new Stone("Stone", this.cmpTransform.local.translation.x, this.cmpTransform.local.translation.y + 0.2, this.directionGlobal, level);
                 level.appendChild(stone);
+                level.appendChild(stone.creatHitbox());
               }
             }
             return true;
