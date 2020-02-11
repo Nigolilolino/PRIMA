@@ -4,13 +4,27 @@ var L16_ScrollerCollide;
 ///<reference types="../FUDGE/Build/FudgeCore.js"/> 
 (function (L16_ScrollerCollide) {
     var fudge = FudgeCore;
-    class Hare extends L16_ScrollerCollide.Characters {
+    let ACTION;
+    (function (ACTION) {
+        ACTION["IDLE"] = "Idle";
+        ACTION["WALK"] = "Walk";
+        ACTION["JUMP"] = "Jump";
+        ACTION["HIT"] = "Hit";
+    })(ACTION = L16_ScrollerCollide.ACTION || (L16_ScrollerCollide.ACTION = {}));
+    let DIRECTION;
+    (function (DIRECTION) {
+        DIRECTION[DIRECTION["LEFT"] = 0] = "LEFT";
+        DIRECTION[DIRECTION["RIGHT"] = 1] = "RIGHT";
+    })(DIRECTION = L16_ScrollerCollide.DIRECTION || (L16_ScrollerCollide.DIRECTION = {}));
+    class Hare extends fudge.Node {
         constructor(_name = "Hare") {
             super(_name);
             this.directionGlobal = "right";
             this.frameCounter = 0;
             this.hitboxes = [];
             this.healthbar = [];
+            // private action: ACTION;
+            // private time: fudge.Time = new fudge.Time();
             this.speed = fudge.Vector3.ZERO();
             this.healthpoints = 11;
             this.update = (_event) => {
@@ -80,13 +94,13 @@ var L16_ScrollerCollide;
         }
         static generateSprites(_txtImage) {
             Hare.sprites = [];
-            let sprite = new L16_ScrollerCollide.Sprite(L16_ScrollerCollide.ACTION.WALK);
+            let sprite = new L16_ScrollerCollide.Sprite(ACTION.WALK);
             sprite.generateByGrid(_txtImage, fudge.Rectangle.GET(0, 0, 77, 52), 6, fudge.Vector2.ZERO(), 64, fudge.ORIGIN2D.BOTTOMCENTER);
             Hare.sprites.push(sprite);
-            sprite = new L16_ScrollerCollide.Sprite(L16_ScrollerCollide.ACTION.IDLE);
+            sprite = new L16_ScrollerCollide.Sprite(ACTION.IDLE);
             sprite.generateByGrid(_txtImage, fudge.Rectangle.GET(0, 64, 77, 55), 6, fudge.Vector2.ZERO(), 64, fudge.ORIGIN2D.BOTTOMCENTER);
             Hare.sprites.push(sprite);
-            sprite = new L16_ScrollerCollide.Sprite(L16_ScrollerCollide.ACTION.HIT);
+            sprite = new L16_ScrollerCollide.Sprite(ACTION.HIT);
             sprite.generateByGrid(_txtImage, fudge.Rectangle.GET(0, 130, 76, 65), 6, fudge.Vector2.ZERO(), 64, fudge.ORIGIN2D.BOTTOMCENTER);
             Hare.sprites.push(sprite);
         }
@@ -105,7 +119,7 @@ var L16_ScrollerCollide;
             return this.hitboxes[1];
         }
         show(_action) {
-            if (_action == L16_ScrollerCollide.ACTION.JUMP)
+            if (_action == ACTION.JUMP)
                 return;
             for (let child of this.getChildren()) {
                 child.activate(child.name == _action);
@@ -113,12 +127,12 @@ var L16_ScrollerCollide;
         }
         act(_action, _direction) {
             switch (_action) {
-                case L16_ScrollerCollide.ACTION.IDLE:
+                case ACTION.IDLE:
                     this.speed.x = 0;
                     this.frameCounter = 0;
                     break;
-                case L16_ScrollerCollide.ACTION.WALK:
-                    let direction = (_direction == L16_ScrollerCollide.DIRECTION.RIGHT ? 1 : -1);
+                case ACTION.WALK:
+                    let direction = (_direction == DIRECTION.RIGHT ? 1 : -1);
                     this.speed.x = Hare.speedMax.x; // * direction;
                     this.cmpTransform.local.rotation = fudge.Vector3.Y(90 - 90 * direction);
                     if (direction == 1) {
@@ -130,7 +144,7 @@ var L16_ScrollerCollide;
                         this.frameCounter = 0;
                     }
                     break;
-                case L16_ScrollerCollide.ACTION.JUMP:
+                case ACTION.JUMP:
                     if (this.speed.y != 0) {
                         this.frameCounter = 0;
                         break;
@@ -140,7 +154,7 @@ var L16_ScrollerCollide;
                         this.frameCounter = 0;
                         break;
                     }
-                case L16_ScrollerCollide.ACTION.HIT:
+                case ACTION.HIT:
                     this.speed.x = 0;
                     if (this.frameCounter > 6) {
                         this.frameCounter = 0;

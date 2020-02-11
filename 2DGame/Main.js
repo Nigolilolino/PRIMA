@@ -44,7 +44,7 @@ var L16_ScrollerCollide;
         L16_ScrollerCollide.game.appendChild(L16_ScrollerCollide.level);
         //game.appendChild(hare);
         let cmpCamera = new L16_ScrollerCollide.fudge.ComponentCamera();
-        cmpCamera.pivot.translateZ(20);
+        cmpCamera.pivot.translateZ(6);
         cmpCamera.pivot.translateY(1.5);
         //cmpCamera.pivot.lookAt(fudge.Vector3.ZERO());
         cmpCamera.backgroundColor = L16_ScrollerCollide.fudge.Color.CSS("aliceblue");

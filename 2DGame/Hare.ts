@@ -2,8 +2,18 @@
 namespace L16_ScrollerCollide {
     import fudge = FudgeCore;
   
-    
-    export class Hare extends Characters {
+    export enum ACTION {
+      IDLE = "Idle",
+      WALK = "Walk",
+      JUMP = "Jump",
+      HIT = "Hit" 
+
+    }
+    export enum DIRECTION {
+      LEFT, RIGHT
+    }
+  
+    export class Hare extends fudge.Node {
       private static sprites: Sprite[];
       private static speedMax: fudge.Vector2 = new fudge.Vector2(1.5, 5); // units per second
       private static gravity: fudge.Vector2 = fudge.Vector2.Y(-4);
@@ -11,6 +21,8 @@ namespace L16_ScrollerCollide {
       private frameCounter: number = 0;
       public hitboxes: Hitbox[] = [];
       public healthbar: Healthpoints[] = [];
+      // private action: ACTION;
+      // private time: fudge.Time = new fudge.Time();
       public speed: fudge.Vector3 = fudge.Vector3.ZERO();
       public healthpoints: number  = 11;
   

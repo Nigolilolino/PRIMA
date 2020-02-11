@@ -59,7 +59,7 @@ namespace L16_ScrollerCollide {
     
   
       let cmpCamera: fudge.ComponentCamera = new fudge.ComponentCamera();
-      cmpCamera.pivot.translateZ(20);
+      cmpCamera.pivot.translateZ(6);
       cmpCamera.pivot.translateY(1.5);
       //cmpCamera.pivot.lookAt(fudge.Vector3.ZERO());
       cmpCamera.backgroundColor = fudge.Color.CSS("aliceblue");
