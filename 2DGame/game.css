@@ -1,0 +1,76 @@
+#startscreen{
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    background: black;
+    z-index: 5;
+    align-content: center;
+    text-align: center;
+}
+
+#menue{
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    background: black;
+    z-index: 5;
+    align-content: center;
+    text-align: center;
+    visibility: hidden;
+}
+
+#menueBtn{
+    width: 100px;
+    height: 50px;
+    margin-left: 1%;
+    margin-top: 1%;
+    background-color:transparent;
+    text-align: center;
+    position: absolute;
+    cursor: pointer;
+}
+
+#menueExitBtn{
+    width: 400px;
+    height: 100px;
+    margin-left: 36%;
+    margin-top: 10%;
+    background-color: white;
+    text-align: center;
+    cursor: pointer;
+}
+
+#gameStartBtn{
+    width: 400px;
+    height: 100px;
+    margin-left: 37%;
+    margin-top: 10%;
+    background-color: white;
+    text-align: center;
+    cursor: pointer;
+}
+
+#title{
+    color: wheat;
+    font-size: 69pt;
+}
+
+.sprites{
+    visibility: hidden;
+}
+
+.slider {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 25px;
+    background: #d3d3d3;
+    outline: none;
+    opacity: 0.7;
+    -webkit-transition: .2s;
+    transition: opacity .2s;
+  }
+
+  #musicVolumeLabel{
+    color: white;
+    font-size: larger;
+  }

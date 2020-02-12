@@ -7,6 +7,7 @@ namespace L16_ScrollerCollide {
         public hitbox: Hitbox;
         public type: string;
         public speed: fudge.Vector3 = fudge.Vector3.ZERO();
+        private counter: number = 0;
         private static gravity: fudge.Vector2 = fudge.Vector2.Y(-4);
         private static sprites: Sprite[];
   
@@ -26,7 +27,7 @@ namespace L16_ScrollerCollide {
   
           this.appendChild(nodeSprite);
         }
-        this.cmpTransform.local.translation = new fudge.Vector3(_x, _y, 0);
+        this.cmpTransform.local.translation = new fudge.Vector3(_x, _y, -1);
         //this.cmpTransform.local.scale(new fudge.Vector3(0.6, 0.6, 0));
         this.creatHitbox();
         this.show(ACTION.HIT);
@@ -53,7 +54,7 @@ namespace L16_ScrollerCollide {
       public show(_action: ACTION): void {
         if (_action == ACTION.JUMP)
           return;
-        for (let child of this.getChildren()){
+        for (let child of this.getChildren()) {
           child.activate(child.name == _action);
         }
       }
@@ -69,17 +70,22 @@ namespace L16_ScrollerCollide {
   
       private update = (_event: fudge.Eventƒ): void => {
         this.broadcastEvent(new CustomEvent("showNext"));
-  
-        let timeFrame: number = fudge.Loop.timeFrameGame / 1000;
-        this.speed.y += Items.gravity.y * timeFrame;
-        let distance: fudge.Vector3 = fudge.Vector3.SCALE(this.speed, timeFrame);
-        this.cmpTransform.local.translate(distance);
-        this.hitbox.cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x - 0.01, this.mtxWorld.translation.y + 0.3, 0);
-        this.cmpTransform.local.rotateY(10);
+        this.counter += 1;
+        // let timeFrame: number = fudge.Loop.timeFrameGame / 1000;
+        // this.speed.y += Items.gravity.y * timeFrame;
+        // let distance: fudge.Vector3 = fudge.Vector3.SCALE(this.speed, timeFrame);
+        // this.cmpTransform.local.translate(distance);
+        this.hitbox.cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x - 0.01, this.mtxWorld.translation.y + 0.3, -1);
         
-        if(this.hitbox.checkCollision()){
-          
+        if(this.counter < 20){
+          this.cmpTransform.local.translateY(0.005);
+        } else if(this.counter >= 20 && this.counter < 40){
+          this.cmpTransform.local.translateY(-0.005);
+        }else{
+          this.counter = 0;
         }
+        //this.cmpTransform.local.translateY(0.1);
+        
         this.checkGroundCollision();
       }
   
@@ -88,7 +94,7 @@ namespace L16_ScrollerCollide {
 
         for (let floor of level.getChildren()) {
 
-          if(floor.name != "Floor"){
+          if (floor.name != "Floor") {
             continue;
           }
 

@@ -5,7 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>ScrollerCollide</title>
+  <link rel="stylesheet" type="text/css" href="game.css" />
   <script src="../FUDGE/Build/FudgeCore.js"></script>
+  <script src="Sound.js"></script>
   <script src="SpriteGenerator.js"></script>
   <script src="Hare.js"></script>
   <script src="Enemy.js"></script>
@@ -25,17 +27,31 @@
   </style> 
 </head>
 <body>
-  <h1>
-    Of Monsters And Men
-  </h1>
+
+  <div id="startscreen">
+    <h1 id="title">Of Monsters And Men</h1>
+    <div id ="gameStartBtn">Start Game</div>
+  </div>
+
+  <div id ="menueBtn">Menue</div>
+
+  <div id="menue">
+    <h1 id="title">Menue</h1>
+    <p id="musicVolumeLabel">Music Volume</p>
+    <input id = "musicVolume" type="range" min="1" max="100" value="50">
+    <div id ="menueExitBtn">Back To Game</div>
+  </div>
+
   <canvas width="1280" height="720" style="background-color: aliceblue;"></canvas>
-  <img src="Sprites/KnightSheet.png"/>
-  <img src="Sprites/SteinSmallFinal.png"/>
-  <img src="Sprites/Items.png"/>
-  <img src="Sprites/Enviroment.png"/>
-  <img src="Sprites/Tree.png"/>
-  <img src="Sprites/wood.png"/>
-  <img src="Sprites/StoneBigFinal.png"/>
+  <img class= "sprites" src="Sprites/KnightSheet.png"/>
+  <img class= "sprites" src="Sprites/SteinSmallFinal.png"/>
+  <img class= "sprites" src="Sprites/Items.png"/>
+  <img class= "sprites" src="Sprites/Enviroment.png"/>
+  <img class= "sprites" src="Sprites/Tree.png"/>
+  <img class= "sprites" src="Sprites/wood.png"/>
+  <img class= "sprites" src="Sprites/StoneBigFinal.png"/>
+
+  <audio id="testTrack" src="Audio/TestAudio.mp3" type="audio/mpeg"></audio>
 
 </body>
 </html>

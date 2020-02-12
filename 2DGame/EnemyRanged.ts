@@ -24,6 +24,7 @@ namespace L16_ScrollerCollide {
         }
         this.cmpTransform.local.translation = new fudge.Vector3(_x, _y, 0);
         this.cmpTransform.local.scale(new fudge.Vector3(0.6, 0.6, 0));
+        this.walkingTimeMax = 50;
         fudge.Loop.addEventListener(fudge.EVENT.LOOP_FRAME, this.update);
       }
   
@@ -152,7 +153,7 @@ namespace L16_ScrollerCollide {
           let positionOfEnemy: number = this.cmpTransform.local.translation.x;
           let positionOfPlayer: number = children[0].cmpTransform.local.translation.x;
           let distance: number = positionOfEnemy - positionOfPlayer;
-          if (distance > -4 && distance < 4) {
+          if (distance > -3 && distance < 3) {
             if (distance > 0) {
               this.directionGlobal = "left";
               if (this.frameCounter == 5) {

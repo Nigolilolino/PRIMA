@@ -2,7 +2,8 @@
 namespace L16_ScrollerCollide {
     export import fudge = FudgeCore;
   
-    window.addEventListener("load", test);
+    //window.addEventListener("load", test);
+    window.addEventListener("load", initializeScreens);
   
     interface KeyPressed {
       [code: string]: boolean;
@@ -15,11 +16,44 @@ namespace L16_ScrollerCollide {
     let healthbar: Healthpoints[] = [];
     let enemyranged: EnemyRanged;
     let enemyMelee: EnemyMelee;
-    let item: Items;
-    
-    //let healthpoints: Healthpoints;
   
-    function test(): void {
+    function initializeScreens(){
+      let startBtn: HTMLDivElement = <HTMLDivElement>document.getElementById("gameStartBtn");
+      startBtn.addEventListener("click", startGame);
+
+      let menuetBtn: HTMLDivElement = <HTMLDivElement>document.getElementById("menueBtn");
+      menuetBtn.addEventListener("click", displayMenue);
+
+      let menueExitBtn: HTMLDivElement = <HTMLDivElement>document.getElementById("menueExitBtn");
+      menueExitBtn.addEventListener("click", closeMenue);
+
+      let volumeSlider: HTMLInputElement = <HTMLInputElement>document.getElementById("musicVolume");
+      volumeSlider.addEventListener("click", changeVolume);
+    }
+
+    function displayMenue(){
+      let menueScreen: HTMLDivElement = <HTMLDivElement>document.getElementById("menue");
+      menueScreen.style.visibility = "visible";
+    }
+
+    function closeMenue(){
+      let menueScreen: HTMLDivElement = <HTMLDivElement>document.getElementById("menue");
+      menueScreen.style.visibility = "hidden";
+    }
+
+    function changeVolume(){
+      let volumeSlider: HTMLInputElement = <HTMLInputElement>document.getElementById("musicVolume");
+      let value: number = parseInt(volumeSlider.value);
+      Sound.vol = value / 100;
+      Sound.play("testTrack");
+    }
+  
+    function startGame(): void {
+      let titleScreen: HTMLDivElement = <HTMLDivElement>document.getElementById("startscreen");
+      titleScreen.style.visibility = "hidden";
+      Sound.init();
+      //Sound.play("testTrack");
+
       let canvas: HTMLCanvasElement = document.querySelector("canvas");
       //let crc2: CanvasRenderingContext2D = canvas.getContext("2d");
       let images: any = document.querySelectorAll("img");
@@ -148,19 +182,19 @@ namespace L16_ScrollerCollide {
 
       createFloor(level, TYPE.GRASS);
 
-      // enemyranged = new EnemyRanged("Stoner", 5, 1);
-      // level.appendChild(enemyranged);
-      // level.appendChild(enemyranged.creatHitbox());
+      enemyranged = new EnemyRanged("Stoner", 12, 1);
+      level.appendChild(enemyranged);
+      level.appendChild(enemyranged.creatHitbox());
 
       enemyMelee = new EnemyMelee("StonerMelee", 3, 1);
       level.appendChild(enemyMelee);
       level.appendChild(enemyMelee.creatHitbox());
 
-      let item: Items = new Items("Potion", 1, 3);
+      let item: Items = new Items("Potion", 1, 1.5);
       level.appendChild(item);
       level.appendChild( item.creatHitbox());
 
-      item = new Items("Potion", 3, 2);
+      item = new Items("Potion", 5, 1.5);
       level.appendChild(item);
       level.appendChild( item.creatHitbox());
 

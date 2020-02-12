@@ -30,6 +30,7 @@ var L16_ScrollerCollide;
             }
             this.cmpTransform.local.translation = new fudge.Vector3(_x, _y, 0);
             this.cmpTransform.local.scale(new fudge.Vector3(0.6, 0.6, 0));
+            this.walkingTimeMax = 100;
             fudge.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, this.update);
         }
         static generateSprites(_txtImage) {
@@ -62,7 +63,7 @@ var L16_ScrollerCollide;
         act(_action, _direction = this.directionGlobal) {
             let fightMode = this.checkDistanceToPlayer();
             if (fightMode == true) {
-                if (this.frameCounter > 4 && this.frameCounter < 8) {
+                if (this.frameCounter > 4 && this.frameCounter < 12) {
                     this.frameCounter = this.frameCounter + 1;
                     _action = L16_ScrollerCollide.ACTION.HIT;
                 }
@@ -75,7 +76,7 @@ var L16_ScrollerCollide;
             this.cmpTransform.local.rotation = fudge.Vector3.Y(90 - 90 * direction);
             switch (_action) {
                 case L16_ScrollerCollide.ACTION.IDLE:
-                    if (this.frameCounter > 41) {
+                    if (this.frameCounter > 35) {
                         this.frameCounter = 0;
                     }
                     this.speed.x = 0;

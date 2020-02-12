@@ -8,16 +8,25 @@ var L16_ScrollerCollide;
         constructor(_name, _x, _y) {
             super(_name);
             this.speed = fudge.Vector3.ZERO();
+            this.counter = 0;
             this.update = (_event) => {
                 this.broadcastEvent(new CustomEvent("showNext"));
-                let timeFrame = fudge.Loop.timeFrameGame / 1000;
-                this.speed.y += Items.gravity.y * timeFrame;
-                let distance = fudge.Vector3.SCALE(this.speed, timeFrame);
-                this.cmpTransform.local.translate(distance);
-                this.hitbox.cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x - 0.01, this.mtxWorld.translation.y + 0.3, 0);
-                this.cmpTransform.local.rotateY(10);
-                if (this.hitbox.checkCollision()) {
+                this.counter += 1;
+                // let timeFrame: number = fudge.Loop.timeFrameGame / 1000;
+                // this.speed.y += Items.gravity.y * timeFrame;
+                // let distance: fudge.Vector3 = fudge.Vector3.SCALE(this.speed, timeFrame);
+                // this.cmpTransform.local.translate(distance);
+                this.hitbox.cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x - 0.01, this.mtxWorld.translation.y + 0.3, -1);
+                if (this.counter < 20) {
+                    this.cmpTransform.local.translateY(0.005);
                 }
+                else if (this.counter >= 20 && this.counter < 40) {
+                    this.cmpTransform.local.translateY(-0.005);
+                }
+                else {
+                    this.counter = 0;
+                }
+                //this.cmpTransform.local.translateY(0.1);
                 this.checkGroundCollision();
             };
             this.addComponent(new fudge.ComponentTransform());
@@ -27,7 +36,7 @@ var L16_ScrollerCollide;
                 nodeSprite.addEventListener("showNext", (_event) => { _event.currentTarget.showFrameNext(); }, true);
                 this.appendChild(nodeSprite);
             }
-            this.cmpTransform.local.translation = new fudge.Vector3(_x, _y, 0);
+            this.cmpTransform.local.translation = new fudge.Vector3(_x, _y, -1);
             //this.cmpTransform.local.scale(new fudge.Vector3(0.6, 0.6, 0));
             this.creatHitbox();
             this.show(L16_ScrollerCollide.ACTION.HIT);

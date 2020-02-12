@@ -55,7 +55,6 @@ var L16_ScrollerCollide;
                 this.cmpTransform.local.translate(distance);
                 let colider = this.hitboxes[0].checkCollision();
                 if (colider == "Hit") {
-                    console.log("Hit");
                     this.healthpoints = this.healthpoints - 1;
                     this.updateHealthbar();
                     if (this.healthpoints <= 0) {
@@ -69,7 +68,6 @@ var L16_ScrollerCollide;
                     }
                 }
                 else if (colider == "Collected") {
-                    console.log("colected");
                     if (this.healthpoints + 2 > 10) {
                         this.healthpoints = 10;
                     }

@@ -4,15 +4,42 @@ var L16_ScrollerCollide;
 ///<reference types="../FUDGE/Build/FudgeCore.js"/> 
 (function (L16_ScrollerCollide) {
     L16_ScrollerCollide.fudge = FudgeCore;
-    window.addEventListener("load", test);
+    //window.addEventListener("load", test);
+    window.addEventListener("load", initializeScreens);
     let keysPressed = {};
     let hare;
     let healthbar = [];
     let enemyranged;
     let enemyMelee;
-    let item;
-    //let healthpoints: Healthpoints;
-    function test() {
+    function initializeScreens() {
+        let startBtn = document.getElementById("gameStartBtn");
+        startBtn.addEventListener("click", startGame);
+        let menuetBtn = document.getElementById("menueBtn");
+        menuetBtn.addEventListener("click", displayMenue);
+        let menueExitBtn = document.getElementById("menueExitBtn");
+        menueExitBtn.addEventListener("click", closeMenue);
+        let volumeSlider = document.getElementById("musicVolume");
+        volumeSlider.addEventListener("click", changeVolume);
+    }
+    function displayMenue() {
+        let menueScreen = document.getElementById("menue");
+        menueScreen.style.visibility = "visible";
+    }
+    function closeMenue() {
+        let menueScreen = document.getElementById("menue");
+        menueScreen.style.visibility = "hidden";
+    }
+    function changeVolume() {
+        let volumeSlider = document.getElementById("musicVolume");
+        let value = parseInt(volumeSlider.value);
+        L16_ScrollerCollide.Sound.vol = value / 100;
+        L16_ScrollerCollide.Sound.play("testTrack");
+    }
+    function startGame() {
+        let titleScreen = document.getElementById("startscreen");
+        titleScreen.style.visibility = "hidden";
+        L16_ScrollerCollide.Sound.init();
+        //Sound.play("testTrack");
         let canvas = document.querySelector("canvas");
         //let crc2: CanvasRenderingContext2D = canvas.getContext("2d");
         let images = document.querySelectorAll("img");
@@ -116,16 +143,16 @@ var L16_ScrollerCollide;
     function createLevel() {
         let level = new L16_ScrollerCollide.fudge.Node("Level");
         createFloor(level, L16_ScrollerCollide.TYPE.GRASS);
-        // enemyranged = new EnemyRanged("Stoner", 5, 1);
-        // level.appendChild(enemyranged);
-        // level.appendChild(enemyranged.creatHitbox());
+        enemyranged = new L16_ScrollerCollide.EnemyRanged("Stoner", 12, 1);
+        level.appendChild(enemyranged);
+        level.appendChild(enemyranged.creatHitbox());
         enemyMelee = new L16_ScrollerCollide.EnemyMelee("StonerMelee", 3, 1);
         level.appendChild(enemyMelee);
         level.appendChild(enemyMelee.creatHitbox());
-        let item = new L16_ScrollerCollide.Items("Potion", 1, 3);
+        let item = new L16_ScrollerCollide.Items("Potion", 1, 1.5);
         level.appendChild(item);
         level.appendChild(item.creatHitbox());
-        item = new L16_ScrollerCollide.Items("Potion", 3, 2);
+        item = new L16_ScrollerCollide.Items("Potion", 5, 1.5);
         level.appendChild(item);
         level.appendChild(item.creatHitbox());
         for (let i = 0; i < hare.healthpoints - 1; i++) {

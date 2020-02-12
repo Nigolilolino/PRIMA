@@ -157,18 +157,18 @@ namespace L16_ScrollerCollide {
         let distance: fudge.Vector3 = fudge.Vector3.SCALE(this.speed, timeFrame);
 
         if (this.directionGlobal == "right") {
-          if(this.action == ACTION.WALK){
+          if (this.action == ACTION.WALK) {
             this.hitboxes[0].cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x + 0.15, this.mtxWorld.translation.y + 0.8, 0);
             this.hitboxes[1].cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x + 0.45, this.mtxWorld.translation.y + 0.35, 0);
-          }else{
+          } else {
             this.hitboxes[0].cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x - 0.2, this.mtxWorld.translation.y + 0.8, 0);
             this.hitboxes[1].cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x + 0.45, this.mtxWorld.translation.y + 0.35, 0);
           }
         } else if (this.directionGlobal == "left") {
-          if(this.action == ACTION.WALK){
+          if (this.action == ACTION.WALK) {
             this.hitboxes[0].cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x - 0.15, this.mtxWorld.translation.y + 0.8, 0);
             this.hitboxes[1].cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x - 0.45, this.mtxWorld.translation.y + 0.35, 0);
-          }else{
+          } else {
             this.hitboxes[0].cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x + 0.2, this.mtxWorld.translation.y + 0.8, 0);
             this.hitboxes[1].cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x - 0.45, this.mtxWorld.translation.y + 0.35, 0);
           }
@@ -178,7 +178,6 @@ namespace L16_ScrollerCollide {
         let colider: string = this.hitboxes[0].checkCollision();
         
         if (colider == "Hit") {
-          console.log("Hit");
           this.healthpoints = this.healthpoints - 1;
           this.updateHealthbar();
           if (this.healthpoints <= 0) {
@@ -190,7 +189,6 @@ namespace L16_ScrollerCollide {
             this.cmpTransform.local.translateX(+0.5);
           }
         } else if (colider == "Collected") {
-          console.log("colected");
           if (this.healthpoints + 2 > 10) {
             this.healthpoints = 10;
           } else {

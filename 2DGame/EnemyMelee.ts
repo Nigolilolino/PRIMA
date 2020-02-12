@@ -24,6 +24,7 @@ namespace L16_ScrollerCollide {
         }
         this.cmpTransform.local.translation = new fudge.Vector3(_x, _y, 0);
         this.cmpTransform.local.scale(new fudge.Vector3(0.6, 0.6, 0));
+        this.walkingTimeMax = 100;
         fudge.Loop.addEventListener(fudge.EVENT.LOOP_FRAME, this.update);
       }
   
@@ -63,7 +64,7 @@ namespace L16_ScrollerCollide {
       public act(_action: ACTION, _direction: String = this.directionGlobal): void {
         let fightMode: boolean = this.checkDistanceToPlayer();
         if (fightMode == true) {
-          if (this.frameCounter > 4 && this.frameCounter < 8) {
+          if (this.frameCounter > 4 && this.frameCounter < 12) {
             this.frameCounter = this.frameCounter + 1;
             _action = ACTION.HIT;
           } else {
@@ -75,7 +76,7 @@ namespace L16_ScrollerCollide {
         this.cmpTransform.local.rotation = fudge.Vector3.Y(90 - 90 * direction);
         switch (_action) {
           case ACTION.IDLE:
-            if (this.frameCounter > 41) {
+            if (this.frameCounter > 35) {
               this.frameCounter = 0;
             }
             this.speed.x = 0;

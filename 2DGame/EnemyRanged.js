@@ -30,6 +30,7 @@ var L16_ScrollerCollide;
             }
             this.cmpTransform.local.translation = new fudge.Vector3(_x, _y, 0);
             this.cmpTransform.local.scale(new fudge.Vector3(0.6, 0.6, 0));
+            this.walkingTimeMax = 50;
             fudge.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, this.update);
         }
         static generateSprites(_txtImage) {
@@ -135,7 +136,7 @@ var L16_ScrollerCollide;
                 let positionOfEnemy = this.cmpTransform.local.translation.x;
                 let positionOfPlayer = children[0].cmpTransform.local.translation.x;
                 let distance = positionOfEnemy - positionOfPlayer;
-                if (distance > -4 && distance < 4) {
+                if (distance > -3 && distance < 3) {
                     if (distance > 0) {
                         this.directionGlobal = "left";
                         if (this.frameCounter == 5) {
