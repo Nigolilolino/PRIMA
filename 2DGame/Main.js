@@ -79,7 +79,10 @@ var L16_ScrollerCollide;
         let txtBackground = new L16_ScrollerCollide.fudge.TextureImage();
         let imgBackground = images[7];
         txtBackground.image = imgBackground;
-        let txtFloraArray = [txtflora, txtBackground];
+        let txtSky = new L16_ScrollerCollide.fudge.TextureImage();
+        let imgSky = images[8];
+        txtSky.image = imgSky;
+        let txtFloraArray = [txtflora, txtBackground, txtSky];
         L16_ScrollerCollide.Flora.generateSprites(txtFloraArray);
         L16_ScrollerCollide.fudge.RenderManager.initialize(true, false);
         L16_ScrollerCollide.game = new L16_ScrollerCollide.fudge.Node("Game");
@@ -155,15 +158,15 @@ var L16_ScrollerCollide;
         // enemyranged = new EnemyRanged("Stoner", 12, 1);
         // level.appendChild(enemyranged);
         // level.appendChild(enemyranged.creatHitbox());
-        enemyMelee = new L16_ScrollerCollide.EnemyMelee("StonerMelee", 3, 1);
-        level.appendChild(enemyMelee);
-        level.appendChild(enemyMelee.creatHitbox());
-        enemyMelee = new L16_ScrollerCollide.EnemyMelee("StonerMelee", 10, 1);
-        level.appendChild(enemyMelee);
-        level.appendChild(enemyMelee.creatHitbox());
-        enemyMelee = new L16_ScrollerCollide.EnemyMelee("StonerMelee", 19, 1);
-        level.appendChild(enemyMelee);
-        level.appendChild(enemyMelee.creatHitbox());
+        // enemyMelee = new EnemyMelee("StonerMelee", 3, 1);
+        // level.appendChild(enemyMelee);
+        // level.appendChild(enemyMelee.creatHitbox());
+        // enemyMelee = new EnemyMelee("StonerMelee", 10, 1);
+        // level.appendChild(enemyMelee);
+        // level.appendChild(enemyMelee.creatHitbox());
+        // enemyMelee = new EnemyMelee("StonerMelee", 19, 1);
+        // level.appendChild(enemyMelee);
+        // level.appendChild(enemyMelee.creatHitbox());
         let item = new L16_ScrollerCollide.Items("Potion", 1, 1.5);
         level.appendChild(item);
         level.appendChild(item.creatHitbox());
@@ -198,10 +201,26 @@ var L16_ScrollerCollide;
         createTree(21, level);
         createTree(23, level);
         createTree(25, level);
-        let background = new L16_ScrollerCollide.Flora(L16_ScrollerCollide.ENVI_TYPE.BACKGROUND, 2.25, 2, -3);
-        level.appendChild(background);
+        createBackground(level);
+        createSky(level);
         L16_ScrollerCollide.game.appendChild(hare);
         return level;
+    }
+    function createSky(_level) {
+        let x = -4.55;
+        for (let i = 0; i < 9; i++) {
+            let sky = new L16_ScrollerCollide.Flora(L16_ScrollerCollide.ENVI_TYPE.SKY, x, 4, -5);
+            _level.appendChild(sky);
+            x = x + 12.8;
+        }
+    }
+    function createBackground(_level) {
+        let x = -6.5;
+        for (let i = 0; i < 9; i++) {
+            let background = new L16_ScrollerCollide.Flora(L16_ScrollerCollide.ENVI_TYPE.BACKGROUND, x, 0.7, -3);
+            _level.appendChild(background);
+            x = x + 8.25;
+        }
     }
     function createFloor(_level, _type) {
         let distance = 2.9;

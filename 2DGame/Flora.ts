@@ -7,7 +7,8 @@ namespace L16_ScrollerCollide {
       TREE_CROWN = "TreeCrown",
       TREE_ROOT = "TreeRoot",
       LEAVES = "Leaves",
-      BACKGROUND = "Background"
+      BACKGROUND = "Background",
+      SKY = "Sky"
     }
   
     export class Flora extends fudge.Node {
@@ -36,6 +37,10 @@ namespace L16_ScrollerCollide {
           this.appendChild(nodeSprite);
         }else if (_type == "Background") {
           let nodeSprite: NodeSprite = new NodeSprite("Background", Flora.sprites[4]);
+          nodeSprite.activate(true);
+          this.appendChild(nodeSprite);
+        }else if (_type == "Sky") {
+          let nodeSprite: NodeSprite = new NodeSprite("Sky", Flora.sprites[5]);
           nodeSprite.activate(true);
           this.appendChild(nodeSprite);
         }
@@ -67,7 +72,11 @@ namespace L16_ScrollerCollide {
         Flora.sprites.push(sprite);
 
         sprite = new Sprite("Background");
-        sprite.generateByGrid(_txtImage[1], fudge.Rectangle.GET(0, 1, 1280, 720), 1, fudge.Vector2.ZERO(), 159, fudge.ORIGIN2D.CENTER);
+        sprite.generateByGrid(_txtImage[1], fudge.Rectangle.GET(0, 1, 1280, 640), 1, fudge.Vector2.ZERO(), 150, fudge.ORIGIN2D.CENTER);
+        Flora.sprites.push(sprite);
+
+        sprite = new Sprite("Sky");
+        sprite.generateByGrid(_txtImage[2], fudge.Rectangle.GET(0, 20, 1280, 720), 1, fudge.Vector2.ZERO(), 100, fudge.ORIGIN2D.CENTER);
         Flora.sprites.push(sprite);
       }
 

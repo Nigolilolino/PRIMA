@@ -11,6 +11,7 @@ var L16_ScrollerCollide;
         ENVI_TYPE["TREE_ROOT"] = "TreeRoot";
         ENVI_TYPE["LEAVES"] = "Leaves";
         ENVI_TYPE["BACKGROUND"] = "Background";
+        ENVI_TYPE["SKY"] = "Sky";
     })(ENVI_TYPE = L16_ScrollerCollide.ENVI_TYPE || (L16_ScrollerCollide.ENVI_TYPE = {}));
     class Flora extends fudge.Node {
         constructor(_type, _x, _y, _z) {
@@ -40,6 +41,11 @@ var L16_ScrollerCollide;
                 nodeSprite.activate(true);
                 this.appendChild(nodeSprite);
             }
+            else if (_type == "Sky") {
+                let nodeSprite = new L16_ScrollerCollide.NodeSprite("Sky", Flora.sprites[5]);
+                nodeSprite.activate(true);
+                this.appendChild(nodeSprite);
+            }
             this.addComponent(new fudge.ComponentTransform());
             this.cmpTransform.local.translation = new fudge.Vector3(_x, _y, _z);
             //this.addComponent(new fudge.ComponentMaterial(Flora.material));
@@ -63,7 +69,10 @@ var L16_ScrollerCollide;
             sprite.generateByGrid(_txtImage[0], fudge.Rectangle.GET(290, 5, 440, 307), 1, fudge.Vector2.ZERO(), 200, fudge.ORIGIN2D.CENTER);
             Flora.sprites.push(sprite);
             sprite = new L16_ScrollerCollide.Sprite("Background");
-            sprite.generateByGrid(_txtImage[1], fudge.Rectangle.GET(0, 1, 1280, 720), 1, fudge.Vector2.ZERO(), 159, fudge.ORIGIN2D.CENTER);
+            sprite.generateByGrid(_txtImage[1], fudge.Rectangle.GET(0, 1, 1280, 640), 1, fudge.Vector2.ZERO(), 150, fudge.ORIGIN2D.CENTER);
+            Flora.sprites.push(sprite);
+            sprite = new L16_ScrollerCollide.Sprite("Sky");
+            sprite.generateByGrid(_txtImage[2], fudge.Rectangle.GET(0, 20, 1280, 720), 1, fudge.Vector2.ZERO(), 100, fudge.ORIGIN2D.CENTER);
             Flora.sprites.push(sprite);
         }
         show() {

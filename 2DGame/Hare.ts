@@ -157,7 +157,7 @@ namespace L16_ScrollerCollide {
         let distance: fudge.Vector3 = fudge.Vector3.SCALE(this.speed, timeFrame);
 
         if (this.directionGlobal == "right") {
-          if (this.action == ACTION.WALK) {
+          if (this.action == ACTION.WALK || this.action == ACTION.JUMP && this.speed.x != 0) {
             this.hitboxes[0].cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x + 0.15, this.mtxWorld.translation.y + 0.8, 0);
             this.hitboxes[1].cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x + 0.45, this.mtxWorld.translation.y + 0.35, 0);
           } else {
@@ -165,7 +165,7 @@ namespace L16_ScrollerCollide {
             this.hitboxes[1].cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x + 0.45, this.mtxWorld.translation.y + 0.35, 0);
           }
         } else if (this.directionGlobal == "left") {
-          if (this.action == ACTION.WALK) {
+          if (this.action == ACTION.WALK || this.action == ACTION.JUMP && this.speed.x != 0) {
             this.hitboxes[0].cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x - 0.15, this.mtxWorld.translation.y + 0.8, 0);
             this.hitboxes[1].cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x - 0.45, this.mtxWorld.translation.y + 0.35, 0);
           } else {
@@ -267,7 +267,7 @@ namespace L16_ScrollerCollide {
           if (hitRight || hitLeft) {
             let translation: fudge.Vector3 = this.cmpTransform.local.translation;
             translation.y = rect.y;
-            if (translation.y - 0.3 >  this.cmpTransform.local.translation.y) {
+            if (translation.y - 0.4 >  this.cmpTransform.local.translation.y) {
               translation.x = this.cmpTransform.local.translation.x + 0.1;
               translation.y = this.cmpTransform.local.translation.y;
               

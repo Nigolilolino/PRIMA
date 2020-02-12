@@ -14,10 +14,10 @@ var L16_ScrollerCollide;
                 let distance = fudge.Vector3.SCALE(this.speed, timeFrame);
                 this.cmpTransform.local.translate(distance);
                 if (this.directionGlobal == "right") {
-                    this.hitbox.cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x + 0.1, this.mtxWorld.translation.y + 0.8, 0);
+                    this.hitbox.cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x + 0.1, this.mtxWorld.translation.y + 0.6, 0);
                 }
                 else if (this.directionGlobal == "left") {
-                    this.hitbox.cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x - 0.1, this.mtxWorld.translation.y + 0.8, 0);
+                    this.hitbox.cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x - 0.1, this.mtxWorld.translation.y + 0.6, 0);
                 }
                 this.checkGroundCollision();
             };
@@ -51,7 +51,7 @@ var L16_ScrollerCollide;
         creatHitbox() {
             let hitbox = new L16_ScrollerCollide.Hitbox(this, "EnemyHitbox");
             hitbox.cmpTransform.local.scaleX(0.9);
-            hitbox.cmpTransform.local.scaleY(0.7);
+            hitbox.cmpTransform.local.scaleY(0.5);
             this.hitbox = hitbox;
             return hitbox;
         }

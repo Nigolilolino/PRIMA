@@ -101,7 +101,10 @@ namespace L16_ScrollerCollide {
       let txtBackground: fudge.TextureImage = new fudge.TextureImage();
       let imgBackground = images[7];
       txtBackground.image = imgBackground;
-      let txtFloraArray: fudge.TextureImage[] = [txtflora, txtBackground];
+      let txtSky: fudge.TextureImage = new fudge.TextureImage();
+      let imgSky = images[8];
+      txtSky.image = imgSky;
+      let txtFloraArray: fudge.TextureImage[] = [txtflora, txtBackground, txtSky];
       Flora.generateSprites(txtFloraArray);
   
       fudge.RenderManager.initialize(true, false);
@@ -197,17 +200,17 @@ namespace L16_ScrollerCollide {
       // level.appendChild(enemyranged);
       // level.appendChild(enemyranged.creatHitbox());
 
-      enemyMelee = new EnemyMelee("StonerMelee", 3, 1);
-      level.appendChild(enemyMelee);
-      level.appendChild(enemyMelee.creatHitbox());
+      // enemyMelee = new EnemyMelee("StonerMelee", 3, 1);
+      // level.appendChild(enemyMelee);
+      // level.appendChild(enemyMelee.creatHitbox());
 
-      enemyMelee = new EnemyMelee("StonerMelee", 10, 1);
-      level.appendChild(enemyMelee);
-      level.appendChild(enemyMelee.creatHitbox());
+      // enemyMelee = new EnemyMelee("StonerMelee", 10, 1);
+      // level.appendChild(enemyMelee);
+      // level.appendChild(enemyMelee.creatHitbox());
 
-      enemyMelee = new EnemyMelee("StonerMelee", 19, 1);
-      level.appendChild(enemyMelee);
-      level.appendChild(enemyMelee.creatHitbox());
+      // enemyMelee = new EnemyMelee("StonerMelee", 19, 1);
+      // level.appendChild(enemyMelee);
+      // level.appendChild(enemyMelee.creatHitbox());
 
       let item: Items = new Items("Potion", 1, 1.5);
       level.appendChild(item);
@@ -250,11 +253,32 @@ namespace L16_ScrollerCollide {
       createTree(23, level);
       createTree(25, level);
 
-      let background: Flora = new Flora(ENVI_TYPE.BACKGROUND, 2.25, 2, -3);
-      level.appendChild(background);
+      createBackground(level);
+
+      createSky(level);
+      
+
       game.appendChild(hare);
 
       return level;
+    }
+
+    function createSky(_level: FudgeCore.Node) {
+      let x: number = -4.55;
+      for (let i: number = 0; i < 9; i++ ) {
+        let sky: Flora = new Flora(ENVI_TYPE.SKY, x, 4, -5);
+        _level.appendChild(sky);
+        x = x + 12.8;
+      }
+    }
+
+    function createBackground(_level: FudgeCore.Node){
+      let x: number = -6.5;
+      for (let i: number = 0; i < 9; i++) {
+        let background: Flora = new Flora(ENVI_TYPE.BACKGROUND, x, 0.7, -3);
+        _level.appendChild(background);
+        x = x + 8.25;
+      }
     }
 
     function createFloor (_level: FudgeCore.Node, _type: TYPE.GRASS): void {
