@@ -10,9 +10,10 @@ var L16_ScrollerCollide;
         ENVI_TYPE["TREE_CROWN"] = "TreeCrown";
         ENVI_TYPE["TREE_ROOT"] = "TreeRoot";
         ENVI_TYPE["LEAVES"] = "Leaves";
+        ENVI_TYPE["BACKGROUND"] = "Background";
     })(ENVI_TYPE = L16_ScrollerCollide.ENVI_TYPE || (L16_ScrollerCollide.ENVI_TYPE = {}));
     class Flora extends fudge.Node {
-        constructor(_type, _x, _y) {
+        constructor(_type, _x, _y, _z) {
             super("Flora");
             if (_type == "TreeTrunk") {
                 let nodeSprite = new L16_ScrollerCollide.NodeSprite("TreeTrunk", Flora.sprites[0]);
@@ -34,8 +35,13 @@ var L16_ScrollerCollide;
                 nodeSprite.activate(true);
                 this.appendChild(nodeSprite);
             }
+            else if (_type == "Background") {
+                let nodeSprite = new L16_ScrollerCollide.NodeSprite("Background", Flora.sprites[4]);
+                nodeSprite.activate(true);
+                this.appendChild(nodeSprite);
+            }
             this.addComponent(new fudge.ComponentTransform());
-            this.cmpTransform.local.translation = new fudge.Vector3(_x, _y, -1);
+            this.cmpTransform.local.translation = new fudge.Vector3(_x, _y, _z);
             //this.addComponent(new fudge.ComponentMaterial(Flora.material));
             let cmpMesh = new fudge.ComponentMesh(Flora.mesh);
             //cmpMesh.pivot.translateY(-0.5);
@@ -45,32 +51,19 @@ var L16_ScrollerCollide;
         static generateSprites(_txtImage) {
             Flora.sprites = [];
             let sprite = new L16_ScrollerCollide.Sprite("TreeTrunk");
-            sprite.generateByGrid(_txtImage, fudge.Rectangle.GET(0, 53, 260, 260), 1, fudge.Vector2.ZERO(), 200, fudge.ORIGIN2D.CENTER);
-            // for (let i: number = 0; i < sprite.frames.length; i++) {
-            //   sprite.frames[i].pivot.translateX(-0.1);
-            //   sprite.frames[i].pivot.translateY(-0.5);
-            // }
+            sprite.generateByGrid(_txtImage[0], fudge.Rectangle.GET(0, 53, 260, 260), 1, fudge.Vector2.ZERO(), 200, fudge.ORIGIN2D.CENTER);
             Flora.sprites.push(sprite);
             sprite = new L16_ScrollerCollide.Sprite("TreeRoot");
-            sprite.generateByGrid(_txtImage, fudge.Rectangle.GET(760, 390, 495, 213), 1, fudge.Vector2.ZERO(), 200, fudge.ORIGIN2D.CENTER);
-            // for (let i: number = 0; i < sprite.frames.length; i++) {
-            //   sprite.frames[i].pivot.translateX(-0.17);
-            //   sprite.frames[i].pivot.translateY(-0.6);
-            // }
+            sprite.generateByGrid(_txtImage[0], fudge.Rectangle.GET(760, 390, 495, 213), 1, fudge.Vector2.ZERO(), 200, fudge.ORIGIN2D.CENTER);
             Flora.sprites.push(sprite);
             sprite = new L16_ScrollerCollide.Sprite("TreeCrown");
-            sprite.generateByGrid(_txtImage, fudge.Rectangle.GET(758, 117, 500, 150), 1, fudge.Vector2.ZERO(), 200, fudge.ORIGIN2D.CENTER);
-            // for (let i: number = 0; i < sprite.frames.length; i++) {
-            //   sprite.frames[i].pivot.translateX(-0.17);
-            //   sprite.frames[i].pivot.translateY(-0.6);
-            // }
+            sprite.generateByGrid(_txtImage[0], fudge.Rectangle.GET(758, 117, 500, 150), 1, fudge.Vector2.ZERO(), 200, fudge.ORIGIN2D.CENTER);
             Flora.sprites.push(sprite);
             sprite = new L16_ScrollerCollide.Sprite("Leaves");
-            sprite.generateByGrid(_txtImage, fudge.Rectangle.GET(290, 5, 440, 307), 1, fudge.Vector2.ZERO(), 200, fudge.ORIGIN2D.CENTER);
-            // for (let i: number = 0; i < sprite.frames.length; i++) {
-            //   sprite.frames[i].pivot.translateX(-0.17);
-            //   sprite.frames[i].pivot.translateY(-0.6);
-            // }
+            sprite.generateByGrid(_txtImage[0], fudge.Rectangle.GET(290, 5, 440, 307), 1, fudge.Vector2.ZERO(), 200, fudge.ORIGIN2D.CENTER);
+            Flora.sprites.push(sprite);
+            sprite = new L16_ScrollerCollide.Sprite("Background");
+            sprite.generateByGrid(_txtImage[1], fudge.Rectangle.GET(0, 1, 1280, 720), 1, fudge.Vector2.ZERO(), 159, fudge.ORIGIN2D.CENTER);
             Flora.sprites.push(sprite);
         }
         show() {

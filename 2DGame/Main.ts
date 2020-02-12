@@ -98,7 +98,11 @@ namespace L16_ScrollerCollide {
       let txtflora: fudge.TextureImage = new fudge.TextureImage();
       let imgflora = images[4];
       txtflora.image = imgflora;
-      Flora.generateSprites(txtflora);
+      let txtBackground: fudge.TextureImage = new fudge.TextureImage();
+      let imgBackground = images[7];
+      txtBackground.image = imgBackground;
+      let txtFloraArray: fudge.TextureImage[] = [txtflora, txtBackground];
+      Flora.generateSprites(txtFloraArray);
   
       fudge.RenderManager.initialize(true, false);
       game = new fudge.Node("Game");
@@ -246,6 +250,8 @@ namespace L16_ScrollerCollide {
       createTree(23, level);
       createTree(25, level);
 
+      let background: Flora = new Flora(ENVI_TYPE.BACKGROUND, 2.25, 2, -3);
+      level.appendChild(background);
       game.appendChild(hare);
 
       return level;
@@ -343,33 +349,33 @@ namespace L16_ScrollerCollide {
     }
 
     function createTree(_x: number, _level: FudgeCore.Node): void {
-      let tree: Flora = new Flora(ENVI_TYPE.LEAVES, _x + 0.1, 3.3);
+      let tree: Flora = new Flora(ENVI_TYPE.LEAVES, _x + 0.1, 3.3, -1);
       tree.cmpTransform.local.scaleX(0.9);
       tree.cmpTransform.local.scaleY(0.9);
       tree.cmpTransform.local.rotateZ(-10);
       _level.appendChild(tree);
 
-      tree = new Flora(ENVI_TYPE.TREE_ROOT, _x, 0);
+      tree = new Flora(ENVI_TYPE.TREE_ROOT, _x, 0, -1);
       tree.cmpTransform.local.scaleX(0.6);
       tree.cmpTransform.local.scaleY(0.6);
       _level.appendChild(tree);
 
-      tree = new Flora(ENVI_TYPE.TREE_TRUNK, _x, 0.67);
+      tree = new Flora(ENVI_TYPE.TREE_TRUNK, _x, 0.67, -1);
       tree.cmpTransform.local.scaleX(0.6);
       tree.cmpTransform.local.scaleY(0.6);
       _level.appendChild(tree);
 
-      tree = new Flora(ENVI_TYPE.TREE_TRUNK, _x, 1.4);
+      tree = new Flora(ENVI_TYPE.TREE_TRUNK, _x, 1.4, -1);
       tree.cmpTransform.local.scaleX(0.6);
       tree.cmpTransform.local.scaleY(0.6);
       _level.appendChild(tree);
 
-      tree = new Flora(ENVI_TYPE.TREE_TRUNK, _x, 2.15);
+      tree = new Flora(ENVI_TYPE.TREE_TRUNK, _x, 2.15, -1);
       tree.cmpTransform.local.scaleX(0.6);
       tree.cmpTransform.local.scaleY(0.6);
       _level.appendChild(tree);
 
-      tree = new Flora(ENVI_TYPE.TREE_CROWN, _x, 2.75);
+      tree = new Flora(ENVI_TYPE.TREE_CROWN, _x, 2.75, -1);
       tree.cmpTransform.local.scaleX(0.6);
       tree.cmpTransform.local.scaleY(0.6);
       _level.appendChild(tree);

@@ -6,7 +6,8 @@ namespace L16_ScrollerCollide {
       TREE_TRUNK = "TreeTrunk",
       TREE_CROWN = "TreeCrown",
       TREE_ROOT = "TreeRoot",
-      LEAVES = "Leaves"
+      LEAVES = "Leaves",
+      BACKGROUND = "Background"
     }
   
     export class Flora extends fudge.Node {
@@ -15,7 +16,7 @@ namespace L16_ScrollerCollide {
       private static material: fudge.Material = new fudge.Material("Flora", fudge.ShaderUniColor, new fudge.CoatColored(fudge.Color.CSS("red", 0.5)));
       private static readonly pivot: fudge.Matrix4x4 = fudge.Matrix4x4.TRANSLATION(fudge.Vector3.Y(-0.5));
   
-      public constructor(_type: ENVI_TYPE, _x: number, _y: number) {
+      public constructor(_type: ENVI_TYPE, _x: number, _y: number, _z: number) {
         super("Flora");
         if (_type == "TreeTrunk") {
           let nodeSprite: NodeSprite = new NodeSprite("TreeTrunk", Flora.sprites[0]);
@@ -33,9 +34,13 @@ namespace L16_ScrollerCollide {
           let nodeSprite: NodeSprite = new NodeSprite("Leaves", Flora.sprites[3]);
           nodeSprite.activate(true);
           this.appendChild(nodeSprite);
+        }else if (_type == "Background") {
+          let nodeSprite: NodeSprite = new NodeSprite("Background", Flora.sprites[4]);
+          nodeSprite.activate(true);
+          this.appendChild(nodeSprite);
         }
         this.addComponent(new fudge.ComponentTransform());
-        this.cmpTransform.local.translation = new fudge.Vector3(_x, _y, -1);
+        this.cmpTransform.local.translation = new fudge.Vector3(_x, _y, _z);
         //this.addComponent(new fudge.ComponentMaterial(Flora.material));
         let cmpMesh: fudge.ComponentMesh = new fudge.ComponentMesh(Flora.mesh);
         //cmpMesh.pivot.translateY(-0.5);
@@ -43,38 +48,26 @@ namespace L16_ScrollerCollide {
         this.addComponent(cmpMesh);
       }
 
-      public static generateSprites(_txtImage: fudge.TextureImage): void {
+      public static generateSprites(_txtImage: fudge.TextureImage[]): void {
         Flora.sprites = [];
         let sprite: Sprite = new Sprite("TreeTrunk");
-        sprite.generateByGrid(_txtImage, fudge.Rectangle.GET(0, 53, 260, 260), 1, fudge.Vector2.ZERO(), 200, fudge.ORIGIN2D.CENTER);
-        // for (let i: number = 0; i < sprite.frames.length; i++) {
-        //   sprite.frames[i].pivot.translateX(-0.1);
-        //   sprite.frames[i].pivot.translateY(-0.5);
-        // }
+        sprite.generateByGrid(_txtImage[0], fudge.Rectangle.GET(0, 53, 260, 260), 1, fudge.Vector2.ZERO(), 200, fudge.ORIGIN2D.CENTER);
         Flora.sprites.push(sprite);
 
         sprite = new Sprite("TreeRoot");
-        sprite.generateByGrid(_txtImage, fudge.Rectangle.GET(760, 390, 495, 213), 1, fudge.Vector2.ZERO(), 200, fudge.ORIGIN2D.CENTER);
-        // for (let i: number = 0; i < sprite.frames.length; i++) {
-        //   sprite.frames[i].pivot.translateX(-0.17);
-        //   sprite.frames[i].pivot.translateY(-0.6);
-        // }
+        sprite.generateByGrid(_txtImage[0], fudge.Rectangle.GET(760, 390, 495, 213), 1, fudge.Vector2.ZERO(), 200, fudge.ORIGIN2D.CENTER);
         Flora.sprites.push(sprite);
 
         sprite = new Sprite("TreeCrown");
-        sprite.generateByGrid(_txtImage, fudge.Rectangle.GET(758, 117, 500, 150), 1, fudge.Vector2.ZERO(), 200, fudge.ORIGIN2D.CENTER);
-        // for (let i: number = 0; i < sprite.frames.length; i++) {
-        //   sprite.frames[i].pivot.translateX(-0.17);
-        //   sprite.frames[i].pivot.translateY(-0.6);
-        // }
+        sprite.generateByGrid(_txtImage[0], fudge.Rectangle.GET(758, 117, 500, 150), 1, fudge.Vector2.ZERO(), 200, fudge.ORIGIN2D.CENTER);
         Flora.sprites.push(sprite);
 
         sprite = new Sprite("Leaves");
-        sprite.generateByGrid(_txtImage, fudge.Rectangle.GET(290, 5, 440, 307), 1, fudge.Vector2.ZERO(), 200, fudge.ORIGIN2D.CENTER);
-        // for (let i: number = 0; i < sprite.frames.length; i++) {
-        //   sprite.frames[i].pivot.translateX(-0.17);
-        //   sprite.frames[i].pivot.translateY(-0.6);
-        // }
+        sprite.generateByGrid(_txtImage[0], fudge.Rectangle.GET(290, 5, 440, 307), 1, fudge.Vector2.ZERO(), 200, fudge.ORIGIN2D.CENTER);
+        Flora.sprites.push(sprite);
+
+        sprite = new Sprite("Background");
+        sprite.generateByGrid(_txtImage[1], fudge.Rectangle.GET(0, 1, 1280, 720), 1, fudge.Vector2.ZERO(), 159, fudge.ORIGIN2D.CENTER);
         Flora.sprites.push(sprite);
       }
 
