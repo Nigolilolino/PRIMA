@@ -27,8 +27,15 @@ namespace L16_ScrollerCollide {
       let menueExitBtn: HTMLDivElement = <HTMLDivElement>document.getElementById("menueExitBtn");
       menueExitBtn.addEventListener("click", closeMenue);
 
+      let restartBtn: HTMLDivElement = <HTMLDivElement>document.getElementById("restartBtn");
+      restartBtn.addEventListener("click", restartGame);
+
       let volumeSlider: HTMLInputElement = <HTMLInputElement>document.getElementById("musicVolume");
       volumeSlider.addEventListener("click", changeVolume);
+    }
+
+    function restartGame(){
+      location.reload();
     }
 
     function displayMenue(){
@@ -182,11 +189,19 @@ namespace L16_ScrollerCollide {
 
       createFloor(level, TYPE.GRASS);
 
-      enemyranged = new EnemyRanged("Stoner", 12, 1);
-      level.appendChild(enemyranged);
-      level.appendChild(enemyranged.creatHitbox());
+      // enemyranged = new EnemyRanged("Stoner", 12, 1);
+      // level.appendChild(enemyranged);
+      // level.appendChild(enemyranged.creatHitbox());
 
       enemyMelee = new EnemyMelee("StonerMelee", 3, 1);
+      level.appendChild(enemyMelee);
+      level.appendChild(enemyMelee.creatHitbox());
+
+      enemyMelee = new EnemyMelee("StonerMelee", 10, 1);
+      level.appendChild(enemyMelee);
+      level.appendChild(enemyMelee.creatHitbox());
+
+      enemyMelee = new EnemyMelee("StonerMelee", 19, 1);
       level.appendChild(enemyMelee);
       level.appendChild(enemyMelee.creatHitbox());
 
@@ -225,6 +240,11 @@ namespace L16_ScrollerCollide {
       createTree(11, level);
       createTree(13, level);
       createTree(15, level);
+      createTree(17, level);
+      createTree(19, level);
+      createTree(21, level);
+      createTree(23, level);
+      createTree(25, level);
 
       game.appendChild(hare);
 

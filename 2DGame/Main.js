@@ -18,8 +18,13 @@ var L16_ScrollerCollide;
         menuetBtn.addEventListener("click", displayMenue);
         let menueExitBtn = document.getElementById("menueExitBtn");
         menueExitBtn.addEventListener("click", closeMenue);
+        let restartBtn = document.getElementById("restartBtn");
+        restartBtn.addEventListener("click", restartGame);
         let volumeSlider = document.getElementById("musicVolume");
         volumeSlider.addEventListener("click", changeVolume);
+    }
+    function restartGame() {
+        location.reload();
     }
     function displayMenue() {
         let menueScreen = document.getElementById("menue");
@@ -143,10 +148,16 @@ var L16_ScrollerCollide;
     function createLevel() {
         let level = new L16_ScrollerCollide.fudge.Node("Level");
         createFloor(level, L16_ScrollerCollide.TYPE.GRASS);
-        enemyranged = new L16_ScrollerCollide.EnemyRanged("Stoner", 12, 1);
-        level.appendChild(enemyranged);
-        level.appendChild(enemyranged.creatHitbox());
+        // enemyranged = new EnemyRanged("Stoner", 12, 1);
+        // level.appendChild(enemyranged);
+        // level.appendChild(enemyranged.creatHitbox());
         enemyMelee = new L16_ScrollerCollide.EnemyMelee("StonerMelee", 3, 1);
+        level.appendChild(enemyMelee);
+        level.appendChild(enemyMelee.creatHitbox());
+        enemyMelee = new L16_ScrollerCollide.EnemyMelee("StonerMelee", 10, 1);
+        level.appendChild(enemyMelee);
+        level.appendChild(enemyMelee.creatHitbox());
+        enemyMelee = new L16_ScrollerCollide.EnemyMelee("StonerMelee", 19, 1);
         level.appendChild(enemyMelee);
         level.appendChild(enemyMelee.creatHitbox());
         let item = new L16_ScrollerCollide.Items("Potion", 1, 1.5);
@@ -178,6 +189,11 @@ var L16_ScrollerCollide;
         createTree(11, level);
         createTree(13, level);
         createTree(15, level);
+        createTree(17, level);
+        createTree(19, level);
+        createTree(21, level);
+        createTree(23, level);
+        createTree(25, level);
         L16_ScrollerCollide.game.appendChild(hare);
         return level;
     }

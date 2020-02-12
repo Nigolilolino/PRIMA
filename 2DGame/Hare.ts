@@ -181,7 +181,8 @@ namespace L16_ScrollerCollide {
           this.healthpoints = this.healthpoints - 1;
           this.updateHealthbar();
           if (this.healthpoints <= 0) {
-            this.deleteThis();
+            fudge.Loop.stop();
+            this.die();
           }
           if (this.directionGlobal == "right") {
             this.cmpTransform.local.translateX(-0.5);
@@ -216,9 +217,9 @@ namespace L16_ScrollerCollide {
         this.checkGroundCollision();
       }
 
-      private deleteThis(){
-        let parent: fudge.Node = this.getParent();
-        parent.removeChild(this);
+      private die(): void {
+       let deathScreen:HTMLDivElement = <HTMLDivElement>document.getElementById("deathScreen"); 
+       deathScreen.style.visibility = "visible";
       }
   
       private checkGroundCollision(): void {
@@ -237,16 +238,30 @@ namespace L16_ScrollerCollide {
           let hitRight: boolean;
 
           if (this.directionGlobal == "right") {
-            pointLeft = new fudge.Vector2(this.cmpTransform.local.translation.x - 0.40, this.cmpTransform.local.translation.y);
-            pointRight = new fudge.Vector2(this.cmpTransform.local.translation.x, this.cmpTransform.local.translation.y);
-            hitLeft = rect.isInside(pointLeft);
-            hitRight = rect.isInside(pointRight);
+            if(this.action == ACTION.WALK) {
+              pointLeft = new fudge.Vector2(this.cmpTransform.local.translation.x, this.cmpTransform.local.translation.y);
+              pointRight = new fudge.Vector2(this.cmpTransform.local.translation.x, this.cmpTransform.local.translation.y);
+              hitLeft = rect.isInside(pointLeft);
+              hitRight = rect.isInside(pointRight);
+            } else {
+              pointLeft = new fudge.Vector2(this.cmpTransform.local.translation.x - 0.40, this.cmpTransform.local.translation.y);
+              pointRight = new fudge.Vector2(this.cmpTransform.local.translation.x, this.cmpTransform.local.translation.y);
+              hitLeft = rect.isInside(pointLeft);
+              hitRight = rect.isInside(pointRight);
+            }
 
           } else if (this.directionGlobal == "left") {
-            pointLeft = new fudge.Vector2(this.cmpTransform.local.translation.x + 0.4, this.cmpTransform.local.translation.y);
-            pointRight = new fudge.Vector2(this.cmpTransform.local.translation.x, this.cmpTransform.local.translation.y);
-            hitLeft = rect.isInside(pointLeft);
-            hitRight = rect.isInside(pointRight);
+            if (this.action == ACTION.WALK) {
+              pointLeft = new fudge.Vector2(this.cmpTransform.local.translation.x, this.cmpTransform.local.translation.y);
+              pointRight = new fudge.Vector2(this.cmpTransform.local.translation.x, this.cmpTransform.local.translation.y);
+              hitLeft = rect.isInside(pointLeft);
+              hitRight = rect.isInside(pointRight);
+            } else {
+              pointLeft = new fudge.Vector2(this.cmpTransform.local.translation.x + 0.4, this.cmpTransform.local.translation.y);
+              pointRight = new fudge.Vector2(this.cmpTransform.local.translation.x, this.cmpTransform.local.translation.y);
+              hitLeft = rect.isInside(pointLeft);
+              hitRight = rect.isInside(pointRight);
+            }
           }
 
           if (hitRight || hitLeft) {
