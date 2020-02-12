@@ -35,9 +35,8 @@ namespace L16_ScrollerCollide {
   
       public static generateSprites(_txtImage: fudge.TextureImage): void {
         Items.sprites = [];
-        let sprite: Sprite = new Sprite(ACTION.WALK);
 
-        sprite = new Sprite(ACTION.IDLE);
+        let sprite: Sprite = new Sprite(ACTION.IDLE);
         sprite.generateByGrid(_txtImage, fudge.Rectangle.GET(0, 0, 30, 34), 1, fudge.Vector2.ZERO(), 90, fudge.ORIGIN2D.BOTTOMCENTER);
         Items.sprites.push(sprite);
       }

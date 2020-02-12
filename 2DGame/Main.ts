@@ -13,8 +13,8 @@ namespace L16_ScrollerCollide {
     export let level: fudge.Node;
     let hare: Hare;
     let healthbar: Healthpoints[] = [];
-    //let enemy2: Enemy;
-    let enemy: Enemy;
+    let enemyranged: EnemyRanged;
+    let enemyMelee: EnemyMelee;
     let item: Items;
     
     //let healthpoints: Healthpoints;
@@ -28,11 +28,16 @@ namespace L16_ScrollerCollide {
       txtHare.image = images[0];
       Hare.generateSprites(txtHare);
 
-      let imgEnemy = images[1];
-      let txtEnemy: fudge.TextureImage = new fudge.TextureImage();
-      txtEnemy.image = imgEnemy;
-      Enemy.generateSprites(txtEnemy);
-      Stone.generateSprites(txtEnemy);
+      let imgEnemyRange = images[1];
+      let txtEnemyRange: fudge.TextureImage = new fudge.TextureImage();
+      txtEnemyRange.image = imgEnemyRange;
+      EnemyRanged.generateSprites(txtEnemyRange);
+      Stone.generateSprites(txtEnemyRange);
+
+      let imgEnemyMelee = images[6];
+      let txtEnemyMelee: fudge.TextureImage = new fudge.TextureImage();
+      txtEnemyMelee.image = imgEnemyMelee;
+      EnemyMelee.generateSprites(txtEnemyMelee);
 
       let imgItem = images[2];
       let txtItems: fudge.TextureImage = new fudge.TextureImage();
@@ -43,7 +48,11 @@ namespace L16_ScrollerCollide {
       let txtEnvironment: fudge.TextureImage = new fudge.TextureImage();
       let imgEnvironment = images[3];
       txtEnvironment.image = imgEnvironment;
-      Floor.generateSprites(txtEnvironment);
+      let txtWood: fudge.TextureImage = new fudge.TextureImage();
+      let imgWood = images[5];
+      txtWood.image = imgWood;
+      let txtEnvrironmentArray: fudge.TextureImage[] = [txtEnvironment, txtWood];
+      Floor.generateSprites(txtEnvrironmentArray);
 
       let txtflora: fudge.TextureImage = new fudge.TextureImage();
       let imgflora = images[4];
@@ -79,7 +88,7 @@ namespace L16_ScrollerCollide {
         activateAnimations();
         viewport.draw(); 
         cmpCamera.pivot.translation = new fudge.Vector3(hare.mtxWorld.translation.x, cmpCamera.pivot.translation.y, cmpCamera.pivot.translation.z);
-        for (let i = 0; i < healthbar.length; i++) {
+        for (let i: number = 0; i < healthbar.length; i++) {
           healthbar[i].cmpTransform.local.translation = new fudge.Vector3(hare.mtxWorld.translation.x + 2 + i / 10 + 0.2, 3, 0);
         }
         //crc2.strokeRect(-1, -1, canvas.width / 2, canvas.height + 2);
@@ -110,19 +119,26 @@ namespace L16_ScrollerCollide {
       hare.act(ACTION.IDLE);
     }
 
-    function activateAnimations(): void {
-      //enemy1.act(ACTION.WALK);
-   
-      item.act(ACTION.IDLE); 
+    function activateAnimations(): void { 
 
-      let stoner: Enemy[] = <Enemy[]>level.getChildrenByName("Stoner");
-      for (let i = 0; i < stoner.length; i++) {
+      let item: EnemyRanged[] = <EnemyRanged[]>level.getChildrenByName("Potion");
+      for (let i: number = 0; i < item.length; i++) {
+        item[i].act(ACTION.IDLE);
+      }
+
+      let stoner: EnemyRanged[] = <EnemyRanged[]>level.getChildrenByName("Stoner");
+      for (let i: number = 0; i < stoner.length; i++) {
         stoner[i].act(ACTION.WALK);
       }
-      
-      let stones:Stone[] = <Stone[]>level.getChildrenByName("Stone");
 
-      for (let i = 0; i < stones.length; i++) {
+      let stonerMelee: EnemyMelee[] = <EnemyMelee[]>level.getChildrenByName("StonerMelee");
+      for (let i: number = 0; i < stonerMelee.length; i++) {
+        stonerMelee[i].act(ACTION.WALK);
+      }
+      
+      let stones: Stone[] = <Stone[]>level.getChildrenByName("Stone");
+
+      for (let i: number = 0; i < stones.length; i++) {
         stones[i].act(ACTION.IDLE);
       }
     }
@@ -130,295 +146,178 @@ namespace L16_ScrollerCollide {
     function createLevel(): fudge.Node {
       let level: fudge.Node = new fudge.Node("Level");
 
-      let floor: Floor = new Floor(TYPE.GRASS);
-      floor.cmpTransform.local.scaleX(3);
-      floor.cmpTransform.local.scaleY(2);
-      level.appendChild(floor);
-  
-      floor = new Floor(TYPE.GRASS);
-      floor.cmpTransform.local.scaleY(2);
-      floor.cmpTransform.local.scaleX(3);
-      floor.cmpTransform.local.translateX(2.4);
-      level.appendChild(floor);
+      createFloor(level, TYPE.GRASS);
 
-      floor = new Floor(TYPE.GRASS);
-      floor.cmpTransform.local.scaleY(2);
-      floor.cmpTransform.local.scaleX(3);
-      floor.cmpTransform.local.translateX(5.3);
-      level.appendChild(floor);
+      // enemyranged = new EnemyRanged("Stoner", 5, 1);
+      // level.appendChild(enemyranged);
+      // level.appendChild(enemyranged.creatHitbox());
 
-      floor = new Floor(TYPE.DIRT);
-      floor.cmpTransform.local.scaleY(1);
-      floor.cmpTransform.local.scaleX(1);
-      floor.cmpTransform.local.translateX(-2);
-      level.appendChild(floor);
+      enemyMelee = new EnemyMelee("StonerMelee", 3, 1);
+      level.appendChild(enemyMelee);
+      level.appendChild(enemyMelee.creatHitbox());
 
-      floor = new Floor(TYPE.DIRT);
-      floor.cmpTransform.local.scaleY(1);
-      floor.cmpTransform.local.scaleX(1);
-      floor.cmpTransform.local.translateX(-2);
-      floor.cmpTransform.local.translateY(0.9);
-      level.appendChild(floor);
-
-      floor = new Floor(TYPE.DIRT);
-      floor.cmpTransform.local.scaleY(1);
-      floor.cmpTransform.local.scaleX(1);
-      floor.cmpTransform.local.translateX(-2);
-      floor.cmpTransform.local.translateY(1.8);
-      level.appendChild(floor);
-
-      floor = new Floor(TYPE.DIRT);
-      floor.cmpTransform.local.scaleY(1);
-      floor.cmpTransform.local.scaleX(1);
-      floor.cmpTransform.local.translateX(-2);
-      floor.cmpTransform.local.translateY(2.7);
-      level.appendChild(floor);
-
-      floor = new Floor(TYPE.DIRT);
-      floor.cmpTransform.local.scaleY(1);
-      floor.cmpTransform.local.scaleX(1);
-      floor.cmpTransform.local.translateX(-2);
-      floor.cmpTransform.local.translateY(3.6);
-      level.appendChild(floor);
-
-      floor = new Floor(TYPE.GRASS);
-      floor.cmpTransform.local.scaleY(2);
-      floor.cmpTransform.local.scaleX(3);
-      floor.cmpTransform.local.translateX(8.1);
-      level.appendChild(floor);
-
-      floor = new Floor(TYPE.GRASS);
-      floor.cmpTransform.local.scaleY(2);
-      floor.cmpTransform.local.scaleX(3);
-      floor.cmpTransform.local.translateX(10.5);
-      level.appendChild(floor);
-
-      floor = new Floor(TYPE.GRASS);
-      floor.cmpTransform.local.scaleY(2);
-      floor.cmpTransform.local.scaleX(3);
-      floor.cmpTransform.local.translateX(13.4);
-      level.appendChild(floor);
-
-      floor = new Floor(TYPE.GRASS);
-      floor.cmpTransform.local.scaleY(2);
-      floor.cmpTransform.local.scaleX(3);
-      floor.cmpTransform.local.translateX(16.3);
-      level.appendChild(floor);
-
-      //Hügel
-
-      floor = new Floor(TYPE.GRASS);
-      floor.cmpTransform.local.scaleY(0.5);
-      floor.cmpTransform.local.scaleX(0.5);
-      floor.cmpTransform.local.translateX(2.5);
-      floor.cmpTransform.local.translateY(0.2);
-      level.appendChild(floor);
-
-      floor = new Floor(TYPE.GRASS);
-      floor.cmpTransform.local.scaleY(0.5);
-      floor.cmpTransform.local.scaleX(0.5);
-      floor.cmpTransform.local.translateX(2.9);
-      floor.cmpTransform.local.translateY(0.2);
-      level.appendChild(floor);
-
-      floor = new Floor(TYPE.GRASS);
-      floor.cmpTransform.local.scaleY(0.5);
-      floor.cmpTransform.local.scaleX(0.5);
-      floor.cmpTransform.local.translateX(3.3);
-      floor.cmpTransform.local.translateY(0.2);
-      level.appendChild(floor);
-
-      floor = new Floor(TYPE.GRASS);
-      floor.cmpTransform.local.scaleY(0.5);
-      floor.cmpTransform.local.scaleX(0.5);
-      floor.cmpTransform.local.translateX(3.7);
-      floor.cmpTransform.local.translateY(0.2);
-      level.appendChild(floor);
-
-      floor = new Floor(TYPE.GRASS);
-      floor.cmpTransform.local.scaleY(0.5);
-      floor.cmpTransform.local.scaleX(0.5);
-      floor.cmpTransform.local.translateX(4.1);
-      floor.cmpTransform.local.translateY(0.2);
-      level.appendChild(floor);
-
-      floor = new Floor(TYPE.GRASS);
-      floor.cmpTransform.local.scaleY(0.5);
-      floor.cmpTransform.local.scaleX(0.5);
-      floor.cmpTransform.local.translateX(2.9);
-      floor.cmpTransform.local.translateY(0.5);
-      level.appendChild(floor);
-
-      floor = new Floor(TYPE.GRASS);
-      floor.cmpTransform.local.scaleY(0.5);
-      floor.cmpTransform.local.scaleX(0.5);
-      floor.cmpTransform.local.translateX(3.3);
-      floor.cmpTransform.local.translateY(0.5);
-      level.appendChild(floor);
-
-      floor = new Floor(TYPE.GRASS);
-      floor.cmpTransform.local.scaleY(0.5);
-      floor.cmpTransform.local.scaleX(0.5);
-      floor.cmpTransform.local.translateX(3.7);
-      floor.cmpTransform.local.translateY(0.5);
-      level.appendChild(floor);
-
-      //......................................
-      //Enemies and Items
-
-      // enemy = new Enemy("Stoner", 1.5, 1);
-      // level.appendChild(enemy);
-      // level.appendChild( enemy.creatHitbox());
-      enemy = new Enemy("Stoner", 5, 1);
-      level.appendChild(enemy);
-      level.appendChild( enemy.creatHitbox());
-
-
-      item = new Items("Potion", 6, 1);
+      let item: Items = new Items("Potion", 1, 3);
       level.appendChild(item);
       level.appendChild( item.creatHitbox());
-      level.appendChild( hare.createHitboxWeapon());
 
-      for (let i = 0; i < hare.healthpoints - 1; i++) {
+      item = new Items("Potion", 3, 2);
+      level.appendChild(item);
+      level.appendChild( item.creatHitbox());
+
+      for (let i: number = 0; i < hare.healthpoints - 1; i++) {
         let healthpoint: Healthpoints = new Healthpoints("Player Healthpoint 1");
         level.appendChild(healthpoint);
         healthpoint.act(STATUS.FULL);
         healthbar.push(healthpoint);
       }
-
+      level.appendChild( hare.createHitboxWeapon());
       level.appendChild(hare.creatHitbox());
 
       hare.healthbar = healthbar;
 
-      //Flora
+      createHill(2.5, level);
+      createHill(10, level);
 
-      let flora: Flora = new Flora(ENVI_TYPE.LEAVES, 1.1, 3.3);
-      flora.cmpTransform.local.scaleX(0.9);
-      flora.cmpTransform.local.scaleY(0.9);
-      flora.cmpTransform.local.rotateZ(-10);
-      level.appendChild(flora);
+      createPlatform(1, level);
+      createPlatform(4.6, level);
+      createPlatform(5.2, level);
+      createPlatform(13, level);
 
-      flora = new Flora(ENVI_TYPE.TREE_ROOT, 1, 0);
-      flora.cmpTransform.local.scaleX(0.6);
-      flora.cmpTransform.local.scaleY(0.6);
-      level.appendChild(flora);
-
-      flora = new Flora(ENVI_TYPE.TREE_TRUNK, 1, 0.67);
-      flora.cmpTransform.local.scaleX(0.6);
-      flora.cmpTransform.local.scaleY(0.6);
-      level.appendChild(flora);
-
-      flora = new Flora(ENVI_TYPE.TREE_TRUNK, 1, 1.4);
-      flora.cmpTransform.local.scaleX(0.6);
-      flora.cmpTransform.local.scaleY(0.6);
-      level.appendChild(flora);
-
-      flora = new Flora(ENVI_TYPE.TREE_TRUNK, 1, 2.15);
-      flora.cmpTransform.local.scaleX(0.6);
-      flora.cmpTransform.local.scaleY(0.6);
-      level.appendChild(flora);
-
-      flora = new Flora(ENVI_TYPE.TREE_CROWN, 1 , 2.75);
-      flora.cmpTransform.local.scaleX(0.6);
-      flora.cmpTransform.local.scaleY(0.6);
-      level.appendChild(flora);
-//...
-      flora = new Flora(ENVI_TYPE.LEAVES, 4.1, 3.3);
-      flora.cmpTransform.local.scaleX(0.9);
-      flora.cmpTransform.local.scaleY(0.9);
-      flora.cmpTransform.local.rotateZ(-10);
-      level.appendChild(flora);
-
-      flora = new Flora(ENVI_TYPE.TREE_ROOT, 4, 0);
-      flora.cmpTransform.local.scaleX(0.6);
-      flora.cmpTransform.local.scaleY(0.6);
-      level.appendChild(flora);
-
-      flora = new Flora(ENVI_TYPE.TREE_TRUNK, 4, 0.67);
-      flora.cmpTransform.local.scaleX(0.6);
-      flora.cmpTransform.local.scaleY(0.6);
-      level.appendChild(flora);
-
-      flora = new Flora(ENVI_TYPE.TREE_TRUNK, 4, 1.4);
-      flora.cmpTransform.local.scaleX(0.6);
-      flora.cmpTransform.local.scaleY(0.6);
-      level.appendChild(flora);
-
-      flora = new Flora(ENVI_TYPE.TREE_TRUNK, 4, 2.15);
-      flora.cmpTransform.local.scaleX(0.6);
-      flora.cmpTransform.local.scaleY(0.6);
-      level.appendChild(flora);
-
-      flora = new Flora(ENVI_TYPE.TREE_CROWN, 4 , 2.75);
-      flora.cmpTransform.local.scaleX(0.6);
-      flora.cmpTransform.local.scaleY(0.6);
-      level.appendChild(flora);
-      //...
-      flora = new Flora(ENVI_TYPE.LEAVES, 7.1, 3.3);
-      flora.cmpTransform.local.scaleX(0.9);
-      flora.cmpTransform.local.scaleY(0.9);
-      flora.cmpTransform.local.rotateZ(-10);
-      level.appendChild(flora);
-
-      flora = new Flora(ENVI_TYPE.TREE_ROOT, 7, 0);
-      flora.cmpTransform.local.scaleX(0.6);
-      flora.cmpTransform.local.scaleY(0.6);
-      level.appendChild(flora);
-
-      flora = new Flora(ENVI_TYPE.TREE_TRUNK, 7, 0.67);
-      flora.cmpTransform.local.scaleX(0.6);
-      flora.cmpTransform.local.scaleY(0.6);
-      level.appendChild(flora);
-
-      flora = new Flora(ENVI_TYPE.TREE_TRUNK, 7, 1.4);
-      flora.cmpTransform.local.scaleX(0.6);
-      flora.cmpTransform.local.scaleY(0.6);
-      level.appendChild(flora);
-
-      flora = new Flora(ENVI_TYPE.TREE_TRUNK, 7, 2.15);
-      flora.cmpTransform.local.scaleX(0.6);
-      flora.cmpTransform.local.scaleY(0.6);
-      level.appendChild(flora);
-
-      flora = new Flora(ENVI_TYPE.TREE_CROWN, 7 , 2.75);
-      flora.cmpTransform.local.scaleX(0.6);
-      flora.cmpTransform.local.scaleY(0.6);
-      level.appendChild(flora);
-
-      //...
-      flora = new Flora(ENVI_TYPE.LEAVES, 10.1, 3.3);
-      flora.cmpTransform.local.scaleX(0.9);
-      flora.cmpTransform.local.scaleY(0.9);
-      flora.cmpTransform.local.rotateZ(-10);
-      level.appendChild(flora);
-
-      flora = new Flora(ENVI_TYPE.TREE_ROOT, 10, 0);
-      flora.cmpTransform.local.scaleX(0.6);
-      flora.cmpTransform.local.scaleY(0.6);
-      level.appendChild(flora);
-
-      flora = new Flora(ENVI_TYPE.TREE_TRUNK, 10, 0.67);
-      flora.cmpTransform.local.scaleX(0.6);
-      flora.cmpTransform.local.scaleY(0.6);
-      level.appendChild(flora);
-
-      flora = new Flora(ENVI_TYPE.TREE_TRUNK, 10, 1.4);
-      flora.cmpTransform.local.scaleX(0.6);
-      flora.cmpTransform.local.scaleY(0.6);
-      level.appendChild(flora);
-
-      flora = new Flora(ENVI_TYPE.TREE_TRUNK, 10, 2.15);
-      flora.cmpTransform.local.scaleX(0.6);
-      flora.cmpTransform.local.scaleY(0.6);
-      level.appendChild(flora);
-
-      flora = new Flora(ENVI_TYPE.TREE_CROWN, 10, 2.75);
-      flora.cmpTransform.local.scaleX(0.6);
-      flora.cmpTransform.local.scaleY(0.6);
-      level.appendChild(flora);
+      createTree(1, level);
+      createTree(3, level);
+      createTree(5, level);
+      createTree(7, level);
+      createTree(9, level);
+      createTree(11, level);
+      createTree(13, level);
+      createTree(15, level);
 
       game.appendChild(hare);
 
       return level;
+    }
+
+    function createFloor (_level: FudgeCore.Node, _type: TYPE.GRASS): void {
+      let distance: number = 2.9;
+
+      for (let i: number = 0; i < 20; i++) {
+        if (i == 0) {
+          let floor: Floor = new Floor(_type);
+          floor.cmpTransform.local.scaleX(3);
+          floor.cmpTransform.local.scaleY(2);
+          _level.appendChild(floor);
+        } else {
+          let floor: Floor = new Floor(_type);
+          floor.cmpTransform.local.scaleY(2);
+          floor.cmpTransform.local.scaleX(3);
+          floor.cmpTransform.local.translateX(distance);
+          _level.appendChild(floor);
+          distance = distance + 2.9;
+        }
+      }
+    }
+
+    function createHill(_x: number, _level: FudgeCore.Node): void {
+
+      let floor: Floor = new Floor(TYPE.GRASS);
+      floor.cmpTransform.local.scaleY(0.5);
+      floor.cmpTransform.local.scaleX(0.5);
+      floor.cmpTransform.local.translateX(_x);
+      floor.cmpTransform.local.translateY(0.2);
+      _level.appendChild(floor);
+
+      floor = new Floor(TYPE.GRASS);
+      floor.cmpTransform.local.scaleY(0.5);
+      floor.cmpTransform.local.scaleX(0.5);
+      floor.cmpTransform.local.translateX(_x + .4);
+      floor.cmpTransform.local.translateY(0.2);
+      _level.appendChild(floor);
+
+      floor = new Floor(TYPE.GRASS);
+      floor.cmpTransform.local.scaleY(0.5);
+      floor.cmpTransform.local.scaleX(0.5);
+      floor.cmpTransform.local.translateX(_x + 0.8);
+      floor.cmpTransform.local.translateY(0.2);
+      _level.appendChild(floor);
+
+      floor = new Floor(TYPE.GRASS);
+      floor.cmpTransform.local.scaleY(0.5);
+      floor.cmpTransform.local.scaleX(0.5);
+      floor.cmpTransform.local.translateX(_x + 1.2);
+      floor.cmpTransform.local.translateY(0.2);
+      _level.appendChild(floor);
+
+      floor = new Floor(TYPE.GRASS);
+      floor.cmpTransform.local.scaleY(0.5);
+      floor.cmpTransform.local.scaleX(0.5);
+      floor.cmpTransform.local.translateX(_x + 1.6);
+      floor.cmpTransform.local.translateY(0.2);
+      _level.appendChild(floor);
+
+      floor = new Floor(TYPE.GRASS);
+      floor.cmpTransform.local.scaleY(0.5);
+      floor.cmpTransform.local.scaleX(0.5);
+      floor.cmpTransform.local.translateX(_x + 0.4);
+      floor.cmpTransform.local.translateY(0.5);
+      _level.appendChild(floor);
+
+      floor = new Floor(TYPE.GRASS);
+      floor.cmpTransform.local.scaleY(0.5);
+      floor.cmpTransform.local.scaleX(0.5);
+      floor.cmpTransform.local.translateX(_x + 0.8);
+      floor.cmpTransform.local.translateY(0.5);
+      _level.appendChild(floor);
+
+      floor = new Floor(TYPE.GRASS);
+      floor.cmpTransform.local.scaleY(0.5);
+      floor.cmpTransform.local.scaleX(0.5);
+      floor.cmpTransform.local.translateX(_x + 1.2);
+      floor.cmpTransform.local.translateY(0.5);
+      _level.appendChild(floor);
+    }
+
+    function createPlatform (_x: number, _level: FudgeCore.Node): void {
+
+      let platform: Floor = new Floor(TYPE.WOOD_S);
+      platform.cmpTransform.local.translateY(1.5);
+      platform.cmpTransform.local.translateX(_x);
+      platform.cmpTransform.local.translateZ(-1);
+      platform.cmpTransform.local.scaleX(0.5);
+      platform.cmpTransform.local.scaleY(0.5);
+      _level.appendChild(platform);
+
+    }
+
+    function createTree(_x: number, _level: FudgeCore.Node): void {
+      let tree: Flora = new Flora(ENVI_TYPE.LEAVES, _x + 0.1, 3.3);
+      tree.cmpTransform.local.scaleX(0.9);
+      tree.cmpTransform.local.scaleY(0.9);
+      tree.cmpTransform.local.rotateZ(-10);
+      _level.appendChild(tree);
+
+      tree = new Flora(ENVI_TYPE.TREE_ROOT, _x, 0);
+      tree.cmpTransform.local.scaleX(0.6);
+      tree.cmpTransform.local.scaleY(0.6);
+      _level.appendChild(tree);
+
+      tree = new Flora(ENVI_TYPE.TREE_TRUNK, _x, 0.67);
+      tree.cmpTransform.local.scaleX(0.6);
+      tree.cmpTransform.local.scaleY(0.6);
+      _level.appendChild(tree);
+
+      tree = new Flora(ENVI_TYPE.TREE_TRUNK, _x, 1.4);
+      tree.cmpTransform.local.scaleX(0.6);
+      tree.cmpTransform.local.scaleY(0.6);
+      _level.appendChild(tree);
+
+      tree = new Flora(ENVI_TYPE.TREE_TRUNK, _x, 2.15);
+      tree.cmpTransform.local.scaleX(0.6);
+      tree.cmpTransform.local.scaleY(0.6);
+      _level.appendChild(tree);
+
+      tree = new Flora(ENVI_TYPE.TREE_CROWN, _x, 2.75);
+      tree.cmpTransform.local.scaleX(0.6);
+      tree.cmpTransform.local.scaleY(0.6);
+      _level.appendChild(tree);
     }
   }

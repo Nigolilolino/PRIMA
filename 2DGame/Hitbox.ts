@@ -7,6 +7,7 @@ namespace L16_ScrollerCollide {
       private static mesh: fudge.MeshSprite = new fudge.MeshSprite();
       private static material: fudge.Material = new fudge.Material("Hitbox", fudge.ShaderUniColor, new fudge.CoatColored(fudge.Color.CSS("black", 0.5)));
       private static readonly pivot: fudge.Matrix4x4 = fudge.Matrix4x4.TRANSLATION(fudge.Vector3.Y(-0.5));
+      
   
       public constructor(_master: fudge.Node, _name?: string) {
 
@@ -51,11 +52,6 @@ namespace L16_ScrollerCollide {
             if (this.name == "EnemyHitbox" || this.name == "ItemHitbox") { 
               continue;
             }
-
-
-            // if (floor.name == "StoneHitbox") {
-            //   fudge.Debug.log("unten");
-            // }
 
             let hit: boolean = false;
             let rectOfThis: fudge.Rectangle = (<Hitbox>this).getRectWorld();

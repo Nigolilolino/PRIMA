@@ -6,7 +6,8 @@ namespace L16_ScrollerCollide {
       IDLE = "Idle",
       WALK = "Walk",
       JUMP = "Jump",
-      HIT = "Hit" 
+      HIT = "Hit" ,
+      DIE = "Die"
 
     }
     export enum DIRECTION {
@@ -21,7 +22,7 @@ namespace L16_ScrollerCollide {
       private frameCounter: number = 0;
       public hitboxes: Hitbox[] = [];
       public healthbar: Healthpoints[] = [];
-      // private action: ACTION;
+      private action: ACTION;
       // private time: fudge.Time = new fudge.Time();
       public speed: fudge.Vector3 = fudge.Vector3.ZERO();
       public healthpoints: number  = 11;
@@ -52,6 +53,9 @@ namespace L16_ScrollerCollide {
         Hare.sprites = [];
         let sprite: Sprite = new Sprite(ACTION.WALK);
         sprite.generateByGrid(_txtImage, fudge.Rectangle.GET(0, 0, 77, 52), 6, fudge.Vector2.ZERO(), 64, fudge.ORIGIN2D.BOTTOMCENTER);
+        for (let i = 0; i < sprite.frames.length; i++) {
+          sprite.frames[i].pivot.translateX(0.3);
+        }
         Hare.sprites.push(sprite);
       
         sprite = new Sprite(ACTION.IDLE);
@@ -91,10 +95,12 @@ namespace L16_ScrollerCollide {
       public act(_action: ACTION, _direction?: DIRECTION): void {
         switch (_action) {
           case ACTION.IDLE:
+            this.action = _action;
             this.speed.x = 0;
             this.frameCounter = 0;
             break;
           case ACTION.WALK:
+            this.action = _action;
             let direction: number = (_direction == DIRECTION.RIGHT ? 1 : -1);
             this.speed.x = Hare.speedMax.x; // * direction;
             this.cmpTransform.local.rotation = fudge.Vector3.Y(90 - 90 * direction);
@@ -107,6 +113,7 @@ namespace L16_ScrollerCollide {
             }
             break;
           case ACTION.JUMP:
+            this.action = _action;
             if (this.speed.y != 0) {
               this.frameCounter = 0;
               break;
@@ -117,6 +124,7 @@ namespace L16_ScrollerCollide {
             }
             
           case ACTION.HIT:
+            this.action = _action;
             this.speed.x = 0;
             if(this.frameCounter > 6) {
               this.frameCounter = 0;
@@ -149,18 +157,28 @@ namespace L16_ScrollerCollide {
         let distance: fudge.Vector3 = fudge.Vector3.SCALE(this.speed, timeFrame);
 
         if (this.directionGlobal == "right") {
-          this.hitboxes[0].cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x - 0.2, this.mtxWorld.translation.y + 0.8, 0);
-          this.hitboxes[1].cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x + 0.45, this.mtxWorld.translation.y + 0.35, 0);
-
+          if(this.action == ACTION.WALK){
+            this.hitboxes[0].cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x + 0.15, this.mtxWorld.translation.y + 0.8, 0);
+            this.hitboxes[1].cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x + 0.45, this.mtxWorld.translation.y + 0.35, 0);
+          }else{
+            this.hitboxes[0].cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x - 0.2, this.mtxWorld.translation.y + 0.8, 0);
+            this.hitboxes[1].cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x + 0.45, this.mtxWorld.translation.y + 0.35, 0);
+          }
         } else if (this.directionGlobal == "left") {
-          this.hitboxes[0].cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x + 0.2, this.mtxWorld.translation.y + 0.8, 0);
-          this.hitboxes[1].cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x - 0.45, this.mtxWorld.translation.y + 0.35, 0);
+          if(this.action == ACTION.WALK){
+            this.hitboxes[0].cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x - 0.15, this.mtxWorld.translation.y + 0.8, 0);
+            this.hitboxes[1].cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x - 0.45, this.mtxWorld.translation.y + 0.35, 0);
+          }else{
+            this.hitboxes[0].cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x + 0.2, this.mtxWorld.translation.y + 0.8, 0);
+            this.hitboxes[1].cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x - 0.45, this.mtxWorld.translation.y + 0.35, 0);
+          }
         }
         this.cmpTransform.local.translate(distance);
 
         let colider: string = this.hitboxes[0].checkCollision();
         
         if (colider == "Hit") {
+          console.log("Hit");
           this.healthpoints = this.healthpoints - 1;
           this.updateHealthbar();
           if (this.healthpoints <= 0) {
@@ -172,6 +190,7 @@ namespace L16_ScrollerCollide {
             this.cmpTransform.local.translateX(+0.5);
           }
         } else if (colider == "Collected") {
+          console.log("colected");
           if (this.healthpoints + 2 > 10) {
             this.healthpoints = 10;
           } else {

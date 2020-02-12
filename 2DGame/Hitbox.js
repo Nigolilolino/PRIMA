@@ -39,9 +39,6 @@ var L16_ScrollerCollide;
                     if (this.name == "EnemyHitbox" || this.name == "ItemHitbox") {
                         continue;
                     }
-                    // if (floor.name == "StoneHitbox") {
-                    //   fudge.Debug.log("unten");
-                    // }
                     let hit = false;
                     let rectOfThis = this.getRectWorld();
                     let rectOfThat = floor.getRectWorld();

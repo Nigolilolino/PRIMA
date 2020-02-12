@@ -3,67 +3,22 @@ namespace L16_ScrollerCollide {
     import fudge = FudgeCore;
     
   
-    export class Enemy extends fudge.Node {
-      private static sprites: Sprite[];
-      private static speedMax: fudge.Vector2 = new fudge.Vector2(1.5, 5); // units per second
-      private static gravity: fudge.Vector2 = fudge.Vector2.Y(-4);
-      private directionGlobal: String = "right";
-      private walkingTimeMax = 120;
-      private currentWalkingTime = 0;
-      private frameCounter: number = 0;
+    export abstract class Enemy extends fudge.Node {
+      protected static sprites: Sprite[];
+      protected static speedMax: fudge.Vector2 = new fudge.Vector2(1.5, 5); // units per second
+      protected static gravity: fudge.Vector2 = fudge.Vector2.Y(-4);
+      protected directionGlobal: String = "right";
+      protected walkingTimeMax: number;
+      protected currentWalkingTime = 0;
+      protected frameCounter: number = 0;
       public healthpoints: number  = 6;
       public hitbox: Hitbox;
       public fieldOfView: Hitbox;
       public speed: fudge.Vector3 = fudge.Vector3.ZERO();
     
   
-      constructor(_name: string, _x: number, _y:number) {
+      constructor(_name: string) {
         super(_name);
-        this.addComponent(new fudge.ComponentTransform());
-  
-        for (let sprite of Enemy.sprites) {
-          let nodeSprite: NodeSprite = new NodeSprite(sprite.name, sprite);
-          nodeSprite.activate(false);
-  
-          nodeSprite.addEventListener(
-            "showNext",
-            (_event: Event) => { (<NodeSprite>_event.currentTarget).showFrameNext(); },
-            true
-          );
-  
-          this.appendChild(nodeSprite);
-        }
-        this.cmpTransform.local.translation = new fudge.Vector3(_x, _y, 0);
-        this.cmpTransform.local.scale(new fudge.Vector3(0.6, 0.6, 0));
-        this.creatHitbox();
-        fudge.Loop.addEventListener(fudge.EVENT.LOOP_FRAME, this.update);
-      }
-  
-      public static generateSprites(_txtImage: fudge.TextureImage): void {
-        Enemy.sprites = [];
-        let sprite: Sprite = new Sprite(ACTION.WALK);
-        sprite.generateByGrid(_txtImage, fudge.Rectangle.GET(17, 288, 74, 65), 11, fudge.Vector2.ZERO(), 64, fudge.ORIGIN2D.BOTTOMCENTER);
-        Enemy.sprites.push(sprite);
-      
-        sprite = new Sprite(ACTION.IDLE);
-        sprite.generateByGrid(_txtImage, fudge.Rectangle.GET(19, 16, 67, 66), 4, fudge.Vector2.ZERO(), 64, fudge.ORIGIN2D.BOTTOMCENTER);
-        Enemy.sprites.push(sprite);
-
-        sprite = new Sprite(ACTION.HIT);
-        sprite.generateByGrid(_txtImage, fudge.Rectangle.GET(15, 87, 68, 75), 7, fudge.Vector2.ZERO(), 64, fudge.ORIGIN2D.BOTTOMCENTER);
-        Enemy.sprites.push(sprite);
-
-        sprite = new Sprite(ACTION.DIE);
-        sprite.generateByGrid(_txtImage, fudge.Rectangle.GET(20, 210, 71, 67), 5, fudge.Vector2.ZERO(), 64, fudge.ORIGIN2D.BOTTOMCENTER);
-        Enemy.sprites.push(sprite);
-      }
-
-      public creatHitbox(): Hitbox {
-        let hitbox: Hitbox = new Hitbox(this, "EnemyHitbox");
-        hitbox.cmpTransform.local.scaleX(0.4);
-        hitbox.cmpTransform.local.scaleY(0.6);
-        this.hitbox = hitbox;
-        return hitbox;
       }
 
       public show(_action: ACTION): void {
@@ -71,94 +26,22 @@ namespace L16_ScrollerCollide {
           child.activate(child.name == _action);
         }
       }
-  
-      public act(_action: ACTION, _direction: String = this.directionGlobal): void {
-        let fightMode: boolean = this.checkDistanceToPlayer();
-        if (fightMode == true) {
-          if (this.frameCounter > 4 && this.frameCounter < 8) {
-            this.frameCounter = this.frameCounter + 1;
-            _action = ACTION.HIT;
-          } else {
-            _action = ACTION.IDLE;
-            this.frameCounter = this.frameCounter + 1;
-          }
-        }
-        if (this.healthpoints <= 0 && this.frameCounter >= 5 && _action == ACTION.IDLE) {
-          this.deleteThis();
-        }else if(_action == ACTION.DIE || this.healthpoints <= 0){
-          this.frameCounter = this.frameCounter + 1;
-          _action = ACTION.DIE;
-        }
-
-        let direction: number = (_direction == "right" ? 1 : -1);
-        this.cmpTransform.local.rotation = fudge.Vector3.Y(90 - 90 * direction);
-        switch (_action) {
-          case ACTION.IDLE:
-            if(this.frameCounter > 41){
-              this.frameCounter = 0;
-            }
-            this.speed.x = 0;
-            break;
-          case ACTION.WALK:
-            this.speed.x = Enemy.speedMax.x; // * direction;
-            if (this.currentWalkingTime < this.walkingTimeMax) {
-              if (direction == 1) {
-                this.currentWalkingTime = this.currentWalkingTime + 1;
-              } else {
-                this.currentWalkingTime = this.currentWalkingTime + 1;
-              }
-            } else { 
-              if(direction == 1){
-                this.currentWalkingTime = 0;
-                direction = -1;
-              } else {
-                this.currentWalkingTime = 0;
-                direction = 1;
-              }
-            }
-
-            if (direction == 1) {
-              this.directionGlobal = "right";
-            } else if (direction == -1) {
-              this.directionGlobal = "left";
-            }
-            break;
-          case ACTION.JUMP:
-            if (this.speed.y != 0) {
-              break;
-            } else {
-              this.speed.y = 3;
-              break;
-            }
-            
-          case ACTION.HIT:
-            this.speed.x = 0;
-            
-            break;
-
-          case ACTION.DIE:
-            this.speed.x = 0;
-            
-            break;
-        }
-        this.show(_action);
-      }
 
       public receiveHit(): void {
         this.healthpoints = this.healthpoints - 1;
         if (this.healthpoints <= 0) {
           this.frameCounter = 0;
-          this.act(ACTION.DIE);
+          this.deleteThis();
         }
       }
 
-      private deleteThis(): void {
+      protected deleteThis(): void {
         let parent: fudge.Node = this.getParent();
         parent.removeChild(this.hitbox);
         parent.removeChild(this);
       }
   
-      private update = (_event: fudge.Eventƒ): void => {
+      protected update = (_event: fudge.Eventƒ): void => {
         this.broadcastEvent(new CustomEvent("showNext"));
         let timeFrame: number = fudge.Loop.timeFrameGame / 1000;
         this.speed.y += Enemy.gravity.y * timeFrame;
@@ -174,40 +57,7 @@ namespace L16_ScrollerCollide {
         this.checkGroundCollision();
       }
 
-      private checkDistanceToPlayer(): boolean {
-        if (this.getParent() != null) {
-          let level: fudge.Node = this.getParent();
-          let game: fudge.Node = level.getParent();
-          let children: fudge.Node[] = game.getChildrenByName("Hare");
-
-          let positionOfEnemy: number = this.cmpTransform.local.translation.x;
-          let positionOfPlayer: number = children[0].cmpTransform.local.translation.x;
-          let distance: number = positionOfEnemy - positionOfPlayer;
-          if (distance > -4 && distance < 4) {
-            if (distance > 0) {
-              this.directionGlobal = "left";
-              if (this.frameCounter == 5) {
-                let stone: Stone = new Stone("Stone", this.cmpTransform.local.translation.x, this.cmpTransform.local.translation.y + 0.2, this.directionGlobal, level);
-                level.appendChild(stone);
-                level.appendChild(stone.creatHitbox());
-              }
-            } else {
-              this.directionGlobal = "right";
-              if (this.frameCounter == 5) {
-                let stone: Stone = new Stone("Stone", this.cmpTransform.local.translation.x, this.cmpTransform.local.translation.y + 0.2, this.directionGlobal, level);
-                level.appendChild(stone);
-                level.appendChild(stone.creatHitbox());
-              }
-            }
-            return true;
-          }
-        }
-        return false;
-
-      }
-
-  
-      private checkGroundCollision(): void {
+      protected checkGroundCollision(): void {
         for (let floor of level.getChildren()) {
 
           if (floor.name != "Floor") {
