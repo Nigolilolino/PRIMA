@@ -5,14 +5,14 @@ var L16_ScrollerCollide;
 (function (L16_ScrollerCollide) {
     L16_ScrollerCollide.fudge = FudgeCore;
     //window.addEventListener("load", test);
-    window.addEventListener("load", initializeScreens);
+    window.addEventListener("load", initialization);
     let keysPressed = {};
     let hare;
     let healthbar = [];
     let enemyranged;
     let enemyMelee;
     let jsonData;
-    function initializeScreens() {
+    function initialization() {
         loadFilesWithResponse();
         let startBtn = document.getElementById("gameStartBtn");
         startBtn.addEventListener("click", startGame);
@@ -114,7 +114,7 @@ var L16_ScrollerCollide;
             processInput();
             activateAnimations();
             viewport.draw();
-            if (hare.cmpTransform.local.translation.x >= 25.5) {
+            if (hare.cmpTransform.local.translation.x >= 18) {
                 cmpCamera.pivot.translation = new L16_ScrollerCollide.fudge.Vector3(cmpCamera.pivot.translation.x, cmpCamera.pivot.translation.y, cmpCamera.pivot.translation.z);
             }
             else if (hare.cmpTransform.local.translation.x <= 2) {
@@ -176,10 +176,7 @@ var L16_ScrollerCollide;
         // enemyMelee = new EnemyMelee("StonerMelee", 3, 1);
         // level.appendChild(enemyMelee);
         // level.appendChild(enemyMelee.creatHitbox());
-        // enemyMelee = new EnemyMelee("StonerMelee", 10, 1);
-        // level.appendChild(enemyMelee);
-        // level.appendChild(enemyMelee.creatHitbox());
-        // enemyMelee = new EnemyMelee("StonerMelee", 19, 1);
+        // enemyMelee = new EnemyMelee("StonerMelee", 16, 1);
         // level.appendChild(enemyMelee);
         // level.appendChild(enemyMelee.creatHitbox());
         for (let i = 0; i < jsonData[0].level1.length; i++) {
@@ -209,6 +206,18 @@ var L16_ScrollerCollide;
                         createTree(object.posX, level);
                     }
                     break;
+                case "Enemy":
+                    if (object.type == "Ranged") {
+                        enemyranged = new L16_ScrollerCollide.EnemyRanged("Stoner", object.posX, object.posy);
+                        level.appendChild(enemyranged);
+                        level.appendChild(enemyranged.creatHitbox());
+                    }
+                    else if (object.type == "Melee") {
+                        enemyMelee = new L16_ScrollerCollide.EnemyMelee("StonerMelee", object.posX, object.posy);
+                        level.appendChild(enemyMelee);
+                        level.appendChild(enemyMelee.creatHitbox());
+                    }
+                    break;
                 default:
                     console.log("Item");
             }
@@ -222,68 +231,6 @@ var L16_ScrollerCollide;
         level.appendChild(hare.createHitboxWeapon());
         level.appendChild(hare.creatHitbox());
         hare.healthbar = healthbar;
-        // let item: Items = new Items("Potion", 1, 1.5);
-        // level.appendChild(item);
-        // level.appendChild( item.creatHitbox());
-        // item = new Items("Potion", 5, 1.5);
-        // level.appendChild(item);
-        // level.appendChild( item.creatHitbox());
-        // item = new Items("Potion", 23.5, 1.5);
-        // level.appendChild(item);
-        // level.appendChild( item.creatHitbox());
-        // item = new Items("Potion", 40, 1.5);
-        // level.appendChild(item);
-        // level.appendChild( item.creatHitbox());
-        // item = new Items("Potion", 46, 1.5);
-        // level.appendChild(item);
-        // level.appendChild( item.creatHitbox());
-        // createHillSmall(2.5, level);
-        // createHillBig(9, level);
-        // createHillSmall(20, level);
-        // createHillBig(27, level);
-        // createHillBig(36, level);
-        // createHillSmall(42, level);
-        // createPlatform(1, level);
-        // createPlatform(4.6, level);
-        // createPlatform(5.2, level);
-        // createPlatform(13, level);
-        // createPlatform(22.85, level);
-        // createPlatform(23.45, level);
-        // createPlatform(24.05, level);
-        // createPlatform(40, level);
-        // createPlatform(46, level);
-        // createPlatform(48.9, level);
-        // createPlatform(49.5, level);
-        // createTree(1, level);
-        // createTree(3, level);
-        // createTree(5, level);
-        // createTree(6, level);
-        // createTree(7, level);
-        // createTree(11, level);
-        // createTree(13, level);
-        // createTree(15, level);
-        // createTree(16, level);
-        // createTree(19, level);
-        // createTree(21, level);
-        // createTree(22, level);
-        // createTree(23, level);
-        // createTree(24, level);
-        // createTree(27, level);
-        // createTree(29, level);
-        // createTree(30.5, level);
-        // createTree(32, level);
-        // createTree(33, level);
-        // createTree(35, level);
-        // createTree(37.5, level);
-        // createTree(39, level);
-        // createTree(46, level);
-        // createTree(48, level);
-        // createTree(49.5, level);
-        // createTree(40, level);
-        // createTree(49, level);
-        // createTree(51, level);
-        // createTree(53, level);
-        // createTree(55, level);
         createBackground(level);
         createSky(level);
         L16_ScrollerCollide.game.appendChild(hare);
@@ -291,7 +238,7 @@ var L16_ScrollerCollide;
     }
     function createSky(_level) {
         let x = -4.55;
-        for (let i = 0; i < 4; i++) {
+        for (let i = 0; i < 3; i++) {
             let sky = new L16_ScrollerCollide.Flora(L16_ScrollerCollide.ENVI_TYPE.SKY, x, 4, -5);
             _level.appendChild(sky);
             x = x + 12.8;
@@ -307,7 +254,7 @@ var L16_ScrollerCollide;
     }
     function createFloor(_level, _type) {
         let distance = 2.9;
-        for (let i = 0; i < 11; i++) {
+        for (let i = 0; i < 8; i++) {
             if (i == 0) {
                 let floor = new L16_ScrollerCollide.Floor(_type);
                 floor.cmpTransform.local.scaleX(3);
