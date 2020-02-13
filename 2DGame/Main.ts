@@ -36,6 +36,14 @@ namespace L16_ScrollerCollide {
 
       let volumeSlider: HTMLInputElement = <HTMLInputElement>document.getElementById("musicVolume");
       volumeSlider.addEventListener("click", changeVolume);
+
+      let showControlsBtns = document.getElementsByClassName("showControlsBtn");
+      for (let i: number = 0; i < showControlsBtns.length; i++) {
+        showControlsBtns[i].addEventListener("click", displayControls);
+      }
+
+      let hideControlsBtn: HTMLDivElement = <HTMLDivElement>document.getElementById("controlsExitBtn");
+      hideControlsBtn.addEventListener("click", closeControlsScreen);
     }
 
     async function loadFilesWithResponse(): Promise<void> {
@@ -46,6 +54,16 @@ namespace L16_ScrollerCollide {
 
     function restartGame(){
       location.reload();
+    }
+
+    function closeControlsScreen(){
+      let controlsScreen: HTMLDivElement = <HTMLDivElement>document.getElementById("controllsScreen");
+      controlsScreen.style.visibility = "hidden";
+    }
+
+    function displayControls(){
+      let controlsScreen: HTMLDivElement = <HTMLDivElement>document.getElementById("controllsScreen");
+      controlsScreen.style.visibility = "visible";
     }
 
     function displayMenue(){
@@ -73,7 +91,6 @@ namespace L16_ScrollerCollide {
       //Sound.play("testTrack");
 
       let canvas: HTMLCanvasElement = document.querySelector("canvas");
-      //let crc2: CanvasRenderingContext2D = canvas.getContext("2d");
       let images: any = document.querySelectorAll("img");
 
       let txtHare: fudge.TextureImage = new fudge.TextureImage();
@@ -123,14 +140,11 @@ namespace L16_ScrollerCollide {
       hare = new Hare("Hare");
       level = createLevel();
       game.appendChild(level);
-      //game.appendChild(hare);
-    
   
       let cmpCamera: fudge.ComponentCamera = new fudge.ComponentCamera();
       cmpCamera.pivot.translateZ(6);
       cmpCamera.pivot.translateY(1.5);
       cmpCamera.pivot.translateX(2);
-      //cmpCamera.pivot.lookAt(fudge.Vector3.ZERO());
       cmpCamera.backgroundColor = fudge.Color.CSS("aliceblue");
   
       let viewport: fudge.Viewport = new fudge.Viewport();
@@ -157,8 +171,6 @@ namespace L16_ScrollerCollide {
         for (let i: number = 0; i < healthbar.length; i++) {
           healthbar[i].cmpTransform.local.translation = new fudge.Vector3(cmpCamera.pivot.translation.x + 2 + i / 10 + 0.2, 3, 0);
         }
-        //crc2.strokeRect(-1, -1, canvas.width / 2, canvas.height + 2);
-        //crc2.strokeRect(-1, canvas.height / 2, canvas.width + 2, canvas.height);
       }
     }
   
@@ -211,18 +223,6 @@ namespace L16_ScrollerCollide {
   
     function createLevel(): fudge.Node {
       let level: fudge.Node = new fudge.Node("Level"); 
-
-      // enemyranged = new EnemyRanged("Stoner", 12, 1);
-      // level.appendChild(enemyranged);
-      // level.appendChild(enemyranged.creatHitbox());
-
-      // enemyMelee = new EnemyMelee("StonerMelee", 3, 1);
-      // level.appendChild(enemyMelee);
-      // level.appendChild(enemyMelee.creatHitbox());
-
-      // enemyMelee = new EnemyMelee("StonerMelee", 16, 1);
-      // level.appendChild(enemyMelee);
-      // level.appendChild(enemyMelee.creatHitbox());
     
       for(let i = 0; i < jsonData[0].level1.length; i++){
         let object = jsonData[0].level1[i];

@@ -4,8 +4,6 @@ namespace L16_ScrollerCollide {
     
   
     export class EnemyMelee extends Enemy {
-      
-      protected walkingTimeMax: number = 100;
 
       constructor(_name: string, _x: number, _y: number) {
         super(_name);
@@ -26,6 +24,7 @@ namespace L16_ScrollerCollide {
         this.cmpTransform.local.translation = new fudge.Vector3(_x, _y, 0);
         this.cmpTransform.local.scale(new fudge.Vector3(0.6, 0.6, 0));
         this.walkingTimeMax = 70;
+        this.healthpoints = 10;
         fudge.Loop.addEventListener(fudge.EVENT.LOOP_FRAME, this.update);
       }
   
@@ -150,11 +149,14 @@ namespace L16_ScrollerCollide {
           let game: fudge.Node = level.getParent();
           let children: fudge.Node[] = game.getChildrenByName("Hare");
 
-          let positionOfEnemy: number = this.cmpTransform.local.translation.x;
-          let positionOfPlayer: number = children[0].cmpTransform.local.translation.x;
-          let distance: number = positionOfEnemy - positionOfPlayer;
-          if (distance > -1 && distance < 1) {
-            if (distance > 0) {
+          let positionOfEnemyX: number = this.cmpTransform.local.translation.x;
+          let positionOfPlayerX: number = children[0].cmpTransform.local.translation.x;
+          let positionOfEnemyY: number = this.cmpTransform.local.translation.y;
+          let positionOfPlayerY: number = children[0].cmpTransform.local.translation.y;
+          let distanceX: number = positionOfEnemyX - positionOfPlayerX;
+          let distanceY: number = positionOfEnemyY - positionOfPlayerY;
+          if (distanceX > -1 && distanceX < 1 && distanceY > -1.4) {
+            if (distanceX > 0) {
               this.directionGlobal = "left";
             } else {
               this.directionGlobal = "right";

@@ -24,6 +24,7 @@ namespace L16_ScrollerCollide {
         this.cmpTransform.local.translation = new fudge.Vector3(_x, _y, 0);
         this.cmpTransform.local.scale(new fudge.Vector3(0.6, 0.6, 0));
         this.walkingTimeMax = 20;
+        this.healthpoints = 4;
         fudge.Loop.addEventListener(fudge.EVENT.LOOP_FRAME, this.update);
       }
   
@@ -149,11 +150,14 @@ namespace L16_ScrollerCollide {
           let game: fudge.Node = level.getParent();
           let children: fudge.Node[] = game.getChildrenByName("Hare");
 
-          let positionOfEnemy: number = this.cmpTransform.local.translation.x;
-          let positionOfPlayer: number = children[0].cmpTransform.local.translation.x;
-          let distance: number = positionOfEnemy - positionOfPlayer;
-          if (distance > -3 && distance < 3) {
-            if (distance > 0) {
+          let positionOfEnemyX: number = this.cmpTransform.local.translation.x;
+          let positionOfPlayerX: number = children[0].cmpTransform.local.translation.x;
+          let positionOfEnemyY: number = this.cmpTransform.local.translation.y;
+          let positionOfPlayerY: number = children[0].cmpTransform.local.translation.y;
+          let distanceX: number = positionOfEnemyX - positionOfPlayerX;
+          let distanceY: number = positionOfEnemyY - positionOfPlayerY;
+          if (distanceX > -3 && distanceX < 3 && distanceY > -0.5) {
+            if (distanceX > 0) {
               this.directionGlobal = "left";
               if (this.frameCounter == 5) {
                 let stone: Stone = new Stone("Stone", this.cmpTransform.local.translation.x, this.cmpTransform.local.translation.y + 0.2, this.directionGlobal, level);

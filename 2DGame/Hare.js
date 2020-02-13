@@ -57,10 +57,6 @@ var L16_ScrollerCollide;
                 if (colider == "Hit") {
                     this.healthpoints = this.healthpoints - 1;
                     this.updateHealthbar();
-                    if (this.healthpoints <= 0) {
-                        fudge.Loop.stop();
-                        this.die();
-                    }
                     if (this.directionGlobal == "right") {
                         this.cmpTransform.local.translateX(-0.5);
                     }
@@ -76,6 +72,10 @@ var L16_ScrollerCollide;
                         this.healthpoints = this.healthpoints + 2;
                     }
                     this.updateHealthbar();
+                }
+                if (this.healthpoints <= 0 || this.cmpTransform.local.translation.y < -1) {
+                    fudge.Loop.stop();
+                    this.die();
                 }
                 let values = this.hitboxes[1].checkCollisionWeapon();
                 if (values) {
@@ -130,7 +130,7 @@ var L16_ScrollerCollide;
         createHitboxWeapon() {
             let hitboxWeapon = new L16_ScrollerCollide.Hitbox(this, "WeaponHitbox");
             hitboxWeapon.cmpTransform.local.scaleX(0.05);
-            hitboxWeapon.cmpTransform.local.scaleY(0.05);
+            hitboxWeapon.cmpTransform.local.scaleY(0.15);
             this.hitboxes.push(hitboxWeapon);
             return this.hitboxes[1];
         }

@@ -10,7 +10,6 @@ var L16_ScrollerCollide;
             this.directionGlobal = "right";
             this.currentWalkingTime = 0;
             this.frameCounter = 0;
-            this.healthpoints = 6;
             this.speed = fudge.Vector3.ZERO();
             this.update = (_event) => {
                 this.broadcastEvent(new CustomEvent("showNext"));

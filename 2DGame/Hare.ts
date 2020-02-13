@@ -79,7 +79,7 @@ namespace L16_ScrollerCollide {
       public createHitboxWeapon(): Hitbox {
         let hitboxWeapon: Hitbox = new Hitbox(this, "WeaponHitbox");
         hitboxWeapon.cmpTransform.local.scaleX(0.05);
-        hitboxWeapon.cmpTransform.local.scaleY(0.05);
+        hitboxWeapon.cmpTransform.local.scaleY(0.15);
         this.hitboxes.push(hitboxWeapon);
         return this.hitboxes[1];
       }
@@ -135,15 +135,15 @@ namespace L16_ScrollerCollide {
         this.show(_action);
       }
 
-      private updateHealthbar(){
-        if(this.healthpoints == 11){
+      private updateHealthbar() {
+        if (this.healthpoints == 11) {
           return;
         }
         let lifeDifference: number = 10 - this.healthpoints;
-        for(let i =  0; i < this.healthbar.length; i++){
-          if(i < lifeDifference){
+        for (let i: number =  0; i < this.healthbar.length; i++) {
+          if (i < lifeDifference){
             this.healthbar[i].act(STATUS.EMPTY);
-          }else{
+          } else {
             this.healthbar[i].act(STATUS.FULL);
           }
         }
@@ -180,10 +180,6 @@ namespace L16_ScrollerCollide {
         if (colider == "Hit") {
           this.healthpoints = this.healthpoints - 1;
           this.updateHealthbar();
-          if (this.healthpoints <= 0) {
-            fudge.Loop.stop();
-            this.die();
-          }
           if (this.directionGlobal == "right") {
             this.cmpTransform.local.translateX(-0.5);
           } else {
@@ -196,6 +192,11 @@ namespace L16_ScrollerCollide {
             this.healthpoints = this.healthpoints + 2;
           }
           this.updateHealthbar();
+        }
+
+        if (this.healthpoints <= 0 || this.cmpTransform.local.translation.y < -1) {
+          fudge.Loop.stop();
+          this.die();
         }
 
         let values: (string|fudge.Node)[] = this.hitboxes[1].checkCollisionWeapon();

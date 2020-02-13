@@ -11,7 +11,7 @@ namespace L16_ScrollerCollide {
       protected currentWalkingTime: number = 0;
       protected walkingTimeMax: number;
       protected frameCounter: number = 0;
-      public healthpoints: number  = 6;
+      public healthpoints: number;
       public hitbox: Hitbox;
       public fieldOfView: Hitbox;
       public speed: fudge.Vector3 = fudge.Vector3.ZERO();

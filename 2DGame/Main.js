@@ -24,6 +24,12 @@ var L16_ScrollerCollide;
         restartBtn.addEventListener("click", restartGame);
         let volumeSlider = document.getElementById("musicVolume");
         volumeSlider.addEventListener("click", changeVolume);
+        let showControlsBtns = document.getElementsByClassName("showControlsBtn");
+        for (let i = 0; i < showControlsBtns.length; i++) {
+            showControlsBtns[i].addEventListener("click", displayControls);
+        }
+        let hideControlsBtn = document.getElementById("controlsExitBtn");
+        hideControlsBtn.addEventListener("click", closeControlsScreen);
     }
     async function loadFilesWithResponse() {
         let response = await fetch("gameInfo.json");
@@ -32,6 +38,14 @@ var L16_ScrollerCollide;
     }
     function restartGame() {
         location.reload();
+    }
+    function closeControlsScreen() {
+        let controlsScreen = document.getElementById("controllsScreen");
+        controlsScreen.style.visibility = "hidden";
+    }
+    function displayControls() {
+        let controlsScreen = document.getElementById("controllsScreen");
+        controlsScreen.style.visibility = "visible";
     }
     function displayMenue() {
         let menueScreen = document.getElementById("menue");
@@ -53,7 +67,6 @@ var L16_ScrollerCollide;
         L16_ScrollerCollide.Sound.init();
         //Sound.play("testTrack");
         let canvas = document.querySelector("canvas");
-        //let crc2: CanvasRenderingContext2D = canvas.getContext("2d");
         let images = document.querySelectorAll("img");
         let txtHare = new L16_ScrollerCollide.fudge.TextureImage();
         txtHare.image = images[0];
@@ -96,12 +109,10 @@ var L16_ScrollerCollide;
         hare = new L16_ScrollerCollide.Hare("Hare");
         L16_ScrollerCollide.level = createLevel();
         L16_ScrollerCollide.game.appendChild(L16_ScrollerCollide.level);
-        //game.appendChild(hare);
         let cmpCamera = new L16_ScrollerCollide.fudge.ComponentCamera();
         cmpCamera.pivot.translateZ(6);
         cmpCamera.pivot.translateY(1.5);
         cmpCamera.pivot.translateX(2);
-        //cmpCamera.pivot.lookAt(fudge.Vector3.ZERO());
         cmpCamera.backgroundColor = L16_ScrollerCollide.fudge.Color.CSS("aliceblue");
         let viewport = new L16_ScrollerCollide.fudge.Viewport();
         viewport.initialize("Viewport", L16_ScrollerCollide.game, cmpCamera, canvas);
@@ -126,8 +137,6 @@ var L16_ScrollerCollide;
             for (let i = 0; i < healthbar.length; i++) {
                 healthbar[i].cmpTransform.local.translation = new L16_ScrollerCollide.fudge.Vector3(cmpCamera.pivot.translation.x + 2 + i / 10 + 0.2, 3, 0);
             }
-            //crc2.strokeRect(-1, -1, canvas.width / 2, canvas.height + 2);
-            //crc2.strokeRect(-1, canvas.height / 2, canvas.width + 2, canvas.height);
         }
     }
     function handleKeyboard(_event) {
@@ -170,15 +179,6 @@ var L16_ScrollerCollide;
     }
     function createLevel() {
         let level = new L16_ScrollerCollide.fudge.Node("Level");
-        // enemyranged = new EnemyRanged("Stoner", 12, 1);
-        // level.appendChild(enemyranged);
-        // level.appendChild(enemyranged.creatHitbox());
-        // enemyMelee = new EnemyMelee("StonerMelee", 3, 1);
-        // level.appendChild(enemyMelee);
-        // level.appendChild(enemyMelee.creatHitbox());
-        // enemyMelee = new EnemyMelee("StonerMelee", 16, 1);
-        // level.appendChild(enemyMelee);
-        // level.appendChild(enemyMelee.creatHitbox());
         for (let i = 0; i < jsonData[0].level1.length; i++) {
             let object = jsonData[0].level1[i];
             switch (object.objectName) {

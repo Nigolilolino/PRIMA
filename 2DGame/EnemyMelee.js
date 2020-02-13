@@ -7,7 +7,6 @@ var L16_ScrollerCollide;
     class EnemyMelee extends L16_ScrollerCollide.Enemy {
         constructor(_name, _x, _y) {
             super(_name);
-            this.walkingTimeMax = 100;
             this.update = (_event) => {
                 this.broadcastEvent(new CustomEvent("showNext"));
                 let timeFrame = fudge.Loop.timeFrameGame / 1000;
@@ -32,6 +31,7 @@ var L16_ScrollerCollide;
             this.cmpTransform.local.translation = new fudge.Vector3(_x, _y, 0);
             this.cmpTransform.local.scale(new fudge.Vector3(0.6, 0.6, 0));
             this.walkingTimeMax = 70;
+            this.healthpoints = 10;
             fudge.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, this.update);
         }
         static generateSprites(_txtImage) {
@@ -134,11 +134,14 @@ var L16_ScrollerCollide;
                 let level = this.getParent();
                 let game = level.getParent();
                 let children = game.getChildrenByName("Hare");
-                let positionOfEnemy = this.cmpTransform.local.translation.x;
-                let positionOfPlayer = children[0].cmpTransform.local.translation.x;
-                let distance = positionOfEnemy - positionOfPlayer;
-                if (distance > -1 && distance < 1) {
-                    if (distance > 0) {
+                let positionOfEnemyX = this.cmpTransform.local.translation.x;
+                let positionOfPlayerX = children[0].cmpTransform.local.translation.x;
+                let positionOfEnemyY = this.cmpTransform.local.translation.y;
+                let positionOfPlayerY = children[0].cmpTransform.local.translation.y;
+                let distanceX = positionOfEnemyX - positionOfPlayerX;
+                let distanceY = positionOfEnemyY - positionOfPlayerY;
+                if (distanceX > -1 && distanceX < 1 && distanceY > -1.4) {
+                    if (distanceX > 0) {
                         this.directionGlobal = "left";
                     }
                     else {
