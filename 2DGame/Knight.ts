@@ -14,10 +14,10 @@ namespace L16_ScrollerCollide {
       LEFT, RIGHT
     }
   
-    export class Hare extends fudge.Node {
+    export class Knight extends fudge.Node {
       private static sprites: Sprite[];
       private static speedMax: fudge.Vector2 = new fudge.Vector2(1.5, 5); // units per second
-      private static gravity: fudge.Vector2 = fudge.Vector2.Y(-3);
+      private static gravity: fudge.Vector2 = fudge.Vector2.Y(-3.4);
       public directionGlobal: String = "right";
       private frameCounter: number = 0;
       public hitboxes: Hitbox[] = [];
@@ -27,11 +27,11 @@ namespace L16_ScrollerCollide {
       public speed: fudge.Vector3 = fudge.Vector3.ZERO();
       public healthpoints: number  = 11;
   
-      constructor(_name: string = "Hare") {
+      constructor(_name: string = "Knight") {
         super(_name);
         this.addComponent(new fudge.ComponentTransform());
   
-        for (let sprite of Hare.sprites) {
+        for (let sprite of Knight.sprites) {
           let nodeSprite: NodeSprite = new NodeSprite(sprite.name, sprite);
           nodeSprite.activate(false);
   
@@ -50,21 +50,21 @@ namespace L16_ScrollerCollide {
       }
   
       public static generateSprites(_txtImage: fudge.TextureImage): void {
-        Hare.sprites = [];
+        Knight.sprites = [];
         let sprite: Sprite = new Sprite(ACTION.WALK);
         sprite.generateByGrid(_txtImage, fudge.Rectangle.GET(0, 0, 77, 52), 6, fudge.Vector2.ZERO(), 64, fudge.ORIGIN2D.BOTTOMCENTER);
         for (let i = 0; i < sprite.frames.length; i++) {
           sprite.frames[i].pivot.translateX(0.3);
         }
-        Hare.sprites.push(sprite);
+        Knight.sprites.push(sprite);
       
         sprite = new Sprite(ACTION.IDLE);
         sprite.generateByGrid(_txtImage, fudge.Rectangle.GET(0, 64, 77, 55), 6, fudge.Vector2.ZERO(), 64, fudge.ORIGIN2D.BOTTOMCENTER);
-        Hare.sprites.push(sprite);
+        Knight.sprites.push(sprite);
 
         sprite = new Sprite(ACTION.HIT);
         sprite.generateByGrid(_txtImage, fudge.Rectangle.GET(0, 130, 76, 65), 6, fudge.Vector2.ZERO(), 64, fudge.ORIGIN2D.BOTTOMCENTER);
-        Hare.sprites.push(sprite);
+        Knight.sprites.push(sprite);
       }
 
       public creatHitbox(): Hitbox {
@@ -79,7 +79,7 @@ namespace L16_ScrollerCollide {
       public createHitboxWeapon(): Hitbox {
         let hitboxWeapon: Hitbox = new Hitbox(this, "WeaponHitbox");
         hitboxWeapon.cmpTransform.local.scaleX(0.05);
-        hitboxWeapon.cmpTransform.local.scaleY(0.15);
+        hitboxWeapon.cmpTransform.local.scaleY(0.1);
         this.hitboxes.push(hitboxWeapon);
         return this.hitboxes[1];
       }
@@ -102,7 +102,7 @@ namespace L16_ScrollerCollide {
           case ACTION.WALK:
             this.action = _action;
             let direction: number = (_direction == DIRECTION.RIGHT ? 1 : -1);
-            this.speed.x = Hare.speedMax.x; // * direction;
+            this.speed.x = Knight.speedMax.x; // * direction;
             this.cmpTransform.local.rotation = fudge.Vector3.Y(90 - 90 * direction);
             if (direction == 1) {
               this.directionGlobal = "right";
@@ -153,7 +153,7 @@ namespace L16_ScrollerCollide {
         this.broadcastEvent(new CustomEvent("showNext"));
   
         let timeFrame: number = fudge.Loop.timeFrameGame / 1000;
-        this.speed.y += Hare.gravity.y * timeFrame;
+        this.speed.y += Knight.gravity.y * timeFrame;
         let distance: fudge.Vector3 = fudge.Vector3.SCALE(this.speed, timeFrame);
 
         if (this.directionGlobal == "right") {

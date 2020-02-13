@@ -120,14 +120,7 @@ namespace L16_ScrollerCollide {
         }
         this.show(_action);
       }
-
-      public receiveHit(): void {
-        super.receiveHit();
-    }
-
-      protected deleteThis(): void {
-        super.deleteThis();
-      }
+     
   
       protected update = (_event: fudge.Eventƒ): void => {
         this.broadcastEvent(new CustomEvent("showNext"));
@@ -148,7 +141,7 @@ namespace L16_ScrollerCollide {
         if (this.getParent() != null) {
           let level: fudge.Node = this.getParent();
           let game: fudge.Node = level.getParent();
-          let children: fudge.Node[] = game.getChildrenByName("Hare");
+          let children: fudge.Node[] = game.getChildrenByName("Knight");
 
           let positionOfEnemyX: number = this.cmpTransform.local.translation.x;
           let positionOfPlayerX: number = children[0].cmpTransform.local.translation.x;

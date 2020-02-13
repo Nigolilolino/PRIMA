@@ -123,17 +123,11 @@ var L16_ScrollerCollide;
             }
             this.show(_action);
         }
-        receiveHit() {
-            super.receiveHit();
-        }
-        deleteThis() {
-            super.deleteThis();
-        }
         checkDistanceToPlayer() {
             if (this.getParent() != null) {
                 let level = this.getParent();
                 let game = level.getParent();
-                let children = game.getChildrenByName("Hare");
+                let children = game.getChildrenByName("Knight");
                 let positionOfEnemyX = this.cmpTransform.local.translation.x;
                 let positionOfPlayerX = children[0].cmpTransform.local.translation.x;
                 let positionOfEnemyY = this.cmpTransform.local.translation.y;

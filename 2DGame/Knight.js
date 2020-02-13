@@ -17,8 +17,8 @@ var L16_ScrollerCollide;
         DIRECTION[DIRECTION["LEFT"] = 0] = "LEFT";
         DIRECTION[DIRECTION["RIGHT"] = 1] = "RIGHT";
     })(DIRECTION = L16_ScrollerCollide.DIRECTION || (L16_ScrollerCollide.DIRECTION = {}));
-    class Hare extends fudge.Node {
-        constructor(_name = "Hare") {
+    class Knight extends fudge.Node {
+        constructor(_name = "Knight") {
             super(_name);
             this.directionGlobal = "right";
             this.frameCounter = 0;
@@ -30,7 +30,7 @@ var L16_ScrollerCollide;
             this.update = (_event) => {
                 this.broadcastEvent(new CustomEvent("showNext"));
                 let timeFrame = fudge.Loop.timeFrameGame / 1000;
-                this.speed.y += Hare.gravity.y * timeFrame;
+                this.speed.y += Knight.gravity.y * timeFrame;
                 let distance = fudge.Vector3.SCALE(this.speed, timeFrame);
                 if (this.directionGlobal == "right") {
                     if (this.action == ACTION.WALK || this.action == ACTION.JUMP && this.speed.x != 0) {
@@ -95,7 +95,7 @@ var L16_ScrollerCollide;
                 this.checkGroundCollision();
             };
             this.addComponent(new fudge.ComponentTransform());
-            for (let sprite of Hare.sprites) {
+            for (let sprite of Knight.sprites) {
                 let nodeSprite = new L16_ScrollerCollide.NodeSprite(sprite.name, sprite);
                 nodeSprite.activate(false);
                 nodeSprite.addEventListener("showNext", (_event) => { _event.currentTarget.showFrameNext(); }, true);
@@ -106,19 +106,19 @@ var L16_ScrollerCollide;
             fudge.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, this.update);
         }
         static generateSprites(_txtImage) {
-            Hare.sprites = [];
+            Knight.sprites = [];
             let sprite = new L16_ScrollerCollide.Sprite(ACTION.WALK);
             sprite.generateByGrid(_txtImage, fudge.Rectangle.GET(0, 0, 77, 52), 6, fudge.Vector2.ZERO(), 64, fudge.ORIGIN2D.BOTTOMCENTER);
             for (let i = 0; i < sprite.frames.length; i++) {
                 sprite.frames[i].pivot.translateX(0.3);
             }
-            Hare.sprites.push(sprite);
+            Knight.sprites.push(sprite);
             sprite = new L16_ScrollerCollide.Sprite(ACTION.IDLE);
             sprite.generateByGrid(_txtImage, fudge.Rectangle.GET(0, 64, 77, 55), 6, fudge.Vector2.ZERO(), 64, fudge.ORIGIN2D.BOTTOMCENTER);
-            Hare.sprites.push(sprite);
+            Knight.sprites.push(sprite);
             sprite = new L16_ScrollerCollide.Sprite(ACTION.HIT);
             sprite.generateByGrid(_txtImage, fudge.Rectangle.GET(0, 130, 76, 65), 6, fudge.Vector2.ZERO(), 64, fudge.ORIGIN2D.BOTTOMCENTER);
-            Hare.sprites.push(sprite);
+            Knight.sprites.push(sprite);
         }
         creatHitbox() {
             let hitbox = new L16_ScrollerCollide.Hitbox(this, "PlayerHitbox");
@@ -130,7 +130,7 @@ var L16_ScrollerCollide;
         createHitboxWeapon() {
             let hitboxWeapon = new L16_ScrollerCollide.Hitbox(this, "WeaponHitbox");
             hitboxWeapon.cmpTransform.local.scaleX(0.05);
-            hitboxWeapon.cmpTransform.local.scaleY(0.15);
+            hitboxWeapon.cmpTransform.local.scaleY(0.1);
             this.hitboxes.push(hitboxWeapon);
             return this.hitboxes[1];
         }
@@ -151,7 +151,7 @@ var L16_ScrollerCollide;
                 case ACTION.WALK:
                     this.action = _action;
                     let direction = (_direction == DIRECTION.RIGHT ? 1 : -1);
-                    this.speed.x = Hare.speedMax.x; // * direction;
+                    this.speed.x = Knight.speedMax.x; // * direction;
                     this.cmpTransform.local.rotation = fudge.Vector3.Y(90 - 90 * direction);
                     if (direction == 1) {
                         this.directionGlobal = "right";
@@ -253,8 +253,8 @@ var L16_ScrollerCollide;
             }
         }
     }
-    Hare.speedMax = new fudge.Vector2(1.5, 5); // units per second
-    Hare.gravity = fudge.Vector2.Y(-3);
-    L16_ScrollerCollide.Hare = Hare;
+    Knight.speedMax = new fudge.Vector2(1.5, 5); // units per second
+    Knight.gravity = fudge.Vector2.Y(-3.4);
+    L16_ScrollerCollide.Knight = Knight;
 })(L16_ScrollerCollide || (L16_ScrollerCollide = {}));
-//# sourceMappingURL=Hare.js.map
+//# sourceMappingURL=Knight.js.map

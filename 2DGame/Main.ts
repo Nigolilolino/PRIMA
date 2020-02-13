@@ -12,7 +12,7 @@ namespace L16_ScrollerCollide {
   
     export let game: fudge.Node;
     export let level: fudge.Node;
-    let hare: Hare;
+    let hare: Knight;
     let healthbar: Healthpoints[] = [];
     let enemyranged: EnemyRanged;
     let enemyMelee: EnemyMelee;
@@ -95,7 +95,7 @@ namespace L16_ScrollerCollide {
 
       let txtHare: fudge.TextureImage = new fudge.TextureImage();
       txtHare.image = images[0];
-      Hare.generateSprites(txtHare);
+      Knight.generateSprites(txtHare);
 
       let imgEnemyRange = images[1];
       let txtEnemyRange: fudge.TextureImage = new fudge.TextureImage();
@@ -137,7 +137,7 @@ namespace L16_ScrollerCollide {
   
       fudge.RenderManager.initialize(true, false);
       game = new fudge.Node("Game");
-      hare = new Hare("Hare");
+      hare = new Knight("Knight");
       level = createLevel();
       game.appendChild(level);
   

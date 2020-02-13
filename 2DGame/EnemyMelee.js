@@ -133,14 +133,14 @@ var L16_ScrollerCollide;
             if (this.getParent() != null) {
                 let level = this.getParent();
                 let game = level.getParent();
-                let children = game.getChildrenByName("Hare");
+                let children = game.getChildrenByName("Knight");
                 let positionOfEnemyX = this.cmpTransform.local.translation.x;
                 let positionOfPlayerX = children[0].cmpTransform.local.translation.x;
                 let positionOfEnemyY = this.cmpTransform.local.translation.y;
                 let positionOfPlayerY = children[0].cmpTransform.local.translation.y;
                 let distanceX = positionOfEnemyX - positionOfPlayerX;
                 let distanceY = positionOfEnemyY - positionOfPlayerY;
-                if (distanceX > -1 && distanceX < 1 && distanceY > -1.4) {
+                if (distanceX > -1 && distanceX < 1 && distanceY > -0.7) {
                     if (distanceX > 0) {
                         this.directionGlobal = "left";
                     }

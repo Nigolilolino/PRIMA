@@ -147,7 +147,7 @@ namespace L16_ScrollerCollide {
         if (this.getParent() != null) {
           let level: fudge.Node = this.getParent();
           let game: fudge.Node = level.getParent();
-          let children: fudge.Node[] = game.getChildrenByName("Hare");
+          let children: fudge.Node[] = game.getChildrenByName("Knight");
 
           let positionOfEnemyX: number = this.cmpTransform.local.translation.x;
           let positionOfPlayerX: number = children[0].cmpTransform.local.translation.x;
@@ -155,7 +155,7 @@ namespace L16_ScrollerCollide {
           let positionOfPlayerY: number = children[0].cmpTransform.local.translation.y;
           let distanceX: number = positionOfEnemyX - positionOfPlayerX;
           let distanceY: number = positionOfEnemyY - positionOfPlayerY;
-          if (distanceX > -1 && distanceX < 1 && distanceY > -1.4) {
+          if (distanceX > -1 && distanceX < 1 && distanceY > -0.7) {
             if (distanceX > 0) {
               this.directionGlobal = "left";
             } else {

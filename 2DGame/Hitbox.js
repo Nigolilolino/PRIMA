@@ -16,7 +16,6 @@ var L16_ScrollerCollide;
             this.addComponent(new fudge.ComponentTransform());
             //this.addComponent(new fudge.ComponentMaterial(Hitbox.material));
             let cmpMesh = new fudge.ComponentMesh(Hitbox.mesh);
-            //cmpMesh.pivot.translateY(-0.5);
             cmpMesh.pivot = Hitbox.pivot;
             this.addComponent(cmpMesh);
         }
