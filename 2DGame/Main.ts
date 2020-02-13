@@ -16,8 +16,12 @@ namespace L16_ScrollerCollide {
     let healthbar: Healthpoints[] = [];
     let enemyranged: EnemyRanged;
     let enemyMelee: EnemyMelee;
+    let jsonData: Object[];
   
     function initializeScreens(){
+
+      loadFilesWithResponse();
+      
       let startBtn: HTMLDivElement = <HTMLDivElement>document.getElementById("gameStartBtn");
       startBtn.addEventListener("click", startGame);
 
@@ -33,6 +37,12 @@ namespace L16_ScrollerCollide {
       let volumeSlider: HTMLInputElement = <HTMLInputElement>document.getElementById("musicVolume");
       volumeSlider.addEventListener("click", changeVolume);
     }
+
+    async function loadFilesWithResponse(): Promise<void> {
+      let response: Response = await fetch("gameInfo.json");
+      let offer: string = await response.text();
+      jsonData = JSON.parse(offer);
+  }
 
     function restartGame(){
       location.reload();
@@ -56,6 +66,7 @@ namespace L16_ScrollerCollide {
     }
   
     function startGame(): void {
+      
       let titleScreen: HTMLDivElement = <HTMLDivElement>document.getElementById("startscreen");
       titleScreen.style.visibility = "hidden";
       Sound.init();
@@ -118,6 +129,7 @@ namespace L16_ScrollerCollide {
       let cmpCamera: fudge.ComponentCamera = new fudge.ComponentCamera();
       cmpCamera.pivot.translateZ(6);
       cmpCamera.pivot.translateY(1.5);
+      cmpCamera.pivot.translateX(2);
       //cmpCamera.pivot.lookAt(fudge.Vector3.ZERO());
       cmpCamera.backgroundColor = fudge.Color.CSS("aliceblue");
   
@@ -129,15 +141,21 @@ namespace L16_ScrollerCollide {
       document.addEventListener("keyup", handleKeyboard);
   
       fudge.Loop.addEventListener(fudge.EVENT.LOOP_FRAME, update);
-      fudge.Loop.start(fudge.LOOP_MODE.TIME_GAME, 15);
+      fudge.Loop.start(fudge.LOOP_MODE.TIME_GAME, 15); 
   
       function update(_event: fudge.Eventƒ): void {
         processInput();
         activateAnimations();
         viewport.draw(); 
-        cmpCamera.pivot.translation = new fudge.Vector3(hare.mtxWorld.translation.x, cmpCamera.pivot.translation.y, cmpCamera.pivot.translation.z);
+        if (hare.cmpTransform.local.translation.x >= 25.5) {
+          cmpCamera.pivot.translation = new fudge.Vector3(cmpCamera.pivot.translation.x, cmpCamera.pivot.translation.y, cmpCamera.pivot.translation.z);
+        } else if(hare.cmpTransform.local.translation.x <= 2){
+          cmpCamera.pivot.translation = new fudge.Vector3(cmpCamera.pivot.translation.x, cmpCamera.pivot.translation.y, cmpCamera.pivot.translation.z);
+        } else {
+          cmpCamera.pivot.translation = new fudge.Vector3(hare.mtxWorld.translation.x, cmpCamera.pivot.translation.y, cmpCamera.pivot.translation.z);
+        }
         for (let i: number = 0; i < healthbar.length; i++) {
-          healthbar[i].cmpTransform.local.translation = new fudge.Vector3(hare.mtxWorld.translation.x + 2 + i / 10 + 0.2, 3, 0);
+          healthbar[i].cmpTransform.local.translation = new fudge.Vector3(cmpCamera.pivot.translation.x + 2 + i / 10 + 0.2, 3, 0);
         }
         //crc2.strokeRect(-1, -1, canvas.width / 2, canvas.height + 2);
         //crc2.strokeRect(-1, canvas.height / 2, canvas.width + 2, canvas.height);
@@ -192,9 +210,7 @@ namespace L16_ScrollerCollide {
     }
   
     function createLevel(): fudge.Node {
-      let level: fudge.Node = new fudge.Node("Level");
-
-      createFloor(level, TYPE.GRASS);
+      let level: fudge.Node = new fudge.Node("Level"); 
 
       // enemyranged = new EnemyRanged("Stoner", 12, 1);
       // level.appendChild(enemyranged);
@@ -211,14 +227,39 @@ namespace L16_ScrollerCollide {
       // enemyMelee = new EnemyMelee("StonerMelee", 19, 1);
       // level.appendChild(enemyMelee);
       // level.appendChild(enemyMelee.creatHitbox());
+    
+      for(let i = 0; i < jsonData[0].level1.length; i++){
+        let object = jsonData[0].level1[i];
+        switch(object.objectName) {
+          case "Floor":
+            createFloor(level, TYPE.GRASS);
+            break;
+          case "Item":
+            let item: Items = new Items(object.type, object.posX, object.posY);
+            level.appendChild(item);
+            level.appendChild( item.creatHitbox());
+            break;
+          case "Hill":
 
-      let item: Items = new Items("Potion", 1, 1.5);
-      level.appendChild(item);
-      level.appendChild( item.creatHitbox());
-
-      item = new Items("Potion", 5, 1.5);
-      level.appendChild(item);
-      level.appendChild( item.creatHitbox());
+            if (object.type == "Big") {
+              createHillBig(object.posX, level);
+            } else if (object.type == "Small") {
+              createHillSmall(object.posX, level);
+            }
+            break;
+            
+          case "Platform":
+            createPlatform(object.posX, level);
+            break;
+          case "Decoration":
+            if (object.type == "Tree") {
+              createTree(object.posX, level);
+            }
+            break;
+          default:
+            console.log("Item");
+        }
+      }
 
       for (let i: number = 0; i < hare.healthpoints - 1; i++) {
         let healthpoint: Healthpoints = new Healthpoints("Player Healthpoint 1");
@@ -231,31 +272,78 @@ namespace L16_ScrollerCollide {
 
       hare.healthbar = healthbar;
 
-      createHill(2.5, level);
-      createHill(10, level);
+      // let item: Items = new Items("Potion", 1, 1.5);
+      // level.appendChild(item);
+      // level.appendChild( item.creatHitbox());
 
-      createPlatform(1, level);
-      createPlatform(4.6, level);
-      createPlatform(5.2, level);
-      createPlatform(13, level);
+      // item = new Items("Potion", 5, 1.5);
+      // level.appendChild(item);
+      // level.appendChild( item.creatHitbox());
 
-      createTree(1, level);
-      createTree(3, level);
-      createTree(5, level);
-      createTree(7, level);
-      createTree(9, level);
-      createTree(11, level);
-      createTree(13, level);
-      createTree(15, level);
-      createTree(17, level);
-      createTree(19, level);
-      createTree(21, level);
-      createTree(23, level);
-      createTree(25, level);
+      // item = new Items("Potion", 23.5, 1.5);
+      // level.appendChild(item);
+      // level.appendChild( item.creatHitbox());
 
-      createBackground(level);
+      // item = new Items("Potion", 40, 1.5);
+      // level.appendChild(item);
+      // level.appendChild( item.creatHitbox());
 
-      createSky(level);
+      // item = new Items("Potion", 46, 1.5);
+      // level.appendChild(item);
+      // level.appendChild( item.creatHitbox());
+
+      // createHillSmall(2.5, level);
+      // createHillBig(9, level);
+      // createHillSmall(20, level);
+      // createHillBig(27, level);
+      // createHillBig(36, level);
+      // createHillSmall(42, level);
+
+      // createPlatform(1, level);
+      // createPlatform(4.6, level);
+      // createPlatform(5.2, level);
+      // createPlatform(13, level);
+      // createPlatform(22.85, level);
+      // createPlatform(23.45, level);
+      // createPlatform(24.05, level);
+      // createPlatform(40, level);
+      // createPlatform(46, level);
+      // createPlatform(48.9, level);
+      // createPlatform(49.5, level);
+
+      // createTree(1, level);
+      // createTree(3, level);
+      // createTree(5, level);
+      // createTree(6, level);
+      // createTree(7, level);
+      // createTree(11, level);
+      // createTree(13, level);
+      // createTree(15, level);
+      // createTree(16, level);
+      // createTree(19, level);
+      // createTree(21, level);
+      // createTree(22, level);
+      // createTree(23, level);
+      // createTree(24, level);
+      // createTree(27, level);
+      // createTree(29, level);
+      // createTree(30.5, level);
+      // createTree(32, level);
+      // createTree(33, level);
+      // createTree(35, level);
+      // createTree(37.5, level);
+      // createTree(39, level);
+      // createTree(46, level);
+      // createTree(48, level);
+      // createTree(49.5, level);
+      // createTree(40, level);
+      // createTree(49, level);
+      // createTree(51, level);
+      // createTree(53, level);
+      // createTree(55, level);
+
+       createBackground(level);
+       createSky(level);
       
 
       game.appendChild(hare);
@@ -265,7 +353,7 @@ namespace L16_ScrollerCollide {
 
     function createSky(_level: FudgeCore.Node) {
       let x: number = -4.55;
-      for (let i: number = 0; i < 9; i++ ) {
+      for (let i: number = 0; i < 4; i++ ) {
         let sky: Flora = new Flora(ENVI_TYPE.SKY, x, 4, -5);
         _level.appendChild(sky);
         x = x + 12.8;
@@ -274,7 +362,7 @@ namespace L16_ScrollerCollide {
 
     function createBackground(_level: FudgeCore.Node){
       let x: number = -6.5;
-      for (let i: number = 0; i < 9; i++) {
+      for (let i: number = 0; i < 5; i++) {
         let background: Flora = new Flora(ENVI_TYPE.BACKGROUND, x, 0.7, -3);
         _level.appendChild(background);
         x = x + 8.25;
@@ -284,7 +372,7 @@ namespace L16_ScrollerCollide {
     function createFloor (_level: FudgeCore.Node, _type: TYPE.GRASS): void {
       let distance: number = 2.9;
 
-      for (let i: number = 0; i < 20; i++) {
+      for (let i: number = 0; i < 11; i++) {
         if (i == 0) {
           let floor: Floor = new Floor(_type);
           floor.cmpTransform.local.scaleX(3);
@@ -301,63 +389,88 @@ namespace L16_ScrollerCollide {
       }
     }
 
-    function createHill(_x: number, _level: FudgeCore.Node): void {
+    function createHillBig(_x: number, _level: FudgeCore.Node): void {
 
-      let floor: Floor = new Floor(TYPE.GRASS);
-      floor.cmpTransform.local.scaleY(0.5);
-      floor.cmpTransform.local.scaleX(0.5);
-      floor.cmpTransform.local.translateX(_x);
-      floor.cmpTransform.local.translateY(0.2);
-      _level.appendChild(floor);
+      let distance: number = 0;
 
-      floor = new Floor(TYPE.GRASS);
-      floor.cmpTransform.local.scaleY(0.5);
-      floor.cmpTransform.local.scaleX(0.5);
-      floor.cmpTransform.local.translateX(_x + .4);
-      floor.cmpTransform.local.translateY(0.2);
-      _level.appendChild(floor);
+      for (let i: number = 0; i < 8; i++) {
+        let floor: Floor = new Floor(TYPE.GRASS);
+        floor.cmpTransform.local.scaleY(0.5);
+        floor.cmpTransform.local.scaleX(0.5);
+        floor.cmpTransform.local.translateX(_x + distance);
+        floor.cmpTransform.local.translateY(0.2);
+        _level.appendChild(floor);
 
-      floor = new Floor(TYPE.GRASS);
-      floor.cmpTransform.local.scaleY(0.5);
-      floor.cmpTransform.local.scaleX(0.5);
-      floor.cmpTransform.local.translateX(_x + 0.8);
-      floor.cmpTransform.local.translateY(0.2);
-      _level.appendChild(floor);
+        distance += 0.4;
+      }
 
-      floor = new Floor(TYPE.GRASS);
-      floor.cmpTransform.local.scaleY(0.5);
-      floor.cmpTransform.local.scaleX(0.5);
-      floor.cmpTransform.local.translateX(_x + 1.2);
-      floor.cmpTransform.local.translateY(0.2);
-      _level.appendChild(floor);
+      distance = 0.4;
 
-      floor = new Floor(TYPE.GRASS);
-      floor.cmpTransform.local.scaleY(0.5);
-      floor.cmpTransform.local.scaleX(0.5);
-      floor.cmpTransform.local.translateX(_x + 1.6);
-      floor.cmpTransform.local.translateY(0.2);
-      _level.appendChild(floor);
+      for (let i: number = 0; i < 6; i++) {
+        let floor: Floor = new Floor(TYPE.GRASS);
+        floor.cmpTransform.local.scaleY(0.5);
+        floor.cmpTransform.local.scaleX(0.5);
+        floor.cmpTransform.local.translateX(_x + distance);
+        floor.cmpTransform.local.translateY(0.4);
+        _level.appendChild(floor);
 
-      floor = new Floor(TYPE.GRASS);
-      floor.cmpTransform.local.scaleY(0.5);
-      floor.cmpTransform.local.scaleX(0.5);
-      floor.cmpTransform.local.translateX(_x + 0.4);
-      floor.cmpTransform.local.translateY(0.5);
-      _level.appendChild(floor);
+        distance += 0.4;
+      }
 
-      floor = new Floor(TYPE.GRASS);
-      floor.cmpTransform.local.scaleY(0.5);
-      floor.cmpTransform.local.scaleX(0.5);
-      floor.cmpTransform.local.translateX(_x + 0.8);
-      floor.cmpTransform.local.translateY(0.5);
-      _level.appendChild(floor);
+      distance = 0.8;
 
-      floor = new Floor(TYPE.GRASS);
-      floor.cmpTransform.local.scaleY(0.5);
-      floor.cmpTransform.local.scaleX(0.5);
-      floor.cmpTransform.local.translateX(_x + 1.2);
-      floor.cmpTransform.local.translateY(0.5);
-      _level.appendChild(floor);
+      for (let i: number = 0; i < 4; i++) {
+        let floor: Floor = new Floor(TYPE.GRASS);
+        floor.cmpTransform.local.scaleY(0.5);
+        floor.cmpTransform.local.scaleX(0.5);
+        floor.cmpTransform.local.translateX(_x + distance);
+        floor.cmpTransform.local.translateY(0.6);
+        _level.appendChild(floor);
+
+        distance += 0.4;
+      }
+
+      distance = 1;
+
+      for (let i: number = 0; i < 3; i++) {
+        let floor: Floor = new Floor(TYPE.GRASS);
+        floor.cmpTransform.local.scaleY(0.5);
+        floor.cmpTransform.local.scaleX(0.5);
+        floor.cmpTransform.local.translateX(_x + distance);
+        floor.cmpTransform.local.translateY(0.8);
+        _level.appendChild(floor);
+
+        distance += 0.4;
+      }
+      
+    }
+
+    function createHillSmall(_x: number, _level: FudgeCore.Node): void {
+
+      let distance: number = 0;
+
+      for (let i: number = 0; i < 5; i++) {
+        let floor: Floor = new Floor(TYPE.GRASS);
+        floor.cmpTransform.local.scaleY(0.5);
+        floor.cmpTransform.local.scaleX(0.5);
+        floor.cmpTransform.local.translateX(_x + distance);
+        floor.cmpTransform.local.translateY(0.2);
+        _level.appendChild(floor);
+
+        distance += 0.4;
+      }
+      distance = 0.4;
+
+      for (let i: number = 0; i < 3; i++) {
+        let floor: Floor = new Floor(TYPE.GRASS);
+        floor.cmpTransform.local.scaleY(0.5);
+        floor.cmpTransform.local.scaleX(0.5);
+        floor.cmpTransform.local.translateX(_x + distance);
+        floor.cmpTransform.local.translateY(0.4);
+        _level.appendChild(floor);
+
+        distance += 0.4;
+      }
     }
 
     function createPlatform (_x: number, _level: FudgeCore.Node): void {

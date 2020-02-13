@@ -254,7 +254,7 @@ var L16_ScrollerCollide;
         }
     }
     Hare.speedMax = new fudge.Vector2(1.5, 5); // units per second
-    Hare.gravity = fudge.Vector2.Y(-4);
+    Hare.gravity = fudge.Vector2.Y(-3);
     L16_ScrollerCollide.Hare = Hare;
 })(L16_ScrollerCollide || (L16_ScrollerCollide = {}));
 //# sourceMappingURL=Hare.js.map

@@ -26,7 +26,7 @@ namespace L16_ScrollerCollide {
           let nodeSprite: NodeSprite = new NodeSprite("DirtFloor", Floor.sprites[1]);
           nodeSprite.activate(true);
           this.appendChild(nodeSprite);
-        }else if (_type == "WoodSmall") {
+        } else if (_type == "WoodSmall") {
           let nodeSprite: NodeSprite = new NodeSprite("WoodSmall", Floor.sprites[2]);
           nodeSprite.activate(true);
           this.appendChild(nodeSprite);

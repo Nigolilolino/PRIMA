@@ -7,6 +7,7 @@ var L16_ScrollerCollide;
     class EnemyMelee extends L16_ScrollerCollide.Enemy {
         constructor(_name, _x, _y) {
             super(_name);
+            this.walkingTimeMax = 100;
             this.update = (_event) => {
                 this.broadcastEvent(new CustomEvent("showNext"));
                 let timeFrame = fudge.Loop.timeFrameGame / 1000;
@@ -30,7 +31,7 @@ var L16_ScrollerCollide;
             }
             this.cmpTransform.local.translation = new fudge.Vector3(_x, _y, 0);
             this.cmpTransform.local.scale(new fudge.Vector3(0.6, 0.6, 0));
-            this.walkingTimeMax = 100;
+            this.walkingTimeMax = 70;
             fudge.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, this.update);
         }
         static generateSprites(_txtImage) {

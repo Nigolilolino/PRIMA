@@ -5,7 +5,8 @@ namespace L16_ScrollerCollide {
   
     export class EnemyMelee extends Enemy {
       
-    
+      protected walkingTimeMax: number = 100;
+
       constructor(_name: string, _x: number, _y: number) {
         super(_name);
         this.addComponent(new fudge.ComponentTransform());
@@ -24,7 +25,7 @@ namespace L16_ScrollerCollide {
         }
         this.cmpTransform.local.translation = new fudge.Vector3(_x, _y, 0);
         this.cmpTransform.local.scale(new fudge.Vector3(0.6, 0.6, 0));
-        this.walkingTimeMax = 100;
+        this.walkingTimeMax = 70;
         fudge.Loop.addEventListener(fudge.EVENT.LOOP_FRAME, this.update);
       }
   

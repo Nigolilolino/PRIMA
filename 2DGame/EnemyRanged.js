@@ -30,7 +30,7 @@ var L16_ScrollerCollide;
             }
             this.cmpTransform.local.translation = new fudge.Vector3(_x, _y, 0);
             this.cmpTransform.local.scale(new fudge.Vector3(0.6, 0.6, 0));
-            this.walkingTimeMax = 50;
+            this.walkingTimeMax = 20;
             fudge.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, this.update);
         }
         static generateSprites(_txtImage) {

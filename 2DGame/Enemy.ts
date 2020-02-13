@@ -8,8 +8,8 @@ namespace L16_ScrollerCollide {
       protected static speedMax: fudge.Vector2 = new fudge.Vector2(1.5, 5); // units per second
       protected static gravity: fudge.Vector2 = fudge.Vector2.Y(-4);
       protected directionGlobal: String = "right";
+      protected currentWalkingTime: number = 0;
       protected walkingTimeMax: number;
-      protected currentWalkingTime = 0;
       protected frameCounter: number = 0;
       public healthpoints: number  = 6;
       public hitbox: Hitbox;
