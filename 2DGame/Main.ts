@@ -2,7 +2,6 @@
 namespace L16_ScrollerCollide {
     export import fudge = FudgeCore;
   
-    //window.addEventListener("load", test);
     window.addEventListener("load", initialization);
   
     interface KeyPressed {
@@ -52,36 +51,10 @@ namespace L16_ScrollerCollide {
       jsonData = JSON.parse(offer);
   }
 
-    function restartGame(){
+    function restartGame(): void {
       location.reload();
     }
 
-    function closeControlsScreen(){
-      let controlsScreen: HTMLDivElement = <HTMLDivElement>document.getElementById("controllsScreen");
-      controlsScreen.style.visibility = "hidden";
-    }
-
-    function displayControls(){
-      let controlsScreen: HTMLDivElement = <HTMLDivElement>document.getElementById("controllsScreen");
-      controlsScreen.style.visibility = "visible";
-    }
-
-    function displayMenue(){
-      let menueScreen: HTMLDivElement = <HTMLDivElement>document.getElementById("menue");
-      menueScreen.style.visibility = "visible";
-    }
-
-    function closeMenue(){
-      let menueScreen: HTMLDivElement = <HTMLDivElement>document.getElementById("menue");
-      menueScreen.style.visibility = "hidden";
-    }
-
-    function changeVolume(){
-      let volumeSlider: HTMLInputElement = <HTMLInputElement>document.getElementById("musicVolume");
-      let value: number = parseInt(volumeSlider.value);
-      Sound.vol = value / 100;
-      Sound.play("testTrack");
-    }
   
     function startGame(): void {
       
@@ -91,49 +64,9 @@ namespace L16_ScrollerCollide {
       //Sound.play("testTrack");
 
       let canvas: HTMLCanvasElement = document.querySelector("canvas");
-      let images: any = document.querySelectorAll("img");
+      let images: NodeListOf<HTMLImageElement> = document.querySelectorAll("img");
 
-      let txtHare: fudge.TextureImage = new fudge.TextureImage();
-      txtHare.image = images[0];
-      Knight.generateSprites(txtHare);
-
-      let imgEnemyRange = images[1];
-      let txtEnemyRange: fudge.TextureImage = new fudge.TextureImage();
-      txtEnemyRange.image = imgEnemyRange;
-      EnemyRanged.generateSprites(txtEnemyRange);
-      Stone.generateSprites(txtEnemyRange);
-
-      let imgEnemyMelee = images[6];
-      let txtEnemyMelee: fudge.TextureImage = new fudge.TextureImage();
-      txtEnemyMelee.image = imgEnemyMelee;
-      EnemyMelee.generateSprites(txtEnemyMelee);
-
-      let imgItem = images[2];
-      let txtItems: fudge.TextureImage = new fudge.TextureImage();
-      txtItems.image = imgItem;
-      Items.generateSprites(txtItems);
-      Healthpoints.generateSprites(txtItems);
-
-      let txtEnvironment: fudge.TextureImage = new fudge.TextureImage();
-      let imgEnvironment = images[3];
-      txtEnvironment.image = imgEnvironment;
-      let txtWood: fudge.TextureImage = new fudge.TextureImage();
-      let imgWood = images[5];
-      txtWood.image = imgWood;
-      let txtEnvrironmentArray: fudge.TextureImage[] = [txtEnvironment, txtWood];
-      Floor.generateSprites(txtEnvrironmentArray);
-
-      let txtflora: fudge.TextureImage = new fudge.TextureImage();
-      let imgflora = images[4];
-      txtflora.image = imgflora;
-      let txtBackground: fudge.TextureImage = new fudge.TextureImage();
-      let imgBackground = images[7];
-      txtBackground.image = imgBackground;
-      let txtSky: fudge.TextureImage = new fudge.TextureImage();
-      let imgSky = images[8];
-      txtSky.image = imgSky;
-      let txtFloraArray: fudge.TextureImage[] = [txtflora, txtBackground, txtSky];
-      Flora.generateSprites(txtFloraArray);
+      loadTextures(images);
   
       fudge.RenderManager.initialize(true, false);
       game = new fudge.Node("Game");
@@ -163,7 +96,7 @@ namespace L16_ScrollerCollide {
         viewport.draw(); 
         if (knight.cmpTransform.local.translation.x >= 18) {
           cmpCamera.pivot.translation = new fudge.Vector3(cmpCamera.pivot.translation.x, cmpCamera.pivot.translation.y, cmpCamera.pivot.translation.z);
-        } else if (knight.cmpTransform.local.translation.x <= 2){
+        } else if (knight.cmpTransform.local.translation.x <= 2) {
           cmpCamera.pivot.translation = new fudge.Vector3(cmpCamera.pivot.translation.x, cmpCamera.pivot.translation.y, cmpCamera.pivot.translation.z);
         } else {
           cmpCamera.pivot.translation = new fudge.Vector3(knight.mtxWorld.translation.x, cmpCamera.pivot.translation.y, cmpCamera.pivot.translation.z);
@@ -265,42 +198,55 @@ namespace L16_ScrollerCollide {
               level.appendChild(enemyMelee.creatHitbox());
             }
             break;  
+            case "Background":
+            if (object.type == "Landscape") {
+              createBackground(level, object.amount);
+            } else if (object.type == "Sky") {
+              createSky(level, object.amount);
+            }
+            break; 
           default:
             console.log("Item");
         }
       }
 
-      for (let i: number = 0; i < knight.healthpoints - 1; i++) {
-        let healthpoint: Healthpoints = new Healthpoints("Player Healthpoint 1");
-        level.appendChild(healthpoint);
-        healthpoint.act(STATUS.FULL);
-        healthbar.push(healthpoint);
-      }
-      level.appendChild( knight.createHitboxWeapon());
-      level.appendChild(knight.creatHitbox());
+      let floor: Floor = new Floor(TYPE.DIRT);
+      floor.cmpTransform.local.translateX(1);
+      floor.cmpTransform.local.translateY(1);
+      floor.cmpTransform.local.scaleX(2);
+      floor.cmpTransform.local.scaleY(2);
+      level.appendChild(floor);
 
-      knight.healthbar = healthbar;
-
-      createBackground(level);
-      createSky(level);
-      
-      game.appendChild(knight);
+      initializeKnight(level);
 
       return level;
     }
 
-    function createSky(_level: FudgeCore.Node): void {
+    function initializeKnight(_level: fudge.Node): void {
+      for (let i: number = 0; i < knight.healthpoints - 1; i++) {
+        let healthpoint: Healthpoints = new Healthpoints("Player Healthpoint 1");
+        _level.appendChild(healthpoint);
+        healthpoint.act(STATUS.FULL);
+        healthbar.push(healthpoint);
+      }
+      knight.healthbar = healthbar;
+      _level.appendChild(knight.createHitboxWeapon());
+      _level.appendChild(knight.creatHitbox());
+      game.appendChild(knight);
+    }
+
+    function createSky(_level: FudgeCore.Node, _amount: number): void {
       let x: number = -4.55;
-      for (let i: number = 0; i < 3; i++ ) {
+      for (let i: number = 0; i < _amount; i++ ) {
         let sky: Flora = new Flora(ENVI_TYPE.SKY, x, 4, -5);
         _level.appendChild(sky);
         x = x + 12.8;
       }
     }
 
-    function createBackground(_level: FudgeCore.Node): void {
+    function createBackground(_level: FudgeCore.Node, _amount: number): void {
       let x: number = -6.5;
-      for (let i: number = 0; i < 5; i++) {
+      for (let i: number = 0; i < _amount; i++) {
         let background: Flora = new Flora(ENVI_TYPE.BACKGROUND, x, 0.7, -3);
         _level.appendChild(background);
         x = x + 8.25;
@@ -412,7 +358,6 @@ namespace L16_ScrollerCollide {
     }
 
     function createPlatform (_x: number, _level: FudgeCore.Node): void {
-
       let platform: Floor = new Floor(TYPE.WOOD_S);
       platform.cmpTransform.local.translateY(1.5);
       platform.cmpTransform.local.translateX(_x);
@@ -420,7 +365,6 @@ namespace L16_ScrollerCollide {
       platform.cmpTransform.local.scaleX(0.5);
       platform.cmpTransform.local.scaleY(0.5);
       _level.appendChild(platform);
-
     }
 
     function createTree(_x: number, _level: FudgeCore.Node): void {
@@ -455,4 +399,79 @@ namespace L16_ScrollerCollide {
       tree.cmpTransform.local.scaleY(0.6);
       _level.appendChild(tree);
     }
+
+    function closeControlsScreen(): void {
+      let controlsScreen: HTMLDivElement = <HTMLDivElement>document.getElementById("controllsScreen");
+      controlsScreen.style.visibility = "hidden";
+    }
+
+    function displayControls(): void {
+      let controlsScreen: HTMLDivElement = <HTMLDivElement>document.getElementById("controllsScreen");
+      controlsScreen.style.visibility = "visible";
+    }
+
+    function displayMenue(): void {
+      let menueScreen: HTMLDivElement = <HTMLDivElement>document.getElementById("menue");
+      menueScreen.style.visibility = "visible";
+    }
+
+    function closeMenue(): void {
+      let menueScreen: HTMLDivElement = <HTMLDivElement>document.getElementById("menue");
+      menueScreen.style.visibility = "hidden";
+    }
+
+    function changeVolume(): void {
+      let volumeSlider: HTMLInputElement = <HTMLInputElement>document.getElementById("musicVolume");
+      let value: number = parseInt(volumeSlider.value);
+      Sound.vol = value / 100;
+      Sound.play("testTrack");
+    }
+
+    function loadTextures(_images: NodeListOf<HTMLImageElement>): void {
+      let txtHare1: fudge.TextureImage = new fudge.TextureImage();
+      txtHare1.image = _images[0];
+      let txtHare2: fudge.TextureImage = new fudge.TextureImage();
+      txtHare2.image = _images[9];
+      let txtKnightArray: fudge.TextureImage[] = [txtHare1, txtHare2];
+      Knight.generateSprites(txtKnightArray);
+
+      let imgEnemyRange: HTMLImageElement = _images[1];
+      let txtEnemyRange: fudge.TextureImage = new fudge.TextureImage();
+      txtEnemyRange.image = imgEnemyRange;
+      EnemyRanged.generateSprites(txtEnemyRange);
+      Stone.generateSprites(txtEnemyRange);
+
+      let imgEnemyMelee: HTMLImageElement = _images[6];
+      let txtEnemyMelee: fudge.TextureImage = new fudge.TextureImage();
+      txtEnemyMelee.image = imgEnemyMelee;
+      EnemyMelee.generateSprites(txtEnemyMelee);
+
+      let imgItem: HTMLImageElement = _images[2];
+      let txtItems: fudge.TextureImage = new fudge.TextureImage();
+      txtItems.image = imgItem;
+      Items.generateSprites(txtItems);
+      Healthpoints.generateSprites(txtItems);
+
+      let txtEnvironment: fudge.TextureImage = new fudge.TextureImage();
+      let imgEnvironment: HTMLImageElement = _images[3];
+      txtEnvironment.image = imgEnvironment;
+      let txtWood: fudge.TextureImage = new fudge.TextureImage();
+      let imgWood: HTMLImageElement = _images[5];
+      txtWood.image = imgWood;
+      let txtEnvrironmentArray: fudge.TextureImage[] = [txtEnvironment, txtWood];
+      Floor.generateSprites(txtEnvrironmentArray);
+
+      let txtflora: fudge.TextureImage = new fudge.TextureImage();
+      let imgflora: HTMLImageElement = _images[4];
+      txtflora.image = imgflora;
+      let txtBackground: fudge.TextureImage = new fudge.TextureImage();
+      let imgBackground: HTMLImageElement = _images[7];
+      txtBackground.image = imgBackground;
+      let txtSky: fudge.TextureImage = new fudge.TextureImage();
+      let imgSky: HTMLImageElement = _images[8];
+      txtSky.image = imgSky;
+      let txtFloraArray: fudge.TextureImage[] = [txtflora, txtBackground, txtSky];
+      Flora.generateSprites(txtFloraArray);
+    }
+
   }

@@ -6,8 +6,10 @@ namespace L16_ScrollerCollide {
     IDLE = "Idle",
     WALK = "Walk",
     JUMP = "Jump",
+    MID_AIR = "MidAir",
     HIT = "Hit",
-    DIE = "Die"
+    DIE = "Die",
+    GETTING_DAMAGE = "GettingDamage"
 
   }
   export enum DIRECTION {
@@ -40,21 +42,37 @@ namespace L16_ScrollerCollide {
       fudge.Loop.addEventListener(fudge.EVENT.LOOP_FRAME, this.update);
     }
 
-    public static generateSprites(_txtImage: fudge.TextureImage): void {
+    public static generateSprites(_txtImage: fudge.TextureImage[]): void {
       Knight.sprites = [];
       let sprite: Sprite = new Sprite(ACTION.WALK);
-      sprite.generateByGrid(_txtImage, fudge.Rectangle.GET(0, 0, 77, 52), 6, fudge.Vector2.ZERO(), 64, fudge.ORIGIN2D.BOTTOMCENTER);
+      sprite.generateByGrid(_txtImage[0], fudge.Rectangle.GET(0, 0, 77, 52), 6, fudge.Vector2.ZERO(), 64, fudge.ORIGIN2D.BOTTOMCENTER);
       for (let i = 0; i < sprite.frames.length; i++) {
         sprite.frames[i].pivot.translateX(0.3);
       }
       Knight.sprites.push(sprite);
 
       sprite = new Sprite(ACTION.IDLE);
-      sprite.generateByGrid(_txtImage, fudge.Rectangle.GET(0, 64, 77, 55), 6, fudge.Vector2.ZERO(), 64, fudge.ORIGIN2D.BOTTOMCENTER);
+      sprite.generateByGrid(_txtImage[0], fudge.Rectangle.GET(0, 64, 77, 55), 6, fudge.Vector2.ZERO(), 64, fudge.ORIGIN2D.BOTTOMCENTER);
       Knight.sprites.push(sprite);
 
       sprite = new Sprite(ACTION.HIT);
-      sprite.generateByGrid(_txtImage, fudge.Rectangle.GET(0, 130, 76, 65), 6, fudge.Vector2.ZERO(), 64, fudge.ORIGIN2D.BOTTOMCENTER);
+      sprite.generateByGrid(_txtImage[0], fudge.Rectangle.GET(0, 130, 76, 65), 6, fudge.Vector2.ZERO(), 64, fudge.ORIGIN2D.BOTTOMCENTER);
+      Knight.sprites.push(sprite);
+
+      sprite = new Sprite(ACTION.DIE);
+      sprite.generateByGrid(_txtImage[1], fudge.Rectangle.GET(15, 8, 84, 60), 7, fudge.Vector2.ZERO(), 64, fudge.ORIGIN2D.BOTTOMCENTER);
+      Knight.sprites.push(sprite);
+
+      sprite = new Sprite(ACTION.JUMP);
+      sprite.generateByGrid(_txtImage[1], fudge.Rectangle.GET(20, 109, 66, 58), 7, fudge.Vector2.ZERO(), 64, fudge.ORIGIN2D.BOTTOMCENTER);
+      Knight.sprites.push(sprite);
+
+      sprite = new Sprite(ACTION.MID_AIR);
+      sprite.generateByGrid(_txtImage[1], fudge.Rectangle.GET(284, 109, 66, 58), 1, fudge.Vector2.ZERO(), 64, fudge.ORIGIN2D.BOTTOMCENTER);
+      Knight.sprites.push(sprite);
+
+      sprite = new Sprite(ACTION.GETTING_DAMAGE);
+      sprite.generateByGrid(_txtImage[1], fudge.Rectangle.GET(19, 193, 72, 66), 7, fudge.Vector2.ZERO(), 64, fudge.ORIGIN2D.BOTTOMCENTER);
       Knight.sprites.push(sprite);
     }
 
@@ -76,8 +94,6 @@ namespace L16_ScrollerCollide {
     }
 
     public show(_action: ACTION): void {
-      if (_action == ACTION.JUMP)
-        return;
       for (let child of this.getChildren()) {
         child.activate(child.name == _action);
       }
@@ -110,7 +126,7 @@ namespace L16_ScrollerCollide {
             break;
           } else {
             this.speed.y = 3;
-            this.frameCounter = 0;
+            this.frameCounter += 1;
             break;
           }
 
@@ -172,8 +188,13 @@ namespace L16_ScrollerCollide {
           let translation: fudge.Vector3 = this.cmpTransform.local.translation;
           translation.y = rect.y;
           if (translation.y - 0.4 > this.cmpTransform.local.translation.y) {
-            translation.x = this.cmpTransform.local.translation.x + 0.1;
-            translation.y = this.cmpTransform.local.translation.y;
+            if(this.directionGlobal == "left"){
+              translation.x = this.cmpTransform.local.translation.x + 0.1;
+              translation.y = this.cmpTransform.local.translation.y;
+            }else{
+              translation.x = this.cmpTransform.local.translation.x - 0.1;
+              translation.y = this.cmpTransform.local.translation.y;
+            }
 
           }
           this.cmpTransform.local.translation = translation;
@@ -259,7 +280,6 @@ namespace L16_ScrollerCollide {
             enemy.cmpTransform.local.translateX(-0.5);
             enemy.receiveHit();
           }
-
         }
       }
 

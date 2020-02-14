@@ -9,8 +9,10 @@ var L16_ScrollerCollide;
         ACTION["IDLE"] = "Idle";
         ACTION["WALK"] = "Walk";
         ACTION["JUMP"] = "Jump";
+        ACTION["MID_AIR"] = "MidAir";
         ACTION["HIT"] = "Hit";
         ACTION["DIE"] = "Die";
+        ACTION["GETTING_DAMAGE"] = "GettingDamage";
     })(ACTION = L16_ScrollerCollide.ACTION || (L16_ScrollerCollide.ACTION = {}));
     let DIRECTION;
     (function (DIRECTION) {
@@ -103,16 +105,28 @@ var L16_ScrollerCollide;
         static generateSprites(_txtImage) {
             Knight.sprites = [];
             let sprite = new L16_ScrollerCollide.Sprite(ACTION.WALK);
-            sprite.generateByGrid(_txtImage, fudge.Rectangle.GET(0, 0, 77, 52), 6, fudge.Vector2.ZERO(), 64, fudge.ORIGIN2D.BOTTOMCENTER);
+            sprite.generateByGrid(_txtImage[0], fudge.Rectangle.GET(0, 0, 77, 52), 6, fudge.Vector2.ZERO(), 64, fudge.ORIGIN2D.BOTTOMCENTER);
             for (let i = 0; i < sprite.frames.length; i++) {
                 sprite.frames[i].pivot.translateX(0.3);
             }
             Knight.sprites.push(sprite);
             sprite = new L16_ScrollerCollide.Sprite(ACTION.IDLE);
-            sprite.generateByGrid(_txtImage, fudge.Rectangle.GET(0, 64, 77, 55), 6, fudge.Vector2.ZERO(), 64, fudge.ORIGIN2D.BOTTOMCENTER);
+            sprite.generateByGrid(_txtImage[0], fudge.Rectangle.GET(0, 64, 77, 55), 6, fudge.Vector2.ZERO(), 64, fudge.ORIGIN2D.BOTTOMCENTER);
             Knight.sprites.push(sprite);
             sprite = new L16_ScrollerCollide.Sprite(ACTION.HIT);
-            sprite.generateByGrid(_txtImage, fudge.Rectangle.GET(0, 130, 76, 65), 6, fudge.Vector2.ZERO(), 64, fudge.ORIGIN2D.BOTTOMCENTER);
+            sprite.generateByGrid(_txtImage[0], fudge.Rectangle.GET(0, 130, 76, 65), 6, fudge.Vector2.ZERO(), 64, fudge.ORIGIN2D.BOTTOMCENTER);
+            Knight.sprites.push(sprite);
+            sprite = new L16_ScrollerCollide.Sprite(ACTION.DIE);
+            sprite.generateByGrid(_txtImage[1], fudge.Rectangle.GET(15, 8, 84, 60), 7, fudge.Vector2.ZERO(), 64, fudge.ORIGIN2D.BOTTOMCENTER);
+            Knight.sprites.push(sprite);
+            sprite = new L16_ScrollerCollide.Sprite(ACTION.JUMP);
+            sprite.generateByGrid(_txtImage[1], fudge.Rectangle.GET(20, 109, 66, 58), 7, fudge.Vector2.ZERO(), 64, fudge.ORIGIN2D.BOTTOMCENTER);
+            Knight.sprites.push(sprite);
+            sprite = new L16_ScrollerCollide.Sprite(ACTION.MID_AIR);
+            sprite.generateByGrid(_txtImage[1], fudge.Rectangle.GET(284, 109, 66, 58), 1, fudge.Vector2.ZERO(), 64, fudge.ORIGIN2D.BOTTOMCENTER);
+            Knight.sprites.push(sprite);
+            sprite = new L16_ScrollerCollide.Sprite(ACTION.GETTING_DAMAGE);
+            sprite.generateByGrid(_txtImage[1], fudge.Rectangle.GET(19, 193, 72, 66), 7, fudge.Vector2.ZERO(), 64, fudge.ORIGIN2D.BOTTOMCENTER);
             Knight.sprites.push(sprite);
         }
         creatHitbox() {
@@ -130,8 +144,6 @@ var L16_ScrollerCollide;
             return this.hitboxes[1];
         }
         show(_action) {
-            if (_action == ACTION.JUMP)
-                return;
             for (let child of this.getChildren()) {
                 child.activate(child.name == _action);
             }
@@ -165,7 +177,7 @@ var L16_ScrollerCollide;
                     }
                     else {
                         this.speed.y = 3;
-                        this.frameCounter = 0;
+                        this.frameCounter += 1;
                         break;
                     }
                 case ACTION.HIT:
@@ -221,8 +233,14 @@ var L16_ScrollerCollide;
                     let translation = this.cmpTransform.local.translation;
                     translation.y = rect.y;
                     if (translation.y - 0.4 > this.cmpTransform.local.translation.y) {
-                        translation.x = this.cmpTransform.local.translation.x + 0.1;
-                        translation.y = this.cmpTransform.local.translation.y;
+                        if (this.directionGlobal == "left") {
+                            translation.x = this.cmpTransform.local.translation.x + 0.1;
+                            translation.y = this.cmpTransform.local.translation.y;
+                        }
+                        else {
+                            translation.x = this.cmpTransform.local.translation.x - 0.1;
+                            translation.y = this.cmpTransform.local.translation.y;
+                        }
                     }
                     this.cmpTransform.local.translation = translation;
                     this.speed.y = 0;

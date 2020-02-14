@@ -134,7 +134,7 @@ var L16_ScrollerCollide;
                 let positionOfPlayerY = children[0].cmpTransform.local.translation.y;
                 let distanceX = positionOfEnemyX - positionOfPlayerX;
                 let distanceY = positionOfEnemyY - positionOfPlayerY;
-                if (distanceX > -3 && distanceX < 3 && distanceY > -0.5) {
+                if (distanceX > -3 && distanceX < 3 && distanceY > -1) {
                     if (distanceX > 0) {
                         this.directionGlobal = "left";
                         if (this.frameCounter == 5) {
@@ -155,9 +155,6 @@ var L16_ScrollerCollide;
                 }
             }
             return false;
-        }
-        checkGroundCollision() {
-            super.checkGroundCollision();
         }
     }
     L16_ScrollerCollide.EnemyRanged = EnemyRanged;

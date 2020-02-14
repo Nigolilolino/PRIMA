@@ -20,10 +20,9 @@ var Test;
         ƒ.Debug.log(imgEnemy);
         txtImage.image = imgEnemy;
         sprite = new Sprite("Hare");
-        //sprite.generateByGrid(txtImage, ƒ.Rectangle.GET(17, 3, 86, 59), 4, ƒ.Vector2.ZERO(), 64, ƒ.ORIGIN2D.BOTTOMCENTER); //IDLE
-        //sprite.generateByGrid(txtImage, ƒ.Rectangle.GET(14, 74, 88, 59), 9, ƒ.Vector2.ZERO(), 64, ƒ.ORIGIN2D.BOTTOMCENTER);//WALK
-        //sprite.generateByGrid(txtImage, ƒ.Rectangle.GET(14, 137, 94, 85), 8, ƒ.Vector2.ZERO(), 64, ƒ.ORIGIN2D.BOTTOMCENTER);// Hit
-        sprite.generateByGrid(txtImage, ƒ.Rectangle.GET(0, 470, 1280, 720), 1, ƒ.Vector2.ZERO(), 300, ƒ.ORIGIN2D.BOTTOMCENTER); // DIE
+        //sprite.generateByGrid(txtImage, ƒ.Rectangle.GET(19, 193, 72, 66), 7, ƒ.Vector2.ZERO(), 64, ƒ.ORIGIN2D.BOTTOMCENTER);//WALK
+        sprite.generateByGrid(txtImage, ƒ.Rectangle.GET(284, 109, 66, 58), 1, ƒ.Vector2.ZERO(), 64, ƒ.ORIGIN2D.BOTTOMCENTER); // Jump
+        //sprite.generateByGrid(txtImage, ƒ.Rectangle.GET(15, 8, 84, 60), 7, ƒ.Vector2.ZERO(), 64, ƒ.ORIGIN2D.BOTTOMCENTER); // DIE
         ƒ.RenderManager.initialize(true, false);
         root = new ƒ.Node("Root");
         let mtxHare;

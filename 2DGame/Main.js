@@ -4,7 +4,6 @@ var L16_ScrollerCollide;
 ///<reference types="../FUDGE/Build/FudgeCore.js"/> 
 (function (L16_ScrollerCollide) {
     L16_ScrollerCollide.fudge = FudgeCore;
-    //window.addEventListener("load", test);
     window.addEventListener("load", initialization);
     let keysPressed = {};
     let knight;
@@ -39,28 +38,6 @@ var L16_ScrollerCollide;
     function restartGame() {
         location.reload();
     }
-    function closeControlsScreen() {
-        let controlsScreen = document.getElementById("controllsScreen");
-        controlsScreen.style.visibility = "hidden";
-    }
-    function displayControls() {
-        let controlsScreen = document.getElementById("controllsScreen");
-        controlsScreen.style.visibility = "visible";
-    }
-    function displayMenue() {
-        let menueScreen = document.getElementById("menue");
-        menueScreen.style.visibility = "visible";
-    }
-    function closeMenue() {
-        let menueScreen = document.getElementById("menue");
-        menueScreen.style.visibility = "hidden";
-    }
-    function changeVolume() {
-        let volumeSlider = document.getElementById("musicVolume");
-        let value = parseInt(volumeSlider.value);
-        L16_ScrollerCollide.Sound.vol = value / 100;
-        L16_ScrollerCollide.Sound.play("testTrack");
-    }
     function startGame() {
         let titleScreen = document.getElementById("startscreen");
         titleScreen.style.visibility = "hidden";
@@ -68,42 +45,7 @@ var L16_ScrollerCollide;
         //Sound.play("testTrack");
         let canvas = document.querySelector("canvas");
         let images = document.querySelectorAll("img");
-        let txtHare = new L16_ScrollerCollide.fudge.TextureImage();
-        txtHare.image = images[0];
-        L16_ScrollerCollide.Knight.generateSprites(txtHare);
-        let imgEnemyRange = images[1];
-        let txtEnemyRange = new L16_ScrollerCollide.fudge.TextureImage();
-        txtEnemyRange.image = imgEnemyRange;
-        L16_ScrollerCollide.EnemyRanged.generateSprites(txtEnemyRange);
-        L16_ScrollerCollide.Stone.generateSprites(txtEnemyRange);
-        let imgEnemyMelee = images[6];
-        let txtEnemyMelee = new L16_ScrollerCollide.fudge.TextureImage();
-        txtEnemyMelee.image = imgEnemyMelee;
-        L16_ScrollerCollide.EnemyMelee.generateSprites(txtEnemyMelee);
-        let imgItem = images[2];
-        let txtItems = new L16_ScrollerCollide.fudge.TextureImage();
-        txtItems.image = imgItem;
-        L16_ScrollerCollide.Items.generateSprites(txtItems);
-        L16_ScrollerCollide.Healthpoints.generateSprites(txtItems);
-        let txtEnvironment = new L16_ScrollerCollide.fudge.TextureImage();
-        let imgEnvironment = images[3];
-        txtEnvironment.image = imgEnvironment;
-        let txtWood = new L16_ScrollerCollide.fudge.TextureImage();
-        let imgWood = images[5];
-        txtWood.image = imgWood;
-        let txtEnvrironmentArray = [txtEnvironment, txtWood];
-        L16_ScrollerCollide.Floor.generateSprites(txtEnvrironmentArray);
-        let txtflora = new L16_ScrollerCollide.fudge.TextureImage();
-        let imgflora = images[4];
-        txtflora.image = imgflora;
-        let txtBackground = new L16_ScrollerCollide.fudge.TextureImage();
-        let imgBackground = images[7];
-        txtBackground.image = imgBackground;
-        let txtSky = new L16_ScrollerCollide.fudge.TextureImage();
-        let imgSky = images[8];
-        txtSky.image = imgSky;
-        let txtFloraArray = [txtflora, txtBackground, txtSky];
-        L16_ScrollerCollide.Flora.generateSprites(txtFloraArray);
+        loadTextures(images);
         L16_ScrollerCollide.fudge.RenderManager.initialize(true, false);
         L16_ScrollerCollide.game = new L16_ScrollerCollide.fudge.Node("Game");
         knight = new L16_ScrollerCollide.Knight("Knight");
@@ -219,35 +161,50 @@ var L16_ScrollerCollide;
                         level.appendChild(enemyMelee.creatHitbox());
                     }
                     break;
+                case "Background":
+                    if (object.type == "Landscape") {
+                        createBackground(level, object.amount);
+                    }
+                    else if (object.type == "Sky") {
+                        createSky(level, object.amount);
+                    }
+                    break;
                 default:
                     console.log("Item");
             }
         }
+        let floor = new L16_ScrollerCollide.Floor(L16_ScrollerCollide.TYPE.DIRT);
+        floor.cmpTransform.local.translateX(1);
+        floor.cmpTransform.local.translateY(1);
+        floor.cmpTransform.local.scaleX(2);
+        floor.cmpTransform.local.scaleY(2);
+        level.appendChild(floor);
+        initializeKnight(level);
+        return level;
+    }
+    function initializeKnight(_level) {
         for (let i = 0; i < knight.healthpoints - 1; i++) {
             let healthpoint = new L16_ScrollerCollide.Healthpoints("Player Healthpoint 1");
-            level.appendChild(healthpoint);
+            _level.appendChild(healthpoint);
             healthpoint.act(L16_ScrollerCollide.STATUS.FULL);
             healthbar.push(healthpoint);
         }
-        level.appendChild(knight.createHitboxWeapon());
-        level.appendChild(knight.creatHitbox());
         knight.healthbar = healthbar;
-        createBackground(level);
-        createSky(level);
+        _level.appendChild(knight.createHitboxWeapon());
+        _level.appendChild(knight.creatHitbox());
         L16_ScrollerCollide.game.appendChild(knight);
-        return level;
     }
-    function createSky(_level) {
+    function createSky(_level, _amount) {
         let x = -4.55;
-        for (let i = 0; i < 3; i++) {
+        for (let i = 0; i < _amount; i++) {
             let sky = new L16_ScrollerCollide.Flora(L16_ScrollerCollide.ENVI_TYPE.SKY, x, 4, -5);
             _level.appendChild(sky);
             x = x + 12.8;
         }
     }
-    function createBackground(_level) {
+    function createBackground(_level, _amount) {
         let x = -6.5;
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0; i < _amount; i++) {
             let background = new L16_ScrollerCollide.Flora(L16_ScrollerCollide.ENVI_TYPE.BACKGROUND, x, 0.7, -3);
             _level.appendChild(background);
             x = x + 8.25;
@@ -371,6 +328,69 @@ var L16_ScrollerCollide;
         tree.cmpTransform.local.scaleX(0.6);
         tree.cmpTransform.local.scaleY(0.6);
         _level.appendChild(tree);
+    }
+    function closeControlsScreen() {
+        let controlsScreen = document.getElementById("controllsScreen");
+        controlsScreen.style.visibility = "hidden";
+    }
+    function displayControls() {
+        let controlsScreen = document.getElementById("controllsScreen");
+        controlsScreen.style.visibility = "visible";
+    }
+    function displayMenue() {
+        let menueScreen = document.getElementById("menue");
+        menueScreen.style.visibility = "visible";
+    }
+    function closeMenue() {
+        let menueScreen = document.getElementById("menue");
+        menueScreen.style.visibility = "hidden";
+    }
+    function changeVolume() {
+        let volumeSlider = document.getElementById("musicVolume");
+        let value = parseInt(volumeSlider.value);
+        L16_ScrollerCollide.Sound.vol = value / 100;
+        L16_ScrollerCollide.Sound.play("testTrack");
+    }
+    function loadTextures(_images) {
+        let txtHare1 = new L16_ScrollerCollide.fudge.TextureImage();
+        txtHare1.image = _images[0];
+        let txtHare2 = new L16_ScrollerCollide.fudge.TextureImage();
+        txtHare2.image = _images[9];
+        let txtKnightArray = [txtHare1, txtHare2];
+        L16_ScrollerCollide.Knight.generateSprites(txtKnightArray);
+        let imgEnemyRange = _images[1];
+        let txtEnemyRange = new L16_ScrollerCollide.fudge.TextureImage();
+        txtEnemyRange.image = imgEnemyRange;
+        L16_ScrollerCollide.EnemyRanged.generateSprites(txtEnemyRange);
+        L16_ScrollerCollide.Stone.generateSprites(txtEnemyRange);
+        let imgEnemyMelee = _images[6];
+        let txtEnemyMelee = new L16_ScrollerCollide.fudge.TextureImage();
+        txtEnemyMelee.image = imgEnemyMelee;
+        L16_ScrollerCollide.EnemyMelee.generateSprites(txtEnemyMelee);
+        let imgItem = _images[2];
+        let txtItems = new L16_ScrollerCollide.fudge.TextureImage();
+        txtItems.image = imgItem;
+        L16_ScrollerCollide.Items.generateSprites(txtItems);
+        L16_ScrollerCollide.Healthpoints.generateSprites(txtItems);
+        let txtEnvironment = new L16_ScrollerCollide.fudge.TextureImage();
+        let imgEnvironment = _images[3];
+        txtEnvironment.image = imgEnvironment;
+        let txtWood = new L16_ScrollerCollide.fudge.TextureImage();
+        let imgWood = _images[5];
+        txtWood.image = imgWood;
+        let txtEnvrironmentArray = [txtEnvironment, txtWood];
+        L16_ScrollerCollide.Floor.generateSprites(txtEnvrironmentArray);
+        let txtflora = new L16_ScrollerCollide.fudge.TextureImage();
+        let imgflora = _images[4];
+        txtflora.image = imgflora;
+        let txtBackground = new L16_ScrollerCollide.fudge.TextureImage();
+        let imgBackground = _images[7];
+        txtBackground.image = imgBackground;
+        let txtSky = new L16_ScrollerCollide.fudge.TextureImage();
+        let imgSky = _images[8];
+        txtSky.image = imgSky;
+        let txtFloraArray = [txtflora, txtBackground, txtSky];
+        L16_ScrollerCollide.Flora.generateSprites(txtFloraArray);
     }
 })(L16_ScrollerCollide || (L16_ScrollerCollide = {}));
 //# sourceMappingURL=Main.js.map

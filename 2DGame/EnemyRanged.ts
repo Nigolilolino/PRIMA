@@ -121,7 +121,6 @@ namespace L16_ScrollerCollide {
         }
         this.show(_action);
       }
-     
   
       protected update = (_event: fudge.Eventƒ): void => {
         this.broadcastEvent(new CustomEvent("showNext"));
@@ -150,7 +149,7 @@ namespace L16_ScrollerCollide {
           let positionOfPlayerY: number = children[0].cmpTransform.local.translation.y;
           let distanceX: number = positionOfEnemyX - positionOfPlayerX;
           let distanceY: number = positionOfEnemyY - positionOfPlayerY;
-          if (distanceX > -3 && distanceX < 3 && distanceY > -0.5) {
+          if (distanceX > -3 && distanceX < 3 && distanceY > -1) {
             if (distanceX > 0) {
               this.directionGlobal = "left";
               if (this.frameCounter == 5) {
@@ -170,11 +169,6 @@ namespace L16_ScrollerCollide {
           }
         }
         return false;
-      }
-
-  
-      protected checkGroundCollision(): void {
-        super.checkGroundCollision();
       }
 
     }

@@ -9,7 +9,7 @@ namespace L16_ScrollerCollide {
       protected static gravity: fudge.Vector2 = fudge.Vector2.Y(-4);
       protected directionGlobal: String = "right";
       protected frameCounter: number = 0;
-      protected healthpoints: number;
+      public healthpoints: number;
       protected hitbox: Hitbox;
       protected speed: fudge.Vector3 = fudge.Vector3.ZERO();
     

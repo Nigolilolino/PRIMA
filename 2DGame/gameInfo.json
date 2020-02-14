@@ -31,7 +31,9 @@
         {"objectName" : "Decoration", "type" : "Tree", "posX" : 18, "posY" : null, "scaleX": null, "scaleY": null},
         {"objectName" : "Decoration", "type" : "Tree", "posX" : 19.5, "posY" : null, "scaleX": null, "scaleY": null},
         {"objectName" : "Decoration", "type" : "Tree", "posX" : 21, "posY" : null, "scaleX": null, "scaleY": null},
-        {"objectName" : "Decoration", "type" : "Tree", "posX" : 22.5, "posY" : null, "scaleX": null, "scaleY": null}
+        {"objectName" : "Decoration", "type" : "Tree", "posX" : 22.5, "posY" : null, "scaleX": null, "scaleY": null},
+        {"objectName" : "Background", "type" : "Landscape", "amount" : 5},
+        {"objectName" : "Background", "type" : "Sky", "amount" : 3}
         ]
     }
 }]
