@@ -7,7 +7,7 @@ var L16_ScrollerCollide;
     //window.addEventListener("load", test);
     window.addEventListener("load", initialization);
     let keysPressed = {};
-    let hare;
+    let knight;
     let healthbar = [];
     let enemyranged;
     let enemyMelee;
@@ -106,7 +106,7 @@ var L16_ScrollerCollide;
         L16_ScrollerCollide.Flora.generateSprites(txtFloraArray);
         L16_ScrollerCollide.fudge.RenderManager.initialize(true, false);
         L16_ScrollerCollide.game = new L16_ScrollerCollide.fudge.Node("Game");
-        hare = new L16_ScrollerCollide.Knight("Knight");
+        knight = new L16_ScrollerCollide.Knight("Knight");
         L16_ScrollerCollide.level = createLevel();
         L16_ScrollerCollide.game.appendChild(L16_ScrollerCollide.level);
         let cmpCamera = new L16_ScrollerCollide.fudge.ComponentCamera();
@@ -125,14 +125,14 @@ var L16_ScrollerCollide;
             processInput();
             activateAnimations();
             viewport.draw();
-            if (hare.cmpTransform.local.translation.x >= 18) {
+            if (knight.cmpTransform.local.translation.x >= 18) {
                 cmpCamera.pivot.translation = new L16_ScrollerCollide.fudge.Vector3(cmpCamera.pivot.translation.x, cmpCamera.pivot.translation.y, cmpCamera.pivot.translation.z);
             }
-            else if (hare.cmpTransform.local.translation.x <= 2) {
+            else if (knight.cmpTransform.local.translation.x <= 2) {
                 cmpCamera.pivot.translation = new L16_ScrollerCollide.fudge.Vector3(cmpCamera.pivot.translation.x, cmpCamera.pivot.translation.y, cmpCamera.pivot.translation.z);
             }
             else {
-                cmpCamera.pivot.translation = new L16_ScrollerCollide.fudge.Vector3(hare.mtxWorld.translation.x, cmpCamera.pivot.translation.y, cmpCamera.pivot.translation.z);
+                cmpCamera.pivot.translation = new L16_ScrollerCollide.fudge.Vector3(knight.mtxWorld.translation.x, cmpCamera.pivot.translation.y, cmpCamera.pivot.translation.z);
             }
             for (let i = 0; i < healthbar.length; i++) {
                 healthbar[i].cmpTransform.local.translation = new L16_ScrollerCollide.fudge.Vector3(cmpCamera.pivot.translation.x + 2 + i / 10 + 0.2, 3, 0);
@@ -142,22 +142,22 @@ var L16_ScrollerCollide;
     function handleKeyboard(_event) {
         keysPressed[_event.code] = (_event.type == "keydown");
         if (_event.code == L16_ScrollerCollide.fudge.KEYBOARD_CODE.W && _event.type == "keydown")
-            hare.act(L16_ScrollerCollide.ACTION.JUMP);
+            knight.act(L16_ScrollerCollide.ACTION.JUMP);
     }
     function processInput() {
         if (keysPressed[L16_ScrollerCollide.fudge.KEYBOARD_CODE.A]) {
-            hare.act(L16_ScrollerCollide.ACTION.WALK, L16_ScrollerCollide.DIRECTION.LEFT);
+            knight.act(L16_ScrollerCollide.ACTION.WALK, L16_ScrollerCollide.DIRECTION.LEFT);
             return;
         }
         if (keysPressed[L16_ScrollerCollide.fudge.KEYBOARD_CODE.D]) {
-            hare.act(L16_ScrollerCollide.ACTION.WALK, L16_ScrollerCollide.DIRECTION.RIGHT);
+            knight.act(L16_ScrollerCollide.ACTION.WALK, L16_ScrollerCollide.DIRECTION.RIGHT);
             return;
         }
         if (keysPressed[L16_ScrollerCollide.fudge.KEYBOARD_CODE.H]) {
-            hare.act(L16_ScrollerCollide.ACTION.HIT);
+            knight.act(L16_ScrollerCollide.ACTION.HIT);
             return;
         }
-        hare.act(L16_ScrollerCollide.ACTION.IDLE);
+        knight.act(L16_ScrollerCollide.ACTION.IDLE);
     }
     function activateAnimations() {
         let item = L16_ScrollerCollide.level.getChildrenByName("Potion");
@@ -179,8 +179,9 @@ var L16_ScrollerCollide;
     }
     function createLevel() {
         let level = new L16_ScrollerCollide.fudge.Node("Level");
-        for (let i = 0; i < jsonData[0].level1.length; i++) {
-            let object = jsonData[0].level1[i];
+        console.log(jsonData[0].level1.levelObjects);
+        for (let i = 0; i < jsonData[0].level1.levelObjects.length; i++) {
+            let object = jsonData[0].level1.levelObjects[i];
             switch (object.objectName) {
                 case "Floor":
                     createFloor(level, L16_ScrollerCollide.TYPE.GRASS);
@@ -222,18 +223,18 @@ var L16_ScrollerCollide;
                     console.log("Item");
             }
         }
-        for (let i = 0; i < hare.healthpoints - 1; i++) {
+        for (let i = 0; i < knight.healthpoints - 1; i++) {
             let healthpoint = new L16_ScrollerCollide.Healthpoints("Player Healthpoint 1");
             level.appendChild(healthpoint);
             healthpoint.act(L16_ScrollerCollide.STATUS.FULL);
             healthbar.push(healthpoint);
         }
-        level.appendChild(hare.createHitboxWeapon());
-        level.appendChild(hare.creatHitbox());
-        hare.healthbar = healthbar;
+        level.appendChild(knight.createHitboxWeapon());
+        level.appendChild(knight.creatHitbox());
+        knight.healthbar = healthbar;
         createBackground(level);
         createSky(level);
-        L16_ScrollerCollide.game.appendChild(hare);
+        L16_ScrollerCollide.game.appendChild(knight);
         return level;
     }
     function createSky(_level) {

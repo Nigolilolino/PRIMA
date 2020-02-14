@@ -1,5 +1,9 @@
 [{
-    "level1":[
+    "level1":{
+        "levelSprites":[
+            
+        ],
+        "levelObjects":[
         {"objectName" : "Enemy", "type" : "Ranged", "posX" : 12, "posY" : 1, "scaleX": null, "scaleY": null},
         {"objectName" : "Enemy", "type" : "Melee", "posX" : 3, "posY" : 1, "scaleX": null, "scaleY": null},
         {"objectName" : "Enemy", "type" : "Melee", "posX" : 16, "posY" : 1, "scaleX": null, "scaleY": null},
@@ -28,5 +32,6 @@
         {"objectName" : "Decoration", "type" : "Tree", "posX" : 19.5, "posY" : null, "scaleX": null, "scaleY": null},
         {"objectName" : "Decoration", "type" : "Tree", "posX" : 21, "posY" : null, "scaleX": null, "scaleY": null},
         {"objectName" : "Decoration", "type" : "Tree", "posX" : 22.5, "posY" : null, "scaleX": null, "scaleY": null}
-    ]
+        ]
+    }
 }]

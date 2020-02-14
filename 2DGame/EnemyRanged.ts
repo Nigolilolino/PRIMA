@@ -8,7 +8,7 @@ namespace L16_ScrollerCollide {
       constructor(_name: string, _x: number, _y:number) {
         super(_name);
         this.addComponent(new fudge.ComponentTransform());
-  
+
         for (let sprite of EnemyRanged.sprites) {
           let nodeSprite: NodeSprite = new NodeSprite(sprite.name, sprite);
           nodeSprite.activate(false);
@@ -21,6 +21,7 @@ namespace L16_ScrollerCollide {
   
           this.appendChild(nodeSprite);
         }
+
         this.cmpTransform.local.translation = new fudge.Vector3(_x, _y, 0);
         this.cmpTransform.local.scale(new fudge.Vector3(0.6, 0.6, 0));
         this.walkingTimeMax = 20;

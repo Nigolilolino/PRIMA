@@ -3,17 +3,14 @@ namespace L16_ScrollerCollide {
     import fudge = FudgeCore;
     
   
-    export abstract class Enemy extends fudge.Node {
+    export abstract class Characters extends fudge.Node {
       protected static sprites: Sprite[];
-      protected static speedMax: fudge.Vector2 = new fudge.Vector2(1.5, 5); // units per second
+      protected static speedMax: fudge.Vector2 = new fudge.Vector2(1.5, 5);
       protected static gravity: fudge.Vector2 = fudge.Vector2.Y(-4);
       protected directionGlobal: String = "right";
-      protected currentWalkingTime: number = 0;
-      protected walkingTimeMax: number;
       protected frameCounter: number = 0;
       protected healthpoints: number;
       protected hitbox: Hitbox;
-      protected fieldOfView: Hitbox;
       protected speed: fudge.Vector3 = fudge.Vector3.ZERO();
     
       constructor(_name: string) {
@@ -44,7 +41,7 @@ namespace L16_ScrollerCollide {
       protected update = (_event: fudge.Eventƒ): void => {
         this.broadcastEvent(new CustomEvent("showNext"));
         let timeFrame: number = fudge.Loop.timeFrameGame / 1000;
-        this.speed.y += Enemy.gravity.y * timeFrame;
+        this.speed.y += Characters.gravity.y * timeFrame;
         let distance: fudge.Vector3 = fudge.Vector3.SCALE(this.speed, timeFrame);
         this.cmpTransform.local.translate(distance);
 

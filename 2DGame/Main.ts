@@ -12,13 +12,13 @@ namespace L16_ScrollerCollide {
   
     export let game: fudge.Node;
     export let level: fudge.Node;
-    let hare: Knight;
+    let knight: Knight;
     let healthbar: Healthpoints[] = [];
     let enemyranged: EnemyRanged;
     let enemyMelee: EnemyMelee;
     let jsonData: Object[];
   
-    function initialization(){
+    function initialization(): void {
 
       loadFilesWithResponse();
       
@@ -137,7 +137,7 @@ namespace L16_ScrollerCollide {
   
       fudge.RenderManager.initialize(true, false);
       game = new fudge.Node("Game");
-      hare = new Knight("Knight");
+      knight = new Knight("Knight");
       level = createLevel();
       game.appendChild(level);
   
@@ -161,12 +161,12 @@ namespace L16_ScrollerCollide {
         processInput();
         activateAnimations();
         viewport.draw(); 
-        if (hare.cmpTransform.local.translation.x >= 18) {
+        if (knight.cmpTransform.local.translation.x >= 18) {
           cmpCamera.pivot.translation = new fudge.Vector3(cmpCamera.pivot.translation.x, cmpCamera.pivot.translation.y, cmpCamera.pivot.translation.z);
-        } else if (hare.cmpTransform.local.translation.x <= 2){
+        } else if (knight.cmpTransform.local.translation.x <= 2){
           cmpCamera.pivot.translation = new fudge.Vector3(cmpCamera.pivot.translation.x, cmpCamera.pivot.translation.y, cmpCamera.pivot.translation.z);
         } else {
-          cmpCamera.pivot.translation = new fudge.Vector3(hare.mtxWorld.translation.x, cmpCamera.pivot.translation.y, cmpCamera.pivot.translation.z);
+          cmpCamera.pivot.translation = new fudge.Vector3(knight.mtxWorld.translation.x, cmpCamera.pivot.translation.y, cmpCamera.pivot.translation.z);
         }
         for (let i: number = 0; i < healthbar.length; i++) {
           healthbar[i].cmpTransform.local.translation = new fudge.Vector3(cmpCamera.pivot.translation.x + 2 + i / 10 + 0.2, 3, 0);
@@ -177,24 +177,24 @@ namespace L16_ScrollerCollide {
     function handleKeyboard(_event: KeyboardEvent): void {
       keysPressed[_event.code] = (_event.type == "keydown");
       if (_event.code == fudge.KEYBOARD_CODE.W && _event.type == "keydown")
-        hare.act(ACTION.JUMP);
+        knight.act(ACTION.JUMP);
     }
   
     function processInput(): void {
 
       if (keysPressed[fudge.KEYBOARD_CODE.A]) {
-        hare.act(ACTION.WALK, DIRECTION.LEFT);
+        knight.act(ACTION.WALK, DIRECTION.LEFT);
         return;
       }
       if (keysPressed[fudge.KEYBOARD_CODE.D]) {
-        hare.act(ACTION.WALK, DIRECTION.RIGHT);
+        knight.act(ACTION.WALK, DIRECTION.RIGHT);
         return;
       }
       if (keysPressed[fudge.KEYBOARD_CODE.H]) {
-        hare.act(ACTION.HIT);
+        knight.act(ACTION.HIT);
         return;
       }
-      hare.act(ACTION.IDLE);
+      knight.act(ACTION.IDLE);
     }
 
     function activateAnimations(): void { 
@@ -223,10 +223,12 @@ namespace L16_ScrollerCollide {
   
     function createLevel(): fudge.Node {
       let level: fudge.Node = new fudge.Node("Level"); 
+
+      console.log(jsonData[0].level1.levelObjects);
     
-      for(let i = 0; i < jsonData[0].level1.length; i++){
-        let object = jsonData[0].level1[i];
-        switch(object.objectName) {
+      for (let i = 0; i < jsonData[0].level1.levelObjects.length; i++) {
+        let object = jsonData[0].level1.levelObjects[i];
+        switch (object.objectName) {
           case "Floor":
             createFloor(level, TYPE.GRASS);
             break;
@@ -268,21 +270,21 @@ namespace L16_ScrollerCollide {
         }
       }
 
-      for (let i: number = 0; i < hare.healthpoints - 1; i++) {
+      for (let i: number = 0; i < knight.healthpoints - 1; i++) {
         let healthpoint: Healthpoints = new Healthpoints("Player Healthpoint 1");
         level.appendChild(healthpoint);
         healthpoint.act(STATUS.FULL);
         healthbar.push(healthpoint);
       }
-      level.appendChild( hare.createHitboxWeapon());
-      level.appendChild(hare.creatHitbox());
+      level.appendChild( knight.createHitboxWeapon());
+      level.appendChild(knight.creatHitbox());
 
-      hare.healthbar = healthbar;
+      knight.healthbar = healthbar;
 
       createBackground(level);
       createSky(level);
       
-      game.appendChild(hare);
+      game.appendChild(knight);
 
       return level;
     }

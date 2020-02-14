@@ -44,8 +44,6 @@ namespace L16_ScrollerCollide {
           this.appendChild(nodeSprite);
         }
         this.creatHitbox();
-     
-        //this.show(ACTION.HIT);
         fudge.Loop.addEventListener(fudge.EVENT.LOOP_FRAME, this.update);
       }
   

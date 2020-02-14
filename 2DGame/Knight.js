@@ -102,7 +102,6 @@ var L16_ScrollerCollide;
                 this.appendChild(nodeSprite);
             }
             this.creatHitbox();
-            //this.show(ACTION.HIT);
             fudge.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, this.update);
         }
         static generateSprites(_txtImage) {
