@@ -10,20 +10,6 @@ var L16_ScrollerCollide;
             this.directionGlobal = "right";
             this.frameCounter = 0;
             this.speed = fudge.Vector3.ZERO();
-            this.update = (_event) => {
-                this.broadcastEvent(new CustomEvent("showNext"));
-                let timeFrame = fudge.Loop.timeFrameGame / 1000;
-                this.speed.y += Characters.gravity.y * timeFrame;
-                let distance = fudge.Vector3.SCALE(this.speed, timeFrame);
-                this.cmpTransform.local.translate(distance);
-                if (this.directionGlobal == "right") {
-                    this.hitbox.cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x, this.mtxWorld.translation.y + 0.6, 0);
-                }
-                else if (this.directionGlobal == "left") {
-                    this.hitbox.cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x, this.mtxWorld.translation.y + 0.6, 0);
-                }
-                this.checkGroundCollision();
-            };
         }
         show(_action) {
             for (let child of this.getChildren()) {

@@ -17,16 +17,11 @@ var L16_ScrollerCollide;
         DIRECTION[DIRECTION["LEFT"] = 0] = "LEFT";
         DIRECTION[DIRECTION["RIGHT"] = 1] = "RIGHT";
     })(DIRECTION = L16_ScrollerCollide.DIRECTION || (L16_ScrollerCollide.DIRECTION = {}));
-    class Knight extends fudge.Node {
+    class Knight extends L16_ScrollerCollide.Characters {
         constructor(_name = "Knight") {
             super(_name);
-            this.directionGlobal = "right";
-            this.frameCounter = 0;
             this.hitboxes = [];
             this.healthbar = [];
-            // private time: fudge.Time = new fudge.Time();
-            this.speed = fudge.Vector3.ZERO();
-            this.healthpoints = 11;
             this.update = (_event) => {
                 this.broadcastEvent(new CustomEvent("showNext"));
                 let timeFrame = fudge.Loop.timeFrameGame / 1000;
@@ -101,6 +96,7 @@ var L16_ScrollerCollide;
                 nodeSprite.addEventListener("showNext", (_event) => { _event.currentTarget.showFrameNext(); }, true);
                 this.appendChild(nodeSprite);
             }
+            this.healthpoints = 11;
             this.creatHitbox();
             fudge.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, this.update);
         }
@@ -183,24 +179,6 @@ var L16_ScrollerCollide;
             }
             this.show(_action);
         }
-        updateHealthbar() {
-            if (this.healthpoints == 11) {
-                return;
-            }
-            let lifeDifference = 10 - this.healthpoints;
-            for (let i = 0; i < this.healthbar.length; i++) {
-                if (i < lifeDifference) {
-                    this.healthbar[i].act(L16_ScrollerCollide.STATUS.EMPTY);
-                }
-                else {
-                    this.healthbar[i].act(L16_ScrollerCollide.STATUS.FULL);
-                }
-            }
-        }
-        die() {
-            let deathScreen = document.getElementById("deathScreen");
-            deathScreen.style.visibility = "visible";
-        }
         checkGroundCollision() {
             for (let floor of L16_ScrollerCollide.level.getChildren()) {
                 if (floor.name != "Floor") {
@@ -251,9 +229,25 @@ var L16_ScrollerCollide;
                 }
             }
         }
+        updateHealthbar() {
+            if (this.healthpoints == 11) {
+                return;
+            }
+            let lifeDifference = 10 - this.healthpoints;
+            for (let i = 0; i < this.healthbar.length; i++) {
+                if (i < lifeDifference) {
+                    this.healthbar[i].act(L16_ScrollerCollide.STATUS.EMPTY);
+                }
+                else {
+                    this.healthbar[i].act(L16_ScrollerCollide.STATUS.FULL);
+                }
+            }
+        }
+        die() {
+            let deathScreen = document.getElementById("deathScreen");
+            deathScreen.style.visibility = "visible";
+        }
     }
-    Knight.speedMax = new fudge.Vector2(1.5, 5); // units per second
-    Knight.gravity = fudge.Vector2.Y(-3.4);
     L16_ScrollerCollide.Knight = Knight;
 })(L16_ScrollerCollide || (L16_ScrollerCollide = {}));
 //# sourceMappingURL=Knight.js.map
