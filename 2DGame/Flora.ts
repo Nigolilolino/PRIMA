@@ -14,7 +14,7 @@ namespace L16_ScrollerCollide {
     export class Flora extends fudge.Node {
       private static sprites: Sprite[];
       private static mesh: fudge.MeshSprite = new fudge.MeshSprite();
-      private static material: fudge.Material = new fudge.Material("Flora", fudge.ShaderUniColor, new fudge.CoatColored(fudge.Color.CSS("red", 0.5)));
+      //private static material: fudge.Material = new fudge.Material("Flora", fudge.ShaderUniColor, new fudge.CoatColored(fudge.Color.CSS("red", 0.5)));
       private static readonly pivot: fudge.Matrix4x4 = fudge.Matrix4x4.TRANSLATION(fudge.Vector3.Y(-0.5));
   
       public constructor(_type: ENVI_TYPE, _x: number, _y: number, _z: number) {
@@ -27,19 +27,19 @@ namespace L16_ScrollerCollide {
           let nodeSprite: NodeSprite = new NodeSprite("TreeRoot", Flora.sprites[1]);
           nodeSprite.activate(true);
           this.appendChild(nodeSprite);
-        }else if (_type == "TreeCrown") {
+        } else if (_type == "TreeCrown") {
           let nodeSprite: NodeSprite = new NodeSprite("TreeCrown", Flora.sprites[2]);
           nodeSprite.activate(true);
           this.appendChild(nodeSprite);
-        }else if (_type == "Leaves") {
+        } else if (_type == "Leaves") {
           let nodeSprite: NodeSprite = new NodeSprite("Leaves", Flora.sprites[3]);
           nodeSprite.activate(true);
           this.appendChild(nodeSprite);
-        }else if (_type == "Background") {
+        } else if (_type == "Background") {
           let nodeSprite: NodeSprite = new NodeSprite("Background", Flora.sprites[4]);
           nodeSprite.activate(true);
           this.appendChild(nodeSprite);
-        }else if (_type == "Sky") {
+        } else if (_type == "Sky") {
           let nodeSprite: NodeSprite = new NodeSprite("Sky", Flora.sprites[5]);
           nodeSprite.activate(true);
           this.appendChild(nodeSprite);
@@ -48,7 +48,6 @@ namespace L16_ScrollerCollide {
         this.cmpTransform.local.translation = new fudge.Vector3(_x, _y, _z);
         //this.addComponent(new fudge.ComponentMaterial(Flora.material));
         let cmpMesh: fudge.ComponentMesh = new fudge.ComponentMesh(Flora.mesh);
-        //cmpMesh.pivot.translateY(-0.5);
         cmpMesh.pivot = Flora.pivot;
         this.addComponent(cmpMesh);
       }
@@ -91,8 +90,7 @@ namespace L16_ScrollerCollide {
         let rect: fudge.Rectangle = fudge.Rectangle.GET(0, 0, 100, 100);
         let topleft: fudge.Vector3 = new fudge.Vector3(-0.5, 0.5, 0);
         let bottomright: fudge.Vector3 = new fudge.Vector3(0.5, -0.5, 0);
-        
-        //let pivot: fudge.Matrix4x4 = this.getComponent(fudge.ComponentMesh).pivot;
+ 
         let mtxResult: fudge.Matrix4x4 = fudge.Matrix4x4.MULTIPLICATION(this.mtxWorld, Flora.pivot);
         topleft.transform(mtxResult, true);
         bottomright.transform(mtxResult, true);

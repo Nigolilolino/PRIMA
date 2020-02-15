@@ -2,24 +2,9 @@
 namespace L16_ScrollerCollide {
   import fudge = FudgeCore;
 
-  export enum ACTION {
-    IDLE = "Idle",
-    WALK = "Walk",
-    JUMP = "Jump",
-    MID_AIR = "MidAir",
-    HIT = "Hit",
-    DIE = "Die",
-    GETTING_DAMAGE = "GettingDamage"
-
-  }
-  export enum DIRECTION {
-    LEFT, RIGHT
-  }
-
   export class Knight extends Characters {
     public hitboxes: Hitbox[] = [];
     public healthbar: Healthpoints[] = [];
-    private action: ACTION;
 
     constructor(_name: string = "Knight") {
       super(_name);
@@ -88,15 +73,9 @@ namespace L16_ScrollerCollide {
     public createHitboxWeapon(): Hitbox {
       let hitboxWeapon: Hitbox = new Hitbox(this, "WeaponHitbox");
       hitboxWeapon.cmpTransform.local.scaleX(0.05);
-      hitboxWeapon.cmpTransform.local.scaleY(0.1);
+      hitboxWeapon.cmpTransform.local.scaleY(0.2);
       this.hitboxes.push(hitboxWeapon);
       return this.hitboxes[1];
-    }
-
-    public show(_action: ACTION): void {
-      for (let child of this.getChildren()) {
-        child.activate(child.name == _action);
-      }
     }
 
     public act(_action: ACTION, _direction?: DIRECTION): void {
@@ -133,6 +112,7 @@ namespace L16_ScrollerCollide {
           }
 
         case ACTION.HIT:
+          Sound.play("Sword");
           this.action = _action;
           this.speed.x = 0;
           if (this.frameCounter > 6) {
@@ -144,69 +124,7 @@ namespace L16_ScrollerCollide {
       this.show(_action);
     }
 
-    protected checkGroundCollision(): void {
-
-
-      for (let floor of level.getChildren()) {
-
-        if (floor.name != "Floor") {
-          continue;
-        }
-
-        let rect: fudge.Rectangle = (<Floor>floor).getRectWorld();
-        let pointLeft: fudge.Vector2;
-        let pointRight: fudge.Vector2;
-        let hitLeft: boolean;
-        let hitRight: boolean;
-
-        if (this.directionGlobal == "right") {
-          if (this.action == ACTION.WALK) {
-            pointLeft = new fudge.Vector2(this.cmpTransform.local.translation.x, this.cmpTransform.local.translation.y);
-            pointRight = new fudge.Vector2(this.cmpTransform.local.translation.x, this.cmpTransform.local.translation.y);
-            hitLeft = rect.isInside(pointLeft);
-            hitRight = rect.isInside(pointRight);
-          } else {
-            pointLeft = new fudge.Vector2(this.cmpTransform.local.translation.x - 0.40, this.cmpTransform.local.translation.y);
-            pointRight = new fudge.Vector2(this.cmpTransform.local.translation.x, this.cmpTransform.local.translation.y);
-            hitLeft = rect.isInside(pointLeft);
-            hitRight = rect.isInside(pointRight);
-          }
-
-        } else if (this.directionGlobal == "left") {
-          if (this.action == ACTION.WALK) {
-            pointLeft = new fudge.Vector2(this.cmpTransform.local.translation.x, this.cmpTransform.local.translation.y);
-            pointRight = new fudge.Vector2(this.cmpTransform.local.translation.x, this.cmpTransform.local.translation.y);
-            hitLeft = rect.isInside(pointLeft);
-            hitRight = rect.isInside(pointRight);
-          } else {
-            pointLeft = new fudge.Vector2(this.cmpTransform.local.translation.x + 0.4, this.cmpTransform.local.translation.y);
-            pointRight = new fudge.Vector2(this.cmpTransform.local.translation.x, this.cmpTransform.local.translation.y);
-            hitLeft = rect.isInside(pointLeft);
-            hitRight = rect.isInside(pointRight);
-          }
-        }
-
-        if (hitRight || hitLeft) {
-          let translation: fudge.Vector3 = this.cmpTransform.local.translation;
-          translation.y = rect.y;
-          if (translation.y - 0.4 > this.cmpTransform.local.translation.y) {
-            if (this.directionGlobal == "left") {
-              translation.x = this.cmpTransform.local.translation.x + 0.1;
-              translation.y = this.cmpTransform.local.translation.y;
-            } else {
-              translation.x = this.cmpTransform.local.translation.x - 0.1;
-              translation.y = this.cmpTransform.local.translation.y;
-            }
-
-          }
-          this.cmpTransform.local.translation = translation;
-          this.speed.y = 0;
-        }
-
-      }
-    }
-
-    private updateHealthbar() {
+    private updateHealthbar(): void {
       if (this.healthpoints == 11) {
         return;
       }
@@ -226,6 +144,7 @@ namespace L16_ScrollerCollide {
       let timeFrame: number = fudge.Loop.timeFrameGame / 1000;
       this.speed.y += Knight.gravity.y * timeFrame;
       let distance: fudge.Vector3 = fudge.Vector3.SCALE(this.speed, timeFrame);
+      this.cmpTransform.local.translate(distance);
 
       if (this.directionGlobal == "right") {
         if (this.action == ACTION.WALK || this.action == ACTION.JUMP && this.speed.x != 0) {
@@ -233,7 +152,7 @@ namespace L16_ScrollerCollide {
           this.hitboxes[1].cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x + 0.45, this.mtxWorld.translation.y + 0.35, 0);
         } else {
           this.hitboxes[0].cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x - 0.2, this.mtxWorld.translation.y + 0.8, 0);
-          this.hitboxes[1].cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x + 0.45, this.mtxWorld.translation.y + 0.35, 0);
+          this.hitboxes[1].cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x + 0.45, this.mtxWorld.translation.y + 0.5, 0);
         }
       } else if (this.directionGlobal == "left") {
         if (this.action == ACTION.WALK || this.action == ACTION.JUMP && this.speed.x != 0) {
@@ -244,8 +163,12 @@ namespace L16_ScrollerCollide {
           this.hitboxes[1].cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x - 0.45, this.mtxWorld.translation.y + 0.35, 0);
         }
       }
-      this.cmpTransform.local.translate(distance);
 
+      this.checkForInteractions();
+      this.checkGroundCollision(0.4, 0);
+    }
+
+    private checkForInteractions(): void {
       let colider: string = this.hitboxes[0].checkCollision();
 
       if (colider == "Hit") {
@@ -267,22 +190,24 @@ namespace L16_ScrollerCollide {
         this.updateHealthbar();
       }
 
-      let values: (string | fudge.Node)[] = this.hitboxes[1].checkCollisionWeapon();
-      if (values) {
-        if (this.frameCounter == 6 || values[0] == "Hit" && this.frameCounter == 7) {
-          let enemyHitbox: Hitbox = <Hitbox>values[1];
+      let combatValues: (string | fudge.Node)[] = this.hitboxes[1].checkCollisionWeapon();
+      if (combatValues) {
+        if (this.frameCounter == 6 || combatValues[0] == "Hit" && this.frameCounter == 7) {
+          let enemyHitbox: Hitbox = <Hitbox>combatValues[1];
           let enemy: Enemy = <Enemy>enemyHitbox.master;
           if (this.directionGlobal == "right") {
             enemy.cmpTransform.local.translateX(+0.5);
             enemy.receiveHit();
+            Sound.play("HittingStone");
+            Sound.play("HurtMonsterSmall");
           } else {
             enemy.cmpTransform.local.translateX(-0.5);
             enemy.receiveHit();
+            Sound.play("HittingStone");
+            Sound.play("HurtMonsterSmall");
           }
         }
       }
-
-      this.checkGroundCollision();
     }
 
   }

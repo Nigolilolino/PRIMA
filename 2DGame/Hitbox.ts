@@ -3,12 +3,12 @@ namespace L16_ScrollerCollide {
     import fudge = FudgeCore;
   
     export class Hitbox extends fudge.Node {
-      public master: fudge.Node;
+
       private static mesh: fudge.MeshSprite = new fudge.MeshSprite();
       private static material: fudge.Material = new fudge.Material("Hitbox", fudge.ShaderUniColor, new fudge.CoatColored(fudge.Color.CSS("black", 0.5)));
       private static readonly pivot: fudge.Matrix4x4 = fudge.Matrix4x4.TRANSLATION(fudge.Vector3.Y(-0.5));
+      public master: fudge.Node;
       
-  
       public constructor(_master: fudge.Node, _name?: string) {
 
         if (_name) {
@@ -18,7 +18,7 @@ namespace L16_ScrollerCollide {
         }
         this.master = _master;
         this.addComponent(new fudge.ComponentTransform());
-        this.addComponent(new fudge.ComponentMaterial(Hitbox.material));
+        //this.addComponent(new fudge.ComponentMaterial(Hitbox.material));
         let cmpMesh: fudge.ComponentMesh = new fudge.ComponentMesh(Hitbox.mesh);
         cmpMesh.pivot = Hitbox.pivot;
         this.addComponent(cmpMesh); 
@@ -92,11 +92,10 @@ namespace L16_ScrollerCollide {
           } else {
             continue;
           }
-
         }
       }
 
-      public checkCollisionWeapon(): any {
+      public checkCollisionWeapon(): (string | fudge.Node)[] {
 
         for (let floor of level.getChildren()) {
 
@@ -124,9 +123,9 @@ namespace L16_ScrollerCollide {
             if (hit && floor.name == "EnemyHitbox") {
               return ["Hit", floor];
             }
-
         }
       }
+        return [null, null];
 
     }
   }

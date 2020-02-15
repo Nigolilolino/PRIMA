@@ -61,7 +61,7 @@ namespace L16_ScrollerCollide {
       let titleScreen: HTMLDivElement = <HTMLDivElement>document.getElementById("startscreen");
       titleScreen.style.visibility = "hidden";
       Sound.init();
-      //Sound.play("Theme");
+      Sound.play("Theme");
 
       let canvas: HTMLCanvasElement = document.querySelector("canvas");
       let images: NodeListOf<HTMLImageElement> = document.querySelectorAll("img");
@@ -156,10 +156,8 @@ namespace L16_ScrollerCollide {
   
     function createLevel(): fudge.Node {
       let level: fudge.Node = new fudge.Node("Level"); 
-
-      console.log(jsonData[0].level1.levelObjects);
     
-      for (let i = 0; i < jsonData[0].level1.levelObjects.length; i++) {
+      for (let i: number = 0; i < jsonData[0].level1.levelObjects.length; i++) {
         let object = jsonData[0].level1.levelObjects[i];
         switch (object.objectName) {
           case "Floor":
@@ -191,11 +189,11 @@ namespace L16_ScrollerCollide {
             if (object.type == "Ranged") {
               enemyranged = new EnemyRanged("Stoner", object.posX, object.posy);
               level.appendChild(enemyranged);
-              level.appendChild(enemyranged.creatHitbox());
+              level.appendChild(enemyranged.creatHitbox(0.4 , 0.6));
             } else if (object.type == "Melee") {
               enemyMelee = new EnemyMelee("StonerMelee", object.posX, object.posy);
               level.appendChild(enemyMelee);
-              level.appendChild(enemyMelee.creatHitbox());
+              level.appendChild(enemyMelee.creatHitbox(0.9, 0.5));
             }
             break;  
             case "Background":

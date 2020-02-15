@@ -26,7 +26,6 @@ namespace L16_ScrollerCollide {
         this.cmpTransform.local.scale(new fudge.Vector3(0.6, 0.6, 0));
         this.walkingTimeMax = 20;
         this.healthpoints = 4;
-        fudge.Loop.addEventListener(fudge.EVENT.LOOP_FRAME, this.update);
       }
   
       public static generateSprites(_txtImage: fudge.TextureImage): void {
@@ -43,20 +42,6 @@ namespace L16_ScrollerCollide {
         sprite.generateByGrid(_txtImage, fudge.Rectangle.GET(15, 87, 68, 75), 7, fudge.Vector2.ZERO(), 64, fudge.ORIGIN2D.BOTTOMCENTER);
         EnemyRanged.sprites.push(sprite);
 
-      }
-
-      public creatHitbox(): Hitbox {
-        let hitbox: Hitbox = new Hitbox(this, "EnemyHitbox");
-        hitbox.cmpTransform.local.scaleX(0.4);
-        hitbox.cmpTransform.local.scaleY(0.6);
-        this.hitbox = hitbox;
-        return hitbox;
-      }
-
-      public show(_action: ACTION): void {
-        for (let child of this.getChildren()) {
-          child.activate(child.name == _action);
-        }
       }
   
       public act(_action: ACTION, _direction: String = this.directionGlobal): void {
@@ -120,31 +105,7 @@ namespace L16_ScrollerCollide {
         }
         this.show(_action);
       }
-      public receiveHit(): void {
-        super.receiveHit();
-    }
-
-      protected deleteThis(): void {
-        fudge.Loop.removeEventListener(fudge.EVENT.LOOP_FRAME, this.update);
-        super.deleteThis();
-      }
   
-  
-      protected update = (_event: fudge.Eventƒ): void => {
-        this.broadcastEvent(new CustomEvent("showNext"));
-        let timeFrame: number = fudge.Loop.timeFrameGame / 1000;
-        this.speed.y += Enemy.gravity.y * timeFrame;
-        let distance: fudge.Vector3 = fudge.Vector3.SCALE(this.speed, timeFrame);
-        this.cmpTransform.local.translate(distance);
-
-        if (this.directionGlobal == "right") {
-          this.hitbox.cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x, this.mtxWorld.translation.y + 0.6, 0);
-        } else if (this.directionGlobal == "left") {
-          this.hitbox.cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x, this.mtxWorld.translation.y + 0.6, 0);
-        }
-        this.checkGroundCollision();
-      }
-
       protected checkDistanceToPlayer(): boolean {
         if (this.getParent() != null) {
           let level: fudge.Node = this.getParent();

@@ -13,7 +13,7 @@ namespace L16_ScrollerCollide {
     export class Floor extends fudge.Node {
       private static sprites: Sprite[];
       private static mesh: fudge.MeshSprite = new fudge.MeshSprite();
-      private static material: fudge.Material = new fudge.Material("Floor", fudge.ShaderUniColor, new fudge.CoatColored(fudge.Color.CSS("red", 0.5)));
+      //private static material: fudge.Material = new fudge.Material("Floor", fudge.ShaderUniColor, new fudge.CoatColored(fudge.Color.CSS("red", 0.5)));
       private static readonly pivot: fudge.Matrix4x4 = fudge.Matrix4x4.TRANSLATION(fudge.Vector3.Y(-0.5));
   
       public constructor(_type: TYPE) {
@@ -45,7 +45,6 @@ namespace L16_ScrollerCollide {
         
         //this.addComponent(new fudge.ComponentMaterial(Floor.material));
         let cmpMesh: fudge.ComponentMesh = new fudge.ComponentMesh(Floor.mesh);
-        //cmpMesh.pivot.translateY(-0.5);
         cmpMesh.pivot = Floor.pivot;
         this.addComponent(cmpMesh);
       }
@@ -102,8 +101,6 @@ namespace L16_ScrollerCollide {
         let rect: fudge.Rectangle = fudge.Rectangle.GET(0, 0, 100, 100);
         let topleft: fudge.Vector3 = new fudge.Vector3(-0.5, 0.5, 0);
         let bottomright: fudge.Vector3 = new fudge.Vector3(0.5, -0.5, 0);
-        
-        //let pivot: fudge.Matrix4x4 = this.getComponent(fudge.ComponentMesh).pivot;
         let mtxResult: fudge.Matrix4x4 = fudge.Matrix4x4.MULTIPLICATION(this.mtxWorld, Floor.pivot);
         topleft.transform(mtxResult, true);
         bottomright.transform(mtxResult, true);

@@ -42,7 +42,7 @@ var L16_ScrollerCollide;
         let titleScreen = document.getElementById("startscreen");
         titleScreen.style.visibility = "hidden";
         L16_ScrollerCollide.Sound.init();
-        //Sound.play("Theme");
+        L16_ScrollerCollide.Sound.play("Theme");
         let canvas = document.querySelector("canvas");
         let images = document.querySelectorAll("img");
         loadTextures(images);
@@ -121,7 +121,6 @@ var L16_ScrollerCollide;
     }
     function createLevel() {
         let level = new L16_ScrollerCollide.fudge.Node("Level");
-        console.log(jsonData[0].level1.levelObjects);
         for (let i = 0; i < jsonData[0].level1.levelObjects.length; i++) {
             let object = jsonData[0].level1.levelObjects[i];
             switch (object.objectName) {
@@ -153,12 +152,12 @@ var L16_ScrollerCollide;
                     if (object.type == "Ranged") {
                         enemyranged = new L16_ScrollerCollide.EnemyRanged("Stoner", object.posX, object.posy);
                         level.appendChild(enemyranged);
-                        level.appendChild(enemyranged.creatHitbox());
+                        level.appendChild(enemyranged.creatHitbox(0.4, 0.6));
                     }
                     else if (object.type == "Melee") {
                         enemyMelee = new L16_ScrollerCollide.EnemyMelee("StonerMelee", object.posX, object.posy);
                         level.appendChild(enemyMelee);
-                        level.appendChild(enemyMelee.creatHitbox());
+                        level.appendChild(enemyMelee.creatHitbox(0.9, 0.5));
                     }
                     break;
                 case "Background":

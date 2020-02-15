@@ -7,20 +7,6 @@ var L16_ScrollerCollide;
     class EnemyMelee extends L16_ScrollerCollide.Enemy {
         constructor(_name, _x, _y) {
             super(_name);
-            this.update = (_event) => {
-                this.broadcastEvent(new CustomEvent("showNext"));
-                let timeFrame = fudge.Loop.timeFrameGame / 1000;
-                this.speed.y += L16_ScrollerCollide.Enemy.gravity.y * timeFrame;
-                let distance = fudge.Vector3.SCALE(this.speed, timeFrame);
-                this.cmpTransform.local.translate(distance);
-                if (this.directionGlobal == "right") {
-                    this.hitbox.cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x + 0.1, this.mtxWorld.translation.y + 0.6, 0);
-                }
-                else if (this.directionGlobal == "left") {
-                    this.hitbox.cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x - 0.1, this.mtxWorld.translation.y + 0.6, 0);
-                }
-                this.checkGroundCollision();
-            };
             this.addComponent(new fudge.ComponentTransform());
             for (let sprite of EnemyMelee.sprites) {
                 let nodeSprite = new L16_ScrollerCollide.NodeSprite(sprite.name, sprite);
@@ -32,7 +18,6 @@ var L16_ScrollerCollide;
             this.cmpTransform.local.scale(new fudge.Vector3(0.6, 0.6, 0));
             this.walkingTimeMax = 70;
             this.healthpoints = 10;
-            fudge.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, this.update);
         }
         static generateSprites(_txtImage) {
             EnemyMelee.sprites = [];
@@ -45,18 +30,6 @@ var L16_ScrollerCollide;
             sprite = new L16_ScrollerCollide.Sprite(L16_ScrollerCollide.ACTION.HIT);
             sprite.generateByGrid(_txtImage, fudge.Rectangle.GET(14, 137, 94, 85), 8, fudge.Vector2.ZERO(), 45, fudge.ORIGIN2D.BOTTOMCENTER);
             EnemyMelee.sprites.push(sprite);
-        }
-        creatHitbox() {
-            let hitbox = new L16_ScrollerCollide.Hitbox(this, "EnemyHitbox");
-            hitbox.cmpTransform.local.scaleX(0.9);
-            hitbox.cmpTransform.local.scaleY(0.5);
-            this.hitbox = hitbox;
-            return hitbox;
-        }
-        show(_action) {
-            for (let child of this.getChildren()) {
-                child.activate(child.name == _action);
-            }
         }
         act(_action, _direction = this.directionGlobal) {
             let fightMode = this.checkDistanceToPlayer();
@@ -117,17 +90,11 @@ var L16_ScrollerCollide;
                         break;
                     }
                 case L16_ScrollerCollide.ACTION.HIT:
+                    L16_ScrollerCollide.Sound.play("HurtMonsterBig");
                     this.speed.x = EnemyMelee.speedMax.x + 1;
                     break;
             }
             this.show(_action);
-        }
-        receiveHit() {
-            super.receiveHit();
-        }
-        deleteThis() {
-            fudge.Loop.removeEventListener("loopFrame" /* LOOP_FRAME */, this.update);
-            super.deleteThis();
         }
         checkDistanceToPlayer() {
             if (this.getParent() != null) {
@@ -140,7 +107,7 @@ var L16_ScrollerCollide;
                 let positionOfPlayerY = children[0].cmpTransform.local.translation.y;
                 let distanceX = positionOfEnemyX - positionOfPlayerX;
                 let distanceY = positionOfEnemyY - positionOfPlayerY;
-                if (distanceX > -1 && distanceX < 1 && distanceY > -0.7) {
+                if (distanceX > -1 && distanceX < 1 && distanceY > -1) {
                     if (distanceX > 0) {
                         this.directionGlobal = "left";
                     }
@@ -151,9 +118,6 @@ var L16_ScrollerCollide;
                 }
             }
             return false;
-        }
-        checkGroundCollision() {
-            super.checkGroundCollision();
         }
     }
     L16_ScrollerCollide.EnemyMelee = EnemyMelee;

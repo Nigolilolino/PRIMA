@@ -50,7 +50,6 @@ var L16_ScrollerCollide;
             this.cmpTransform.local.translation = new fudge.Vector3(_x, _y, _z);
             //this.addComponent(new fudge.ComponentMaterial(Flora.material));
             let cmpMesh = new fudge.ComponentMesh(Flora.mesh);
-            //cmpMesh.pivot.translateY(-0.5);
             cmpMesh.pivot = Flora.pivot;
             this.addComponent(cmpMesh);
         }
@@ -83,7 +82,6 @@ var L16_ScrollerCollide;
             let rect = fudge.Rectangle.GET(0, 0, 100, 100);
             let topleft = new fudge.Vector3(-0.5, 0.5, 0);
             let bottomright = new fudge.Vector3(0.5, -0.5, 0);
-            //let pivot: fudge.Matrix4x4 = this.getComponent(fudge.ComponentMesh).pivot;
             let mtxResult = fudge.Matrix4x4.MULTIPLICATION(this.mtxWorld, Flora.pivot);
             topleft.transform(mtxResult, true);
             bottomright.transform(mtxResult, true);
@@ -94,7 +92,7 @@ var L16_ScrollerCollide;
         }
     }
     Flora.mesh = new fudge.MeshSprite();
-    Flora.material = new fudge.Material("Flora", fudge.ShaderUniColor, new fudge.CoatColored(fudge.Color.CSS("red", 0.5)));
+    //private static material: fudge.Material = new fudge.Material("Flora", fudge.ShaderUniColor, new fudge.CoatColored(fudge.Color.CSS("red", 0.5)));
     Flora.pivot = fudge.Matrix4x4.TRANSLATION(fudge.Vector3.Y(-0.5));
     L16_ScrollerCollide.Flora = Flora;
 })(L16_ScrollerCollide || (L16_ScrollerCollide = {}));

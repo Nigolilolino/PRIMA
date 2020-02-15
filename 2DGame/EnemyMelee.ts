@@ -25,7 +25,6 @@ namespace L16_ScrollerCollide {
         this.cmpTransform.local.scale(new fudge.Vector3(0.6, 0.6, 0));
         this.walkingTimeMax = 70;
         this.healthpoints = 10;
-        fudge.Loop.addEventListener(fudge.EVENT.LOOP_FRAME, this.update);
       }
   
       public static generateSprites(_txtImage: fudge.TextureImage): void {
@@ -43,20 +42,6 @@ namespace L16_ScrollerCollide {
         EnemyMelee.sprites.push(sprite);
       }
 
-      public creatHitbox(): Hitbox {
-        let hitbox: Hitbox = new Hitbox(this, "EnemyHitbox");
-        hitbox.cmpTransform.local.scaleX(0.9);
-        hitbox.cmpTransform.local.scaleY(0.5);
-        this.hitbox = hitbox;
-        return hitbox;
-      }
-
-      public show(_action: ACTION): void {
-        for (let child of this.getChildren()) {
-          child.activate(child.name == _action);
-        }
-      }
-  
       public act(_action: ACTION, _direction: String = this.directionGlobal): void {
         let fightMode: boolean = this.checkDistanceToPlayer();
         if (fightMode == true) {
@@ -112,34 +97,11 @@ namespace L16_ScrollerCollide {
             }
             
           case ACTION.HIT:
+            Sound.play("HurtMonsterBig");
             this.speed.x = EnemyMelee.speedMax.x + 1;
             break;
         }
         this.show(_action);
-      }
-
-      public receiveHit(): void {
-        super.receiveHit();
-    }
-
-      protected deleteThis(): void {
-        fudge.Loop.removeEventListener(fudge.EVENT.LOOP_FRAME, this.update);
-        super.deleteThis();
-      }
-  
-      protected update = (_event: fudge.Eventƒ): void => {
-        this.broadcastEvent(new CustomEvent("showNext"));
-        let timeFrame: number = fudge.Loop.timeFrameGame / 1000;
-        this.speed.y += Enemy.gravity.y * timeFrame;
-        let distance: fudge.Vector3 = fudge.Vector3.SCALE(this.speed, timeFrame);
-        this.cmpTransform.local.translate(distance);
-
-        if (this.directionGlobal == "right") {
-          this.hitbox.cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x + 0.1, this.mtxWorld.translation.y + 0.6, 0);
-        } else if (this.directionGlobal == "left") {
-          this.hitbox.cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x - 0.1, this.mtxWorld.translation.y + 0.6, 0);
-        }
-        this.checkGroundCollision();
       }
 
       protected checkDistanceToPlayer(): boolean {
@@ -154,7 +116,7 @@ namespace L16_ScrollerCollide {
           let positionOfPlayerY: number = children[0].cmpTransform.local.translation.y;
           let distanceX: number = positionOfEnemyX - positionOfPlayerX;
           let distanceY: number = positionOfEnemyY - positionOfPlayerY;
-          if (distanceX > -1 && distanceX < 1 && distanceY > -0.7) {
+          if (distanceX > -1 && distanceX < 1 && distanceY > -1) {
             if (distanceX > 0) {
               this.directionGlobal = "left";
             } else {
@@ -165,11 +127,5 @@ namespace L16_ScrollerCollide {
         }
         return false;
       }
-
-  
-      protected checkGroundCollision(): void {
-        super.checkGroundCollision();
-      }
-
     }
   }
