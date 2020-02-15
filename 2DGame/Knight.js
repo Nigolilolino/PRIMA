@@ -52,7 +52,9 @@ var L16_ScrollerCollide;
                 this.cmpTransform.local.translate(distance);
                 let colider = this.hitboxes[0].checkCollision();
                 if (colider == "Hit") {
-                    this.healthpoints = this.healthpoints - 1;
+                    if (this.healthpoints != 11)
+                        L16_ScrollerCollide.Sound.play("HitHuman");
+                    this.receiveHit();
                     this.updateHealthbar();
                     if (this.directionGlobal == "right") {
                         this.cmpTransform.local.translateX(-0.5);
@@ -69,10 +71,6 @@ var L16_ScrollerCollide;
                         this.healthpoints = this.healthpoints + 2;
                     }
                     this.updateHealthbar();
-                }
-                if (this.healthpoints <= 0 || this.cmpTransform.local.translation.y < -1) {
-                    fudge.Loop.stop();
-                    this.die();
                 }
                 let values = this.hitboxes[1].checkCollisionWeapon();
                 if (values) {
@@ -168,6 +166,8 @@ var L16_ScrollerCollide;
                         this.directionGlobal = "left";
                         this.frameCounter = 0;
                     }
+                    if (this.speed.y == 0)
+                        L16_ScrollerCollide.Sound.play("WalkOnGrass");
                     break;
                 case ACTION.JUMP:
                     this.action = _action;
@@ -260,10 +260,6 @@ var L16_ScrollerCollide;
                     this.healthbar[i].act(L16_ScrollerCollide.STATUS.FULL);
                 }
             }
-        }
-        die() {
-            let deathScreen = document.getElementById("deathScreen");
-            deathScreen.style.visibility = "visible";
         }
     }
     L16_ScrollerCollide.Knight = Knight;

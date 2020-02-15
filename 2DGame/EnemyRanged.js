@@ -45,9 +45,6 @@ var L16_ScrollerCollide;
             sprite = new L16_ScrollerCollide.Sprite(L16_ScrollerCollide.ACTION.HIT);
             sprite.generateByGrid(_txtImage, fudge.Rectangle.GET(15, 87, 68, 75), 7, fudge.Vector2.ZERO(), 64, fudge.ORIGIN2D.BOTTOMCENTER);
             EnemyRanged.sprites.push(sprite);
-            // sprite = new Sprite(ACTION.DIE);
-            // sprite.generateByGrid(_txtImage, fudge.Rectangle.GET(20, 210, 71, 67), 5, fudge.Vector2.ZERO(), 64, fudge.ORIGIN2D.BOTTOMCENTER);
-            // EnemyRanged.sprites.push(sprite);
         }
         creatHitbox() {
             let hitbox = new L16_ScrollerCollide.Hitbox(this, "EnemyHitbox");
@@ -108,6 +105,8 @@ var L16_ScrollerCollide;
                     else if (direction == -1) {
                         this.directionGlobal = "left";
                     }
+                    if (this.speed.y == 0)
+                        L16_ScrollerCollide.Sound.play("WalkOnGrass");
                     break;
                 case L16_ScrollerCollide.ACTION.JUMP:
                     if (this.speed.y != 0) {
@@ -122,6 +121,13 @@ var L16_ScrollerCollide;
                     break;
             }
             this.show(_action);
+        }
+        receiveHit() {
+            super.receiveHit();
+        }
+        deleteThis() {
+            fudge.Loop.removeEventListener("loopFrame" /* LOOP_FRAME */, this.update);
+            super.deleteThis();
         }
         checkDistanceToPlayer() {
             if (this.getParent() != null) {

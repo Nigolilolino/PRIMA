@@ -18,9 +18,12 @@ var L16_ScrollerCollide;
         }
         receiveHit() {
             this.healthpoints = this.healthpoints - 1;
-            if (this.healthpoints <= 0) {
+            if (this.healthpoints <= 0 && this.name != "Knight") {
                 this.frameCounter = 0;
                 this.deleteThis();
+            }
+            else if (this.healthpoints <= 0 && this.name == "Knight") {
+                this.endGame();
             }
         }
         deleteThis() {
@@ -58,9 +61,14 @@ var L16_ScrollerCollide;
                 }
             }
         }
+        endGame() {
+            fudge.Loop.stop();
+            let deathScreen = document.getElementById("deathScreen");
+            deathScreen.style.visibility = "visible";
+        }
     }
     Characters.speedMax = new fudge.Vector2(1.5, 5);
-    Characters.gravity = fudge.Vector2.Y(-4);
+    Characters.gravity = fudge.Vector2.Y(-3.5);
     L16_ScrollerCollide.Characters = Characters;
 })(L16_ScrollerCollide || (L16_ScrollerCollide = {}));
 //# sourceMappingURL=Characters.js.map

@@ -42,7 +42,7 @@ var L16_ScrollerCollide;
         let titleScreen = document.getElementById("startscreen");
         titleScreen.style.visibility = "hidden";
         L16_ScrollerCollide.Sound.init();
-        //Sound.play("testTrack");
+        //Sound.play("Theme");
         let canvas = document.querySelector("canvas");
         let images = document.querySelectorAll("img");
         loadTextures(images);
@@ -174,8 +174,20 @@ var L16_ScrollerCollide;
             }
         }
         let floor = new L16_ScrollerCollide.Floor(L16_ScrollerCollide.TYPE.DIRT);
-        floor.cmpTransform.local.translateX(1);
-        floor.cmpTransform.local.translateY(1);
+        floor.cmpTransform.local.translateX(-1.5);
+        floor.cmpTransform.local.translateY(0);
+        floor.cmpTransform.local.scaleX(1);
+        floor.cmpTransform.local.scaleY(0.5);
+        level.appendChild(floor);
+        floor = new L16_ScrollerCollide.Floor(L16_ScrollerCollide.TYPE.DIRT);
+        floor.cmpTransform.local.translateX(-2.4);
+        floor.cmpTransform.local.translateY(2);
+        floor.cmpTransform.local.scaleX(2);
+        floor.cmpTransform.local.scaleY(2);
+        level.appendChild(floor);
+        floor = new L16_ScrollerCollide.Floor(L16_ScrollerCollide.TYPE.DIRT);
+        floor.cmpTransform.local.translateX(22.3);
+        floor.cmpTransform.local.translateY(2);
         floor.cmpTransform.local.scaleX(2);
         floor.cmpTransform.local.scaleY(2);
         level.appendChild(floor);
@@ -340,16 +352,18 @@ var L16_ScrollerCollide;
     function displayMenue() {
         let menueScreen = document.getElementById("menue");
         menueScreen.style.visibility = "visible";
+        L16_ScrollerCollide.fudge.Loop.stop();
     }
     function closeMenue() {
         let menueScreen = document.getElementById("menue");
         menueScreen.style.visibility = "hidden";
+        L16_ScrollerCollide.fudge.Loop.start(L16_ScrollerCollide.fudge.LOOP_MODE.TIME_GAME, 15);
     }
     function changeVolume() {
         let volumeSlider = document.getElementById("musicVolume");
         let value = parseInt(volumeSlider.value);
         L16_ScrollerCollide.Sound.vol = value / 100;
-        L16_ScrollerCollide.Sound.play("testTrack");
+        L16_ScrollerCollide.Sound.play("Theme");
     }
     function loadTextures(_images) {
         let txtHare1 = new L16_ScrollerCollide.fudge.TextureImage();

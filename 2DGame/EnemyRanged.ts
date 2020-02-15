@@ -43,9 +43,6 @@ namespace L16_ScrollerCollide {
         sprite.generateByGrid(_txtImage, fudge.Rectangle.GET(15, 87, 68, 75), 7, fudge.Vector2.ZERO(), 64, fudge.ORIGIN2D.BOTTOMCENTER);
         EnemyRanged.sprites.push(sprite);
 
-        // sprite = new Sprite(ACTION.DIE);
-        // sprite.generateByGrid(_txtImage, fudge.Rectangle.GET(20, 210, 71, 67), 5, fudge.Vector2.ZERO(), 64, fudge.ORIGIN2D.BOTTOMCENTER);
-        // EnemyRanged.sprites.push(sprite);
       }
 
       public creatHitbox(): Hitbox {
@@ -105,6 +102,8 @@ namespace L16_ScrollerCollide {
             } else if (direction == -1) {
               this.directionGlobal = "left";
             }
+            if (this.speed.y == 0)
+              Sound.play("WalkOnGrass");
             break;
           case ACTION.JUMP:
             if (this.speed.y != 0) {
@@ -121,6 +120,15 @@ namespace L16_ScrollerCollide {
         }
         this.show(_action);
       }
+      public receiveHit(): void {
+        super.receiveHit();
+    }
+
+      protected deleteThis(): void {
+        fudge.Loop.removeEventListener(fudge.EVENT.LOOP_FRAME, this.update);
+        super.deleteThis();
+      }
+  
   
       protected update = (_event: fudge.Eventƒ): void => {
         this.broadcastEvent(new CustomEvent("showNext"));

@@ -36,7 +36,7 @@ namespace L16_ScrollerCollide {
       let volumeSlider: HTMLInputElement = <HTMLInputElement>document.getElementById("musicVolume");
       volumeSlider.addEventListener("click", changeVolume);
 
-      let showControlsBtns = document.getElementsByClassName("showControlsBtn");
+      let showControlsBtns: HTMLCollectionOf<Element> = document.getElementsByClassName("showControlsBtn");
       for (let i: number = 0; i < showControlsBtns.length; i++) {
         showControlsBtns[i].addEventListener("click", displayControls);
       }
@@ -61,7 +61,7 @@ namespace L16_ScrollerCollide {
       let titleScreen: HTMLDivElement = <HTMLDivElement>document.getElementById("startscreen");
       titleScreen.style.visibility = "hidden";
       Sound.init();
-      //Sound.play("testTrack");
+      //Sound.play("Theme");
 
       let canvas: HTMLCanvasElement = document.querySelector("canvas");
       let images: NodeListOf<HTMLImageElement> = document.querySelectorAll("img");
@@ -211,8 +211,22 @@ namespace L16_ScrollerCollide {
       }
 
       let floor: Floor = new Floor(TYPE.DIRT);
-      floor.cmpTransform.local.translateX(1);
-      floor.cmpTransform.local.translateY(1);
+      floor.cmpTransform.local.translateX(-1.5);
+      floor.cmpTransform.local.translateY(0);
+      floor.cmpTransform.local.scaleX(1);
+      floor.cmpTransform.local.scaleY(0.5);
+      level.appendChild(floor);
+
+      floor = new Floor(TYPE.DIRT);
+      floor.cmpTransform.local.translateX(-2.4);
+      floor.cmpTransform.local.translateY(2);
+      floor.cmpTransform.local.scaleX(2);
+      floor.cmpTransform.local.scaleY(2);
+      level.appendChild(floor);
+
+      floor = new Floor(TYPE.DIRT);
+      floor.cmpTransform.local.translateX(22.3);
+      floor.cmpTransform.local.translateY(2);
       floor.cmpTransform.local.scaleX(2);
       floor.cmpTransform.local.scaleY(2);
       level.appendChild(floor);
@@ -413,18 +427,20 @@ namespace L16_ScrollerCollide {
     function displayMenue(): void {
       let menueScreen: HTMLDivElement = <HTMLDivElement>document.getElementById("menue");
       menueScreen.style.visibility = "visible";
+      fudge.Loop.stop();
     }
 
     function closeMenue(): void {
       let menueScreen: HTMLDivElement = <HTMLDivElement>document.getElementById("menue");
       menueScreen.style.visibility = "hidden";
+      fudge.Loop.start(fudge.LOOP_MODE.TIME_GAME, 15);
     }
 
     function changeVolume(): void {
       let volumeSlider: HTMLInputElement = <HTMLInputElement>document.getElementById("musicVolume");
       let value: number = parseInt(volumeSlider.value);
       Sound.vol = value / 100;
-      Sound.play("testTrack");
+      Sound.play("Theme");
     }
 
     function loadTextures(_images: NodeListOf<HTMLImageElement>): void {

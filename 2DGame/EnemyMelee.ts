@@ -41,10 +41,6 @@ namespace L16_ScrollerCollide {
         sprite = new Sprite(ACTION.HIT);
         sprite.generateByGrid(_txtImage, fudge.Rectangle.GET(14, 137, 94, 85), 8, fudge.Vector2.ZERO(), 45, fudge.ORIGIN2D.BOTTOMCENTER);
         EnemyMelee.sprites.push(sprite);
-
-        // sprite = new Sprite(ACTION.DIE);
-        // sprite.generateByGrid(_txtImage, fudge.Rectangle.GET(20, 210, 71, 67), 5, fudge.Vector2.ZERO(), 64, fudge.ORIGIN2D.BOTTOMCENTER);
-        // EnemyMelee.sprites.push(sprite);
       }
 
       public creatHitbox(): Hitbox {
@@ -104,6 +100,8 @@ namespace L16_ScrollerCollide {
             } else if (direction == -1) {
               this.directionGlobal = "left";
             }
+            if (this.speed.y == 0)
+              Sound.play("WalkOnGrass");
             break;
           case ACTION.JUMP:
             if (this.speed.y != 0) {
@@ -125,6 +123,7 @@ namespace L16_ScrollerCollide {
     }
 
       protected deleteThis(): void {
+        fudge.Loop.removeEventListener(fudge.EVENT.LOOP_FRAME, this.update);
         super.deleteThis();
       }
   

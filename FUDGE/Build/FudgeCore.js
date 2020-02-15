@@ -7963,6 +7963,7 @@ var FudgeCore;
          * Deletes the timer with the id given by this time object
          */
         deleteTimer(_id) {
+            console.log(this.timers[_id]);
             this.timers[_id].clear();
             delete this.timers[_id];
         }
@@ -8034,7 +8035,7 @@ var FudgeCore;
          * @param _syncWithAnimationFrame Experimental and only applicable in TIME-modes. Should defer the loop-cycle until the next possible animation frame.
          */
         static start(_mode = LOOP_MODE.FRAME_REQUEST, _fps = 60, _syncWithAnimationFrame = false) {
-            Loop.stop();
+            //Loop.stop();
             Loop.timeStartGame = FudgeCore.Time.game.get();
             Loop.timeStartReal = performance.now();
             Loop.timeLastFrameGame = Loop.timeStartGame;
@@ -8080,6 +8081,8 @@ var FudgeCore;
                     window.cancelAnimationFrame(Loop.idRequest);
                     break;
                 case LOOP_MODE.TIME_GAME:
+                    console.log("STOP");
+                    console.log(Loop.idIntervall);
                     FudgeCore.Time.game.deleteTimer(Loop.idIntervall);
                     window.cancelAnimationFrame(Loop.idRequest);
                     break;

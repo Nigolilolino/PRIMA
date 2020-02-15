@@ -18,7 +18,7 @@ namespace L16_ScrollerCollide {
         }
         this.master = _master;
         this.addComponent(new fudge.ComponentTransform());
-        //this.addComponent(new fudge.ComponentMaterial(Hitbox.material));
+        this.addComponent(new fudge.ComponentMaterial(Hitbox.material));
         let cmpMesh: fudge.ComponentMesh = new fudge.ComponentMesh(Hitbox.mesh);
         cmpMesh.pivot = Hitbox.pivot;
         this.addComponent(cmpMesh); 

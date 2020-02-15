@@ -6,7 +6,7 @@ namespace L16_ScrollerCollide {
     export abstract class Characters extends fudge.Node {
       protected static sprites: Sprite[];
       protected static speedMax: fudge.Vector2 = new fudge.Vector2(1.5, 5);
-      protected static gravity: fudge.Vector2 = fudge.Vector2.Y(-4);
+      protected static gravity: fudge.Vector2 = fudge.Vector2.Y(-3.5);
       protected directionGlobal: String = "right";
       protected frameCounter: number = 0;
       public healthpoints: number;
@@ -26,9 +26,11 @@ namespace L16_ScrollerCollide {
 
       public receiveHit(): void {
         this.healthpoints = this.healthpoints - 1;
-        if (this.healthpoints <= 0) {
+        if (this.healthpoints <= 0 && this.name != "Knight") {
           this.frameCounter = 0;
           this.deleteThis();
+        } else if (this.healthpoints <= 0 && this.name == "Knight") {
+          this.endGame();
         }
       }
 
@@ -70,6 +72,12 @@ namespace L16_ScrollerCollide {
             this.speed.y = 0;
           }
         }
+      }
+
+      private endGame(){
+        fudge.Loop.stop();
+        let deathScreen: HTMLDivElement = <HTMLDivElement>document.getElementById("deathScreen");
+        deathScreen.style.visibility = "visible";
       }
 
     }
