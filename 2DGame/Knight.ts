@@ -177,6 +177,7 @@ namespace L16_ScrollerCollide {
         this.receiveHit(this.directionGlobal);
         this.updateHealthbar();
       } else if (colider == "Collected") {
+        Sound.play("Slurp");
         if (this.healthpoints + 2 > 10) {
           this.healthpoints = 10;
         } else {

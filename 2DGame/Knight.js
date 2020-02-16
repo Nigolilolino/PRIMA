@@ -159,6 +159,7 @@ var L16_ScrollerCollide;
                 this.updateHealthbar();
             }
             else if (colider == "Collected") {
+                L16_ScrollerCollide.Sound.play("Slurp");
                 if (this.healthpoints + 2 > 10) {
                     this.healthpoints = 10;
                 }

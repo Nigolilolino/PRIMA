@@ -35,8 +35,17 @@ namespace L16_ScrollerCollide {
         restartBtn[i].addEventListener("click", restartGame);
       }
 
-      let volumeSlider: HTMLInputElement = <HTMLInputElement>document.getElementById("musicVolume");
-      volumeSlider.addEventListener("click", changeVolume);
+      let volumeSliderMusic: HTMLInputElement = <HTMLInputElement>document.getElementById("musicVolume");
+      volumeSliderMusic.addEventListener("click", changeVolumeMusic);
+
+      let volumeSliderVoices: HTMLInputElement = <HTMLInputElement>document.getElementById("voicesVolume");
+      volumeSliderVoices.addEventListener("click", changeVolumeVoices);
+
+      let volumeSliderEnvironment: HTMLInputElement = <HTMLInputElement>document.getElementById("environmentVolume");
+      volumeSliderEnvironment.addEventListener("click", changeVolumeEnvironment);
+
+      let volumeSliderEffects: HTMLInputElement = <HTMLInputElement>document.getElementById("effectsVolume");
+      volumeSliderEffects.addEventListener("click", changeVolumeEffects);
 
       let showControlsBtns: HTMLCollectionOf<Element> = document.getElementsByClassName("showControlsBtn");
       for (let i: number = 0; i < showControlsBtns.length; i++) {
@@ -64,6 +73,7 @@ namespace L16_ScrollerCollide {
       titleScreen.style.visibility = "hidden";
       Sound.init();
       Sound.play("Theme");
+      Sound.play("Wind");
 
       let canvas: HTMLCanvasElement = document.querySelector("canvas");
       let images: NodeListOf<HTMLImageElement> = document.querySelectorAll("img");
@@ -437,11 +447,30 @@ namespace L16_ScrollerCollide {
       fudge.Loop.start(fudge.LOOP_MODE.TIME_REAL, 10); 
     }
 
-    function changeVolume(): void {
+    function changeVolumeMusic(): void {
       let volumeSlider: HTMLInputElement = <HTMLInputElement>document.getElementById("musicVolume");
       let value: number = parseInt(volumeSlider.value);
-      Sound.vol = value / 100;
+      Sound.volMusic = value / 100;
       Sound.play("Theme");
+    }
+
+    function changeVolumeVoices(): void {
+      let volumeSlider: HTMLInputElement = <HTMLInputElement>document.getElementById("voicesVolume");
+      let value: number = parseInt(volumeSlider.value);
+      Sound.volVoices = value / 100;
+    }
+
+    function changeVolumeEnvironment(): void {
+      let volumeSlider: HTMLInputElement = <HTMLInputElement>document.getElementById("environmentVolume");
+      let value: number = parseInt(volumeSlider.value);
+      Sound.volEnvironment = value / 100;
+      Sound.play("Wind");
+    }
+
+    function changeVolumeEffects(): void {
+      let volumeSlider: HTMLInputElement = <HTMLInputElement>document.getElementById("effectsVolume");
+      let value: number = parseInt(volumeSlider.value);
+      Sound.volEffects = value / 100;
     }
 
     function loadTextures(_images: NodeListOf<HTMLImageElement>): void {

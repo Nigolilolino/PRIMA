@@ -100,6 +100,7 @@
     text-align: center;
     cursor: pointer;
     display: inline-block;
+    
 }
 
 #gameStartBtn{
@@ -116,6 +117,7 @@
 #title{
     color: wheat;
     font-size: 69pt;
+    margin: 0%;;
 }
 
 .sprites{
@@ -134,11 +136,23 @@
   }
 
   #musicVolume{
-    display: block;
-    margin-left: 45%;
+    display: inline-block;
+  }
+
+  #voicesVolume{
+    display: inline-block;
+  }
+
+  #environmentVolume{
+    display: inline-block;
+  }
+
+  #effectsVolume{
+    display: inline-block;
   }
 
   #musicVolumeLabel{
     color: white;
     font-size: larger;
+    
   }

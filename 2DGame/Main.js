@@ -23,8 +23,14 @@ var L16_ScrollerCollide;
         for (let i = 0; i < restartBtn.length; i++) {
             restartBtn[i].addEventListener("click", restartGame);
         }
-        let volumeSlider = document.getElementById("musicVolume");
-        volumeSlider.addEventListener("click", changeVolume);
+        let volumeSliderMusic = document.getElementById("musicVolume");
+        volumeSliderMusic.addEventListener("click", changeVolumeMusic);
+        let volumeSliderVoices = document.getElementById("voicesVolume");
+        volumeSliderVoices.addEventListener("click", changeVolumeVoices);
+        let volumeSliderEnvironment = document.getElementById("environmentVolume");
+        volumeSliderEnvironment.addEventListener("click", changeVolumeEnvironment);
+        let volumeSliderEffects = document.getElementById("effectsVolume");
+        volumeSliderEffects.addEventListener("click", changeVolumeEffects);
         let showControlsBtns = document.getElementsByClassName("showControlsBtn");
         for (let i = 0; i < showControlsBtns.length; i++) {
             showControlsBtns[i].addEventListener("click", displayControls);
@@ -45,6 +51,7 @@ var L16_ScrollerCollide;
         titleScreen.style.visibility = "hidden";
         L16_ScrollerCollide.Sound.init();
         L16_ScrollerCollide.Sound.play("Theme");
+        L16_ScrollerCollide.Sound.play("Wind");
         let canvas = document.querySelector("canvas");
         let images = document.querySelectorAll("img");
         loadTextures(images);
@@ -361,11 +368,27 @@ var L16_ScrollerCollide;
         menueScreen.style.visibility = "hidden";
         L16_ScrollerCollide.fudge.Loop.start(L16_ScrollerCollide.fudge.LOOP_MODE.TIME_REAL, 10);
     }
-    function changeVolume() {
+    function changeVolumeMusic() {
         let volumeSlider = document.getElementById("musicVolume");
         let value = parseInt(volumeSlider.value);
-        L16_ScrollerCollide.Sound.vol = value / 100;
+        L16_ScrollerCollide.Sound.volMusic = value / 100;
         L16_ScrollerCollide.Sound.play("Theme");
+    }
+    function changeVolumeVoices() {
+        let volumeSlider = document.getElementById("voicesVolume");
+        let value = parseInt(volumeSlider.value);
+        L16_ScrollerCollide.Sound.volVoices = value / 100;
+    }
+    function changeVolumeEnvironment() {
+        let volumeSlider = document.getElementById("environmentVolume");
+        let value = parseInt(volumeSlider.value);
+        L16_ScrollerCollide.Sound.volEnvironment = value / 100;
+        L16_ScrollerCollide.Sound.play("Wind");
+    }
+    function changeVolumeEffects() {
+        let volumeSlider = document.getElementById("effectsVolume");
+        let value = parseInt(volumeSlider.value);
+        L16_ScrollerCollide.Sound.volEffects = value / 100;
     }
     function loadTextures(_images) {
         let txtHare1 = new L16_ScrollerCollide.fudge.TextureImage();
