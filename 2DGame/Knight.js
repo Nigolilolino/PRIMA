@@ -100,7 +100,7 @@ var L16_ScrollerCollide;
                 case L16_ScrollerCollide.ACTION.WALK:
                     this.action = _action;
                     let direction = (_direction == L16_ScrollerCollide.DIRECTION.RIGHT ? 1 : -1);
-                    this.speed.x = Knight.speedMax.x; // * direction;
+                    this.speed.x = Knight.speedMax.x;
                     this.cmpTransform.local.rotation = fudge.Vector3.Y(90 - 90 * direction);
                     if (direction == 1) {
                         this.directionGlobal = "right";
@@ -155,14 +155,8 @@ var L16_ScrollerCollide;
             if (colider == "Hit") {
                 if (this.healthpoints != 11)
                     L16_ScrollerCollide.Sound.play("HitHuman");
-                this.receiveHit();
+                this.receiveHit(this.directionGlobal);
                 this.updateHealthbar();
-                if (this.directionGlobal == "right") {
-                    this.cmpTransform.local.translateX(-0.5);
-                }
-                else {
-                    this.cmpTransform.local.translateX(+0.5);
-                }
             }
             else if (colider == "Collected") {
                 if (this.healthpoints + 2 > 10) {
@@ -178,18 +172,9 @@ var L16_ScrollerCollide;
                 if (this.frameCounter == 6 || combatValues[0] == "Hit" && this.frameCounter == 7) {
                     let enemyHitbox = combatValues[1];
                     let enemy = enemyHitbox.master;
-                    if (this.directionGlobal == "right") {
-                        enemy.cmpTransform.local.translateX(+0.5);
-                        enemy.receiveHit();
-                        L16_ScrollerCollide.Sound.play("HittingStone");
-                        L16_ScrollerCollide.Sound.play("HurtMonsterSmall");
-                    }
-                    else {
-                        enemy.cmpTransform.local.translateX(-0.5);
-                        enemy.receiveHit();
-                        L16_ScrollerCollide.Sound.play("HittingStone");
-                        L16_ScrollerCollide.Sound.play("HurtMonsterSmall");
-                    }
+                    enemy.receiveHit(this.directionGlobal);
+                    L16_ScrollerCollide.Sound.play("HittingStone");
+                    L16_ScrollerCollide.Sound.play("HurtMonsterSmall");
                 }
             }
         }

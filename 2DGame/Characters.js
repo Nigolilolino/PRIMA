@@ -25,14 +25,44 @@ var L16_ScrollerCollide;
             this.directionGlobal = "right";
             this.frameCounter = 0;
             this.speed = fudge.Vector3.ZERO();
+            this.update = (_event) => {
+                this.broadcastEvent(new CustomEvent("showNext"));
+                let timeFrame = fudge.Loop.timeFrameGame / 1000;
+                this.speed.y += L16_ScrollerCollide.Enemy.gravity.y * timeFrame;
+                let distance = fudge.Vector3.SCALE(this.speed, timeFrame);
+                this.cmpTransform.local.translate(distance);
+                if (this.directionGlobal == "right") {
+                    this.hitbox.cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x, this.mtxWorld.translation.y + 0.6, 0);
+                }
+                else if (this.directionGlobal == "left") {
+                    this.hitbox.cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x, this.mtxWorld.translation.y + 0.6, 0);
+                }
+                this.checkGroundCollision(0, 0);
+            };
         }
         show(_action) {
             for (let child of this.getChildren()) {
                 child.activate(child.name == _action);
             }
         }
-        receiveHit() {
+        receiveHit(_direction) {
             this.healthpoints = this.healthpoints - 1;
+            if (_direction == "right") {
+                if (this.name == "Knight") {
+                    this.cmpTransform.local.translateX(-0.5);
+                }
+                else {
+                    this.cmpTransform.local.translateX(+0.5);
+                }
+            }
+            else {
+                if (this.name == "Knight") {
+                    this.cmpTransform.local.translateX(+0.5);
+                }
+                else {
+                    this.cmpTransform.local.translateX(-0.5);
+                }
+            }
             if (this.healthpoints <= 0 && this.name != "Knight") {
                 this.frameCounter = 0;
                 this.deleteThis();
@@ -42,6 +72,7 @@ var L16_ScrollerCollide;
             }
         }
         deleteThis() {
+            fudge.Loop.removeEventListener("loopFrame" /* LOOP_FRAME */, this.update);
             let parent = this.getParent();
             parent.removeChild(this.hitbox);
             parent.removeChild(this);

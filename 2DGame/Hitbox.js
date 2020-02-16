@@ -70,6 +70,7 @@ var L16_ScrollerCollide;
                     if (hit && floor.name == "ItemHitbox") {
                         let hitbox = floor;
                         let level = hitbox.getParent();
+                        console.log(hitbox.master);
                         level.removeChild(hitbox.master);
                         level.removeChild(hitbox);
                         return "Collected";

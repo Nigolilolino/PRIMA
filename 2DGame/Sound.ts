@@ -4,9 +4,11 @@ namespace L16_ScrollerCollide {
         [id: string]: HTMLAudioElement;
       }
     export class Sound {
+    public static volMusic: number = 0.5;
+    public static volEffects: number = 0.1;
+    public static volEnvironment: number = 0.1;
+    public static volVoices: number = 0.1;
     private static sounds: Sounds = {};
-    public static vol: number = 0.5;
-    public static volWalking: number = 0.1;
 
     public static init(): void {
         let audioElements: NodeListOf<HTMLAudioElement> = document.querySelectorAll("audio");
@@ -18,9 +20,9 @@ namespace L16_ScrollerCollide {
     public static play(_id: string): void {
 
         if (Sound.sounds[_id].id == "WalkOnGrass") {
-            Sound.sounds[_id].volume = Sound.volWalking;
+            Sound.sounds[_id].volume = Sound.volEffects;
         } else {
-            Sound.sounds[_id].volume = Sound.vol;
+            Sound.sounds[_id].volume = Sound.volMusic;
         }
         Sound.sounds[_id].play();
     }

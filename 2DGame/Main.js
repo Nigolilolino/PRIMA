@@ -19,8 +19,10 @@ var L16_ScrollerCollide;
         menuetBtn.addEventListener("click", displayMenue);
         let menueExitBtn = document.getElementById("menueExitBtn");
         menueExitBtn.addEventListener("click", closeMenue);
-        let restartBtn = document.getElementById("restartBtn");
-        restartBtn.addEventListener("click", restartGame);
+        let restartBtn = document.getElementsByClassName("restartBtn");
+        for (let i = 0; i < restartBtn.length; i++) {
+            restartBtn[i].addEventListener("click", restartGame);
+        }
         let volumeSlider = document.getElementById("musicVolume");
         volumeSlider.addEventListener("click", changeVolume);
         let showControlsBtns = document.getElementsByClassName("showControlsBtn");
@@ -51,6 +53,7 @@ var L16_ScrollerCollide;
         knight = new L16_ScrollerCollide.Knight("Knight");
         L16_ScrollerCollide.level = createLevel();
         L16_ScrollerCollide.game.appendChild(L16_ScrollerCollide.level);
+        console.log(L16_ScrollerCollide.game);
         let cmpCamera = new L16_ScrollerCollide.fudge.ComponentCamera();
         cmpCamera.pivot.translateZ(6);
         cmpCamera.pivot.translateY(1.5);
@@ -59,10 +62,10 @@ var L16_ScrollerCollide;
         let viewport = new L16_ScrollerCollide.fudge.Viewport();
         viewport.initialize("Viewport", L16_ScrollerCollide.game, cmpCamera, canvas);
         viewport.draw();
-        document.addEventListener("keydown", handleKeyboard);
-        document.addEventListener("keyup", handleKeyboard);
+        document.addEventListener("keydown", handleJump);
+        document.addEventListener("keyup", handleJump);
         L16_ScrollerCollide.fudge.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, update);
-        L16_ScrollerCollide.fudge.Loop.start(L16_ScrollerCollide.fudge.LOOP_MODE.TIME_GAME, 15);
+        L16_ScrollerCollide.fudge.Loop.start(L16_ScrollerCollide.fudge.LOOP_MODE.TIME_REAL, 10);
         function update(_event) {
             processInput();
             activateAnimations();
@@ -81,7 +84,7 @@ var L16_ScrollerCollide;
             }
         }
     }
-    function handleKeyboard(_event) {
+    function handleJump(_event) {
         keysPressed[_event.code] = (_event.type == "keydown");
         if (_event.code == L16_ScrollerCollide.fudge.KEYBOARD_CODE.W && _event.type == "keydown")
             knight.act(L16_ScrollerCollide.ACTION.JUMP);
@@ -196,13 +199,13 @@ var L16_ScrollerCollide;
     function initializeKnight(_level) {
         for (let i = 0; i < knight.healthpoints - 1; i++) {
             let healthpoint = new L16_ScrollerCollide.Healthpoints("Player Healthpoint 1");
-            _level.appendChild(healthpoint);
+            L16_ScrollerCollide.game.appendChild(healthpoint);
             healthpoint.act(L16_ScrollerCollide.STATUS.FULL);
             healthbar.push(healthpoint);
         }
         knight.healthbar = healthbar;
-        _level.appendChild(knight.createHitboxWeapon());
-        _level.appendChild(knight.creatHitbox());
+        L16_ScrollerCollide.game.appendChild(knight.createHitboxWeapon());
+        L16_ScrollerCollide.game.appendChild(knight.creatHitbox());
         L16_ScrollerCollide.game.appendChild(knight);
     }
     function createSky(_level, _amount) {
@@ -356,7 +359,7 @@ var L16_ScrollerCollide;
     function closeMenue() {
         let menueScreen = document.getElementById("menue");
         menueScreen.style.visibility = "hidden";
-        L16_ScrollerCollide.fudge.Loop.start(L16_ScrollerCollide.fudge.LOOP_MODE.TIME_GAME, 15);
+        L16_ScrollerCollide.fudge.Loop.start(L16_ScrollerCollide.fudge.LOOP_MODE.TIME_REAL, 10);
     }
     function changeVolume() {
         let volumeSlider = document.getElementById("musicVolume");

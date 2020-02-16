@@ -1,8 +1,5 @@
 [{
     "level1":{
-        "levelSprites":[
-            
-        ],
         "levelObjects":[
         {"objectName" : "Enemy", "type" : "Ranged", "posX" : 12, "posY" : 1, "scaleX": null, "scaleY": null},
         {"objectName" : "Enemy", "type" : "Melee", "posX" : 3, "posY" : 1, "scaleX": null, "scaleY": null},

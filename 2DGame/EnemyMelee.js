@@ -16,7 +16,7 @@ var L16_ScrollerCollide;
             }
             this.cmpTransform.local.translation = new fudge.Vector3(_x, _y, 0);
             this.cmpTransform.local.scale(new fudge.Vector3(0.6, 0.6, 0));
-            this.walkingTimeMax = 70;
+            this.walkingTimeMax = 40;
             this.healthpoints = 10;
         }
         static generateSprites(_txtImage) {

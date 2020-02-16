@@ -88,7 +88,7 @@ namespace L16_ScrollerCollide {
         case ACTION.WALK:
           this.action = _action;
           let direction: number = (_direction == DIRECTION.RIGHT ? 1 : -1);
-          this.speed.x = Knight.speedMax.x; // * direction;
+          this.speed.x = Knight.speedMax.x;
           this.cmpTransform.local.rotation = fudge.Vector3.Y(90 - 90 * direction);
           if (direction == 1) {
             this.directionGlobal = "right";
@@ -124,21 +124,7 @@ namespace L16_ScrollerCollide {
       this.show(_action);
     }
 
-    private updateHealthbar(): void {
-      if (this.healthpoints == 11) {
-        return;
-      }
-      let lifeDifference: number = 10 - this.healthpoints;
-      for (let i: number = 0; i < this.healthbar.length; i++) {
-        if (i < lifeDifference) {
-          this.healthbar[i].act(STATUS.EMPTY);
-        } else {
-          this.healthbar[i].act(STATUS.FULL);
-        }
-      }
-    }
-
-    private update = (_event: fudge.Eventƒ): void => {
+    protected update = (_event: fudge.Eventƒ): void => {
       this.broadcastEvent(new CustomEvent("showNext"));
 
       let timeFrame: number = fudge.Loop.timeFrameGame / 1000;
@@ -168,19 +154,28 @@ namespace L16_ScrollerCollide {
       this.checkGroundCollision(0.4, 0);
     }
 
+    private updateHealthbar(): void {
+      if (this.healthpoints == 11) {
+        return;
+      }
+      let lifeDifference: number = 10 - this.healthpoints;
+      for (let i: number = 0; i < this.healthbar.length; i++) {
+        if (i < lifeDifference) {
+          this.healthbar[i].act(STATUS.EMPTY);
+        } else {
+          this.healthbar[i].act(STATUS.FULL);
+        }
+      }
+    }
+
     private checkForInteractions(): void {
       let colider: string = this.hitboxes[0].checkCollision();
 
       if (colider == "Hit") {
         if (this.healthpoints != 11)
         Sound.play("HitHuman");
-        this.receiveHit();
+        this.receiveHit(this.directionGlobal);
         this.updateHealthbar();
-        if (this.directionGlobal == "right") {
-          this.cmpTransform.local.translateX(-0.5);
-        } else {
-          this.cmpTransform.local.translateX(+0.5);
-        }
       } else if (colider == "Collected") {
         if (this.healthpoints + 2 > 10) {
           this.healthpoints = 10;
@@ -195,17 +190,10 @@ namespace L16_ScrollerCollide {
         if (this.frameCounter == 6 || combatValues[0] == "Hit" && this.frameCounter == 7) {
           let enemyHitbox: Hitbox = <Hitbox>combatValues[1];
           let enemy: Enemy = <Enemy>enemyHitbox.master;
-          if (this.directionGlobal == "right") {
-            enemy.cmpTransform.local.translateX(+0.5);
-            enemy.receiveHit();
-            Sound.play("HittingStone");
-            Sound.play("HurtMonsterSmall");
-          } else {
-            enemy.cmpTransform.local.translateX(-0.5);
-            enemy.receiveHit();
-            Sound.play("HittingStone");
-            Sound.play("HurtMonsterSmall");
-          }
+          enemy.receiveHit(this.directionGlobal);
+          Sound.play("HittingStone");
+          Sound.play("HurtMonsterSmall");
+          
         }
       }
     }

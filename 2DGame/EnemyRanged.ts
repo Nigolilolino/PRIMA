@@ -122,22 +122,24 @@ namespace L16_ScrollerCollide {
             if (distanceX > 0) {
               this.directionGlobal = "left";
               if (this.frameCounter == 5) {
-                let stone: Stone = new Stone("Stone", this.cmpTransform.local.translation.x, this.cmpTransform.local.translation.y + 0.2, this.directionGlobal, level);
-                level.appendChild(stone);
-                level.appendChild(stone.creatHitbox());
+                this.createProjectiles();
               }
             } else {
               this.directionGlobal = "right";
               if (this.frameCounter == 5) {
-                let stone: Stone = new Stone("Stone", this.cmpTransform.local.translation.x, this.cmpTransform.local.translation.y + 0.2, this.directionGlobal, level);
-                level.appendChild(stone);
-                level.appendChild(stone.creatHitbox());
+                this.createProjectiles();
               }
             }
             return true;
           }
         }
         return false;
+      }
+
+      private createProjectiles(): void {
+        let stone: Stone = new Stone("Stone", this.cmpTransform.local.translation.x, this.cmpTransform.local.translation.y + 0.2, this.directionGlobal, level);
+        level.appendChild(stone);
+        level.appendChild(stone.creatHitbox());
       }
 
     }

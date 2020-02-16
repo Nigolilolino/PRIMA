@@ -8,20 +8,6 @@ var L16_ScrollerCollide;
         constructor(_name) {
             super(_name);
             this.currentWalkingTime = 0;
-            this.update = (_event) => {
-                this.broadcastEvent(new CustomEvent("showNext"));
-                let timeFrame = fudge.Loop.timeFrameGame / 1000;
-                this.speed.y += Enemy.gravity.y * timeFrame;
-                let distance = fudge.Vector3.SCALE(this.speed, timeFrame);
-                this.cmpTransform.local.translate(distance);
-                if (this.directionGlobal == "right") {
-                    this.hitbox.cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x, this.mtxWorld.translation.y + 0.6, 0);
-                }
-                else if (this.directionGlobal == "left") {
-                    this.hitbox.cmpTransform.local.translation = new fudge.Vector3(this.mtxWorld.translation.x, this.mtxWorld.translation.y + 0.6, 0);
-                }
-                this.checkGroundCollision(0, 0);
-            };
             fudge.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, this.update);
         }
         creatHitbox(scaleX, scaleY) {

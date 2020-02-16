@@ -59,14 +59,15 @@
     visibility: hidden;
 }
 
-#restartBtn{
+.restartBtn{
     width: 400px;
     height: 100px;
-    margin-left: 36%;
-    margin-top: 10%;
+    /* margin-left: 0%; */
+    margin-top: 2%;
     background-color: white;
     text-align: center;
     cursor: pointer;
+    display: inline-block;
 }
 
 #menue{

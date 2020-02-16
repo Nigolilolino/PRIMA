@@ -85,6 +85,7 @@ namespace L16_ScrollerCollide {
             if (hit && floor.name == "ItemHitbox") {
               let hitbox: Hitbox = <Hitbox>floor;
               let level: fudge.Node = hitbox.getParent();
+              console.log(hitbox.master);
               level.removeChild(hitbox.master);
               level.removeChild(hitbox);
               return "Collected";

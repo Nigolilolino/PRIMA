@@ -30,8 +30,10 @@ namespace L16_ScrollerCollide {
       let menueExitBtn: HTMLDivElement = <HTMLDivElement>document.getElementById("menueExitBtn");
       menueExitBtn.addEventListener("click", closeMenue);
 
-      let restartBtn: HTMLDivElement = <HTMLDivElement>document.getElementById("restartBtn");
-      restartBtn.addEventListener("click", restartGame);
+      let restartBtn: HTMLCollectionOf<Element> = document.getElementsByClassName("restartBtn");
+      for (let i: number = 0; i < restartBtn.length; i++) {
+        restartBtn[i].addEventListener("click", restartGame);
+      }
 
       let volumeSlider: HTMLInputElement = <HTMLInputElement>document.getElementById("musicVolume");
       volumeSlider.addEventListener("click", changeVolume);
@@ -73,6 +75,7 @@ namespace L16_ScrollerCollide {
       knight = new Knight("Knight");
       level = createLevel();
       game.appendChild(level);
+      console.log(game);
   
       let cmpCamera: fudge.ComponentCamera = new fudge.ComponentCamera();
       cmpCamera.pivot.translateZ(6);
@@ -84,11 +87,11 @@ namespace L16_ScrollerCollide {
       viewport.initialize("Viewport", game, cmpCamera, canvas);
       viewport.draw();
   
-      document.addEventListener("keydown", handleKeyboard);
-      document.addEventListener("keyup", handleKeyboard);
+      document.addEventListener("keydown", handleJump);
+      document.addEventListener("keyup", handleJump);
   
       fudge.Loop.addEventListener(fudge.EVENT.LOOP_FRAME, update);
-      fudge.Loop.start(fudge.LOOP_MODE.TIME_GAME, 15); 
+      fudge.Loop.start(fudge.LOOP_MODE.TIME_REAL, 10); 
   
       function update(_event: fudge.Eventƒ): void {
         processInput();
@@ -107,7 +110,7 @@ namespace L16_ScrollerCollide {
       }
     }
   
-    function handleKeyboard(_event: KeyboardEvent): void {
+    function handleJump(_event: KeyboardEvent): void {
       keysPressed[_event.code] = (_event.type == "keydown");
       if (_event.code == fudge.KEYBOARD_CODE.W && _event.type == "keydown")
         knight.act(ACTION.JUMP);
@@ -237,13 +240,13 @@ namespace L16_ScrollerCollide {
     function initializeKnight(_level: fudge.Node): void {
       for (let i: number = 0; i < knight.healthpoints - 1; i++) {
         let healthpoint: Healthpoints = new Healthpoints("Player Healthpoint 1");
-        _level.appendChild(healthpoint);
+        game.appendChild(healthpoint);
         healthpoint.act(STATUS.FULL);
         healthbar.push(healthpoint);
       }
       knight.healthbar = healthbar;
-      _level.appendChild(knight.createHitboxWeapon());
-      _level.appendChild(knight.creatHitbox());
+      game.appendChild(knight.createHitboxWeapon());
+      game.appendChild(knight.creatHitbox());
       game.appendChild(knight);
     }
 
@@ -431,7 +434,7 @@ namespace L16_ScrollerCollide {
     function closeMenue(): void {
       let menueScreen: HTMLDivElement = <HTMLDivElement>document.getElementById("menue");
       menueScreen.style.visibility = "hidden";
-      fudge.Loop.start(fudge.LOOP_MODE.TIME_GAME, 15);
+      fudge.Loop.start(fudge.LOOP_MODE.TIME_REAL, 10); 
     }
 
     function changeVolume(): void {

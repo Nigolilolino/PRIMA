@@ -110,23 +110,24 @@ var L16_ScrollerCollide;
                     if (distanceX > 0) {
                         this.directionGlobal = "left";
                         if (this.frameCounter == 5) {
-                            let stone = new L16_ScrollerCollide.Stone("Stone", this.cmpTransform.local.translation.x, this.cmpTransform.local.translation.y + 0.2, this.directionGlobal, level);
-                            level.appendChild(stone);
-                            level.appendChild(stone.creatHitbox());
+                            this.createProjectiles();
                         }
                     }
                     else {
                         this.directionGlobal = "right";
                         if (this.frameCounter == 5) {
-                            let stone = new L16_ScrollerCollide.Stone("Stone", this.cmpTransform.local.translation.x, this.cmpTransform.local.translation.y + 0.2, this.directionGlobal, level);
-                            level.appendChild(stone);
-                            level.appendChild(stone.creatHitbox());
+                            this.createProjectiles();
                         }
                     }
                     return true;
                 }
             }
             return false;
+        }
+        createProjectiles() {
+            let stone = new L16_ScrollerCollide.Stone("Stone", this.cmpTransform.local.translation.x, this.cmpTransform.local.translation.y + 0.2, this.directionGlobal, L16_ScrollerCollide.level);
+            L16_ScrollerCollide.level.appendChild(stone);
+            L16_ScrollerCollide.level.appendChild(stone.creatHitbox());
         }
     }
     L16_ScrollerCollide.EnemyRanged = EnemyRanged;
