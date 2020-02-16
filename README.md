@@ -2,6 +2,12 @@
 
 ## Abschlussaufgabe ##
 
+- [Of Monsters And Men](https://nicoklein97.github.io/PRIMA/2DGame/index.html)
+- [Code](https://github.com/NicoKlein97/PRIMA/tree/master/2DGame)
+- [Designdokument und Ausarbeitung](https://github.com/NicoKlein97/PRIMA/tree/master/2DGame/DesignDokument/Ausarbeitung.pdf)
+
+!!! Die gesammte Tabelle + Grafiken sind nochmal sauber im Designdokument enthalten !!!
+
 | Nr | Bezeichnung           | Inhalt                                                                                                                                                                                                                                                                         |
 |---:|-----------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 |    | Titel                 | Of Monsters And Men
@@ -18,3 +24,5 @@
 |  9 | Subklassen            | Insgesamt erben 6 Klassen von fudgeCore: Node. Diese sind Characters, Floor, Healthpoints, Hitbox, Items und Flora. Des Weiteren erben 2 Klassen von Characters, nämlich Knight und Enemy. Knight beinhaltet teilweise ähnliche Funktionen wie die späteren Kinder der Klasse Enemy, jedoch sind die Unterschiede im Detail dann doch zu groß, um alle Funktionen einfach in Characters auslagern zu können. Von der Klasse Enemy wiederum erben EnemyMelee und EnemyRanged. Die einzigen Klassen, welche von niemandem erben, sind die Klassen Sound und SpriteGenerator. Eine Detaillierte Übersicht zu den Klassen in Form eines Klassendiagrammes sind unter Abbildung 3 zu finden. |
 | 10 | Maße & Positionen     | Die Skalierung aller Objekte in der Spielwelt wurde dem „Knight“ also dem Protagonisten angepasst. Er wurde immer als Referenzgröße verwendet, um nachvollziehbare Größenverhältnisse darzustellen. Bei der Platzierung jeglicher Objekte in der Welt, wird immer von dem Nullpunkt der „mtxWorld“ ausgegangen. Von dort aus werden alle per alle Objekte per translate-Funktion an die entsprechende Position verschoben. Die Hitboxen wiederrum orientieren sich dann in jedem Frame an der „mtxWorld“-Position des zugehörigen Charakters. Bewegt dieser sich also auf der Weltachse, macht es die Hitbox ebenso.                                                                  |
 | 11 | Event-System          | Das Events-System wir für eine Vielzahl an Aktionen verwendet: 1.	HTML-Elemente:  Bei der Interaktion des Users mit bestimmten HTML-Elementen werden onclick-Events ausgelöst, welche beispielsweise Screens ein- und ausblenden. 2.	Sound: Im Menü befinden sich einige Regler, mit denen der User im aktiven Spiel die Lautstärke erhöhen oder verringern kann. Hierbei wird ein onclick-Event verwendet, welches die Volume-Eigenschaft von einem Sound um den aktuellen Wert des Reglers verändert.                                                                                                                                                                                  |
+
+Die gesammte Tabelle + Grafiken sind nochmal sauber im Designdokument enthalten !!!
